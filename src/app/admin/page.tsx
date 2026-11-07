@@ -198,8 +198,8 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Export CSV
-  const handleExportCsv = () => {
+  // Export Word Document (.doc)
+  const handleExportDoc = () => {
     const params = new URLSearchParams();
     if (selectedConstituency !== "ALL") params.append("constituency", selectedConstituency);
     if (selectedWard !== "ALL") params.append("ward", selectedWard);
@@ -321,12 +321,12 @@ export default function AdminDashboardPage() {
 
           {/* Right: Clean Primary Action */}
           <button
-            onClick={handleExportCsv}
+            onClick={handleExportDoc}
             className="py-1.5 px-3 rounded-lg bg-[#0B4DB8] hover:bg-[#083B8F] active:scale-95 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs shrink-0 select-none cursor-pointer"
-            title="Export filtered list to CSV"
+            title="Download roster as Word Document (.doc)"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <span>Download DOC</span>
           </button>
         </div>
       </header>
