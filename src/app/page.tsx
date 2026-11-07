@@ -56,6 +56,8 @@ export default function VolunteerRegistrationPage() {
   const [error, setError] = useState<string | null>(null);
   const [successVolunteer, setSuccessVolunteer] = useState<Volunteer | null>(null);
   const [showWardsAccordion, setShowWardsAccordion] = useState(false);
+  const [expandedConstituency, setExpandedConstituency] = useState<string | null>(null);
+  const [expandedWard, setExpandedWard] = useState<string | null>(null);
 
   // Lenis iOS smooth inertial spring scrolling
   useEffect(() => {
@@ -476,125 +478,6 @@ export default function VolunteerRegistrationPage() {
                   </motion.div>
                 </div>
               </div>
-
-              {/* Geographical Mappings - Smooth Accordion */}
-              <div className="ios-card overflow-hidden border-[#e2e8f0]">
-                <button
-                  type="button"
-                  onClick={() => setShowWardsAccordion((prev) => !prev)}
-                  className="w-full p-3.5 flex items-center justify-between text-left cursor-pointer hover:bg-[#f1f5f9] active:bg-[#eef4fb] transition-colors select-none"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-sm bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center shrink-0">
-                      <MapPin className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-[#0f172a]">
-                        Constituencies, Wards &amp; Polling Stations
-                      </h4>
-                      <p className="text-[10px] text-[#64748b]">
-                        {showWardsAccordion
-                          ? "Tap to collapse mappings"
-                          : `${mombasaConstituencies.length} Constituencies • ${mombasaWards.length} Wards • ${totalPollingStations} Stations (Tap to explore)`}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`p-1 text-[#64748b] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                      showWardsAccordion ? "rotate-180" : ""
-                    }`}
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
-                </button>
-
-                {/* Stretchy Spring Accordion Content */}
-                <AnimatePresence initial={false}>
-                  {showWardsAccordion && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 320, damping: 28 }}
-                      className="overflow-hidden border-t border-[#e2e8f0]"
-                    >
-                      <div className="p-3 space-y-2.5 bg-[#f8fafc]">
-                        <p className="text-[10px] text-[#64748b]">
-                          Tap any designated station below to pre-select it in the registration form:
-                        </p>
-
-                        <div className="space-y-3">
-                          {mombasaConstituencies.map((cName) => {
-                            const cWards = getWardsByConstituency(cName);
-                            return (
-                              <div
-                                key={cName}
-                                className="bg-white rounded-sm border border-[#e2e8f0] p-2.5 space-y-2 shadow-xs"
-                              >
-                                <div className="flex items-center justify-between pb-1.5 border-b border-[#e2e8f0]">
-                                  <p className="text-xs font-bold text-[#0B4DB8] uppercase tracking-wide">
-                                    {cName} Constituency
-                                  </p>
-                                  <span className="text-[10px] text-[#64748b] font-medium">
-                                    {cWards.length} Wards
-                                  </span>
-                                </div>
-
-                                <div className="space-y-2">
-                                  {cWards.map((w) => (
-                                    <div
-                                      key={w.ward}
-                                      className="bg-[#f8fafc] rounded-xs border border-[#e2e8f0]/80 p-2 space-y-1.5"
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <p className="text-[11px] font-bold text-[#0f172a]">
-                                          {w.ward} Ward
-                                        </p>
-                                        <p className="text-[10px] text-[#64748b]">
-                                          {w.pollingStations.length} Stations
-                                        </p>
-                                      </div>
-
-                                      {/* Station Buttons with iOS Spring Tactile Feedback */}
-                                      <div className="pt-1 border-t border-[#e2e8f0]/60 flex flex-wrap gap-1">
-                                        {w.pollingStations.map((station) => (
-                                          <motion.button
-                                            key={station}
-                                            type="button"
-                                            whileHover={{ scale: 1.03 }}
-                                            whileTap={{ scale: 0.93 }}
-                                            transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                                            onClick={() => {
-                                              setConstituency(cName);
-                                              setWard(w.ward);
-                                              setPollingStation(station);
-                                              setIsOtherStation(false);
-                                              setOtherStationText("");
-                                              window.scrollTo({ top: 120, behavior: "smooth" });
-                                            }}
-                                            className={`text-[10px] px-2.5 py-1 rounded-sm border cursor-pointer select-none ${
-                                              constituency === cName && ward === w.ward && pollingStation === station
-                                                ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs ring-1 ring-[#0B4DB8]"
-                                                : "bg-white text-[#0f172a] border-[#e2e8f0] hover:bg-[#eef4fb] hover:border-[#0B4DB8]/30"
-                                            }`}
-                                          >
-                                            {station}
-                                          </motion.button>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
             </motion.div>
 
             {/* Right Column (Volunteer Registration Form on LG) */}
@@ -602,7 +485,7 @@ export default function VolunteerRegistrationPage() {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 280, damping: 26, delay: 0.05, mass: 0.8 }}
-              className="lg:col-span-7"
+              className="lg:col-span-7 space-y-4"
             >
               {/* Error Banner */}
               {error && (
@@ -1037,6 +920,230 @@ export default function VolunteerRegistrationPage() {
                   </Link>
                 </p>
               </form>
+
+              {/* Geographical Directory Accordion - Directly below Volunteer Registration Form */}
+              <div className="ios-card overflow-hidden border-[#e2e8f0]">
+                <button
+                  type="button"
+                  onClick={() => setShowWardsAccordion((prev) => !prev)}
+                  className="w-full p-3.5 flex items-center justify-between text-left cursor-pointer hover:bg-[#f1f5f9] active:bg-[#eef4fb] transition-colors select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center shrink-0">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#0f172a]">
+                        Explore Constituencies, Wards &amp; Polling Stations
+                      </h4>
+                      <p className="text-[10px] text-[#64748b] mt-0.5">
+                        {showWardsAccordion
+                          ? "Tap to collapse directory"
+                          : `${mombasaConstituencies.length} Constituencies • ${mombasaWards.length} Wards • ${totalPollingStations} Stations (Tap to view)`}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`p-1 text-[#64748b] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                      showWardsAccordion ? "rotate-180" : ""
+                    }`}
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {/* Stretchy Spring Accordion Content */}
+                <AnimatePresence initial={false}>
+                  {showWardsAccordion && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                      className="overflow-hidden border-t border-[#e2e8f0]"
+                    >
+                      <div className="p-3 space-y-2 bg-[#f8fafc]">
+                        <p className="text-[10px] text-[#64748b] px-0.5">
+                          Tap a constituency below to expand its wards, then choose a ward to view stations:
+                        </p>
+
+                        <div className="space-y-1.5">
+                          {mombasaConstituencies.map((cName) => {
+                            const cWards = getWardsByConstituency(cName);
+                            const isConstExpanded = expandedConstituency === cName;
+                            const totalStationsInConst = cWards.reduce(
+                              (acc, w) => acc + w.pollingStations.length,
+                              0
+                            );
+
+                            return (
+                              <div
+                                key={cName}
+                                className="bg-white rounded-lg border border-[#e2e8f0] overflow-hidden shadow-2xs transition-colors"
+                              >
+                                {/* Constituency Header Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setExpandedConstituency(isConstExpanded ? null : cName);
+                                    if (isConstExpanded) setExpandedWard(null);
+                                  }}
+                                  className={`w-full px-3 py-2.5 flex items-center justify-between text-left cursor-pointer transition-colors select-none ${
+                                    isConstExpanded
+                                      ? "bg-[#0B4DB8]/5 text-[#0B4DB8]"
+                                      : "hover:bg-slate-50 text-slate-800"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className={`w-2 h-2 rounded-full ${
+                                        isConstExpanded ? "bg-[#0B4DB8]" : "bg-slate-300"
+                                      }`}
+                                    />
+                                    <span className="text-xs font-bold uppercase tracking-wide">
+                                      {cName} Constituency
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-[#64748b] font-medium">
+                                      {cWards.length} wards &bull; {totalStationsInConst} stations
+                                    </span>
+                                    <ChevronDown
+                                      className={`w-3.5 h-3.5 text-[#64748b] transition-transform duration-200 ${
+                                        isConstExpanded ? "rotate-180 text-[#0B4DB8]" : ""
+                                      }`}
+                                    />
+                                  </div>
+                                </button>
+
+                                {/* Constituency Wards (Opens Downwards) */}
+                                <AnimatePresence initial={false}>
+                                  {isConstExpanded && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: "auto", opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                                      className="overflow-hidden border-t border-[#e2e8f0]/80 bg-[#f8fafc] p-2 space-y-1.5"
+                                    >
+                                      {cWards.map((w) => {
+                                        const isWardExpanded = expandedWard === w.ward;
+
+                                        return (
+                                          <div
+                                            key={w.ward}
+                                            className="bg-white rounded-md border border-[#e2e8f0]/90 overflow-hidden"
+                                          >
+                                            {/* Ward Row (Opens Downwards) */}
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                setExpandedWard(isWardExpanded ? null : w.ward)
+                                              }
+                                              className={`w-full px-2.5 py-2 flex items-center justify-between text-left cursor-pointer transition-colors select-none ${
+                                                isWardExpanded ? "bg-slate-100/70" : "hover:bg-slate-50"
+                                              }`}
+                                            >
+                                              <div className="flex items-center gap-1.5">
+                                                <span className="text-[11px] font-bold text-[#0f172a]">
+                                                  {w.ward} Ward
+                                                </span>
+                                                {ward === w.ward && (
+                                                  <span className="text-[9px] bg-[#0B4DB8] text-white px-1.5 py-0.2 rounded-xs font-semibold">
+                                                    Selected
+                                                  </span>
+                                                )}
+                                              </div>
+
+                                              <div className="flex items-center gap-1.5">
+                                                <span className="text-[10px] text-[#64748b]">
+                                                  {w.pollingStations.length} stations
+                                                </span>
+                                                <ChevronDown
+                                                  className={`w-3 h-3 text-[#64748b] transition-transform duration-200 ${
+                                                    isWardExpanded ? "rotate-180" : ""
+                                                  }`}
+                                                />
+                                              </div>
+                                            </button>
+
+                                            {/* Ward Polling Stations (Opens Downwards) */}
+                                            <AnimatePresence initial={false}>
+                                              {isWardExpanded && (
+                                                <motion.div
+                                                  initial={{ height: 0, opacity: 0 }}
+                                                  animate={{ height: "auto", opacity: 1 }}
+                                                  exit={{ height: 0, opacity: 0 }}
+                                                  transition={{
+                                                    type: "spring",
+                                                    stiffness: 380,
+                                                    damping: 26,
+                                                  }}
+                                                  className="overflow-hidden border-t border-[#e2e8f0]/70 p-2 bg-[#f8fafc]/50"
+                                                >
+                                                  <p className="text-[9px] text-[#64748b] mb-1.5">
+                                                    Tap a station to select it in the form above:
+                                                  </p>
+                                                  <div className="flex flex-wrap gap-1">
+                                                    {w.pollingStations.map((station) => {
+                                                      const isStationActive =
+                                                        constituency === cName &&
+                                                        ward === w.ward &&
+                                                        pollingStation === station;
+                                                      return (
+                                                        <motion.button
+                                                          key={station}
+                                                          type="button"
+                                                          whileHover={{ scale: 1.02 }}
+                                                          whileTap={{ scale: 0.94 }}
+                                                          transition={{
+                                                            type: "spring",
+                                                            stiffness: 500,
+                                                            damping: 20,
+                                                          }}
+                                                          onClick={() => {
+                                                            setConstituency(cName);
+                                                            setWard(w.ward);
+                                                            setPollingStation(station);
+                                                            setIsOtherStation(false);
+                                                            setOtherStationText("");
+                                                            // Smooth scroll up to form
+                                                            window.scrollTo({
+                                                              top: 240,
+                                                              behavior: "smooth",
+                                                            });
+                                                          }}
+                                                          className={`text-[10px] px-2 py-1 rounded-sm border cursor-pointer select-none transition-colors ${
+                                                            isStationActive
+                                                              ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs ring-1 ring-[#0B4DB8]"
+                                                              : "bg-white text-[#0f172a] border-[#e2e8f0] hover:bg-[#eef4fb] hover:border-[#0B4DB8]/30"
+                                                          }`}
+                                                        >
+                                                          {station}
+                                                        </motion.button>
+                                                      );
+                                                    })}
+                                                  </div>
+                                                </motion.div>
+                                              )}
+                                            </AnimatePresence>
+                                          </div>
+                                        );
+                                      })}
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </motion.div>
           </div>
         )}

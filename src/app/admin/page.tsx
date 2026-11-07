@@ -21,9 +21,21 @@ import {
   Vote,
   Unlock,
   Lock,
+  FileText,
+  Printer,
+  Table as TableIcon,
+  ChevronDown,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { mombasaWards, mombasaConstituencies, getWardsByConstituency } from "@/constants/mombasa-wards";
 import { ApiResponse, Volunteer, VolunteerStats } from "@/types";
+import {
+  exportToPdf,
+  exportToCsv,
+  exportToWord,
+  openPrintDialog,
+} from "@/lib/export-utils";
 
 export default function AdminDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -45,6 +57,8 @@ export default function AdminDashboardPage() {
   // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState<Volunteer | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
 
   // Check initial session or default unlock for development convenience
   useEffect(() => {
@@ -198,15 +212,6 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Export Word Document (.doc)
-  const handleExportDoc = () => {
-    const params = new URLSearchParams();
-    if (selectedConstituency !== "ALL") params.append("constituency", selectedConstituency);
-    if (selectedWard !== "ALL") params.append("ward", selectedWard);
-    if (selectedStation !== "ALL") params.append("pollingStation", selectedStation);
-    window.open(`/api/v1/volunteers/export?${params.toString()}`, "_blank");
-  };
-
   // If not authenticated, show sleek iOS passcode screen
   if (!isAuthenticated) {
     return (
@@ -319,15 +324,154 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Right: Clean Primary Action */}
-          <button
-            onClick={handleExportDoc}
-            className="py-1.5 px-3 rounded-lg bg-[#0B4DB8] hover:bg-[#083B8F] active:scale-95 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs shrink-0 select-none cursor-pointer"
-            title="Download roster as Word Document (.doc)"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download DOC</span>
-          </button>
+          {/* Right: Export Menu (PDF, CSV, Word, Print) */}
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowExportMenu((prev) => !prev)}
+              className="py-1.5 px-3 rounded-lg bg-[#0B4DB8] hover:bg-[#083B8F] active:scale-95 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs select-none cursor-pointer"
+              title="Export volunteer roster"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export</span>
+              <ChevronDown
+                className={`w-3 h-3 transition-transform duration-200 ${
+                  showExportMenu ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {showExportMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowExportMenu(false)}
+                />
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-[0_12px_36px_rgba(0,0,0,0.14),0_4px_12px_rgba(0,0,0,0.06)] border border-slate-200/90 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between">
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                      Export Roster
+                    </p>
+                    <span className="text-[10px] font-bold text-[#0B4DB8] bg-[#0B4DB8]/10 px-1.5 py-0.5 rounded">
+                      {filteredVolunteers.length} records
+                    </span>
+                  </div>
+
+                  {/* Option 1: PDF Document (Vector landscape layout) */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      exportToPdf(filteredVolunteers, {
+                        constituency: selectedConstituency,
+                        ward: selectedWard,
+                        pollingStation: selectedStation,
+                      });
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <FileText className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-slate-800">PDF Document</span>
+                        <span className="text-[8.5px] font-bold px-1.5 py-0.2 bg-red-100 text-red-700 rounded uppercase">
+                          .pdf
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        Clean vector landscape layout
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Option 2: Excel / CSV Spreadsheet */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      exportToCsv(filteredVolunteers, {
+                        constituency: selectedConstituency,
+                        ward: selectedWard,
+                        pollingStation: selectedStation,
+                      });
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <TableIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-slate-800">Excel / CSV</span>
+                        <span className="text-[8.5px] font-bold px-1.5 py-0.2 bg-emerald-100 text-emerald-700 rounded uppercase">
+                          .csv
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        UTF-8 spreadsheet for Excel & Sheets
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Option 3: Word Document */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      exportToWord(filteredVolunteers, {
+                        constituency: selectedConstituency,
+                        ward: selectedWard,
+                        pollingStation: selectedStation,
+                      });
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-[#0B4DB8] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <FileText className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-slate-800">Word Document</span>
+                        <span className="text-[8.5px] font-bold px-1.5 py-0.2 bg-blue-100 text-[#0B4DB8] rounded uppercase">
+                          .doc
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        Fixed-grid office document
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Option 4: Print / Save as PDF dialog */}
+                  <div className="border-t border-slate-100 my-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowExportMenu(false);
+                      openPrintDialog(filteredVolunteers, {
+                        constituency: selectedConstituency,
+                        ward: selectedWard,
+                        pollingStation: selectedStation,
+                      });
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer group"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Printer className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs font-semibold text-slate-800">Print / Save PDF</span>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        Native print sheet on mobile & PC
+                      </p>
+                    </div>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </header>
 
@@ -469,28 +613,61 @@ export default function AdminDashboardPage() {
             </select>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-[#64748b] pt-1 border-t border-[#e2e8f0]">
-            <span>
-              Showing <strong className="text-[#0f172a]">{filteredVolunteers.length}</strong> of {volunteers.length} volunteers
-              {selectedConstituency !== "ALL" && (
-                <span className="ml-1 text-[#0B4DB8] font-semibold">in {selectedConstituency}</span>
-              )}
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748b] pt-1.5 border-t border-[#e2e8f0]">
+            <div className="flex items-center gap-2">
+              <span>
+                Showing <strong className="text-[#0f172a]">{filteredVolunteers.length}</strong> of {volunteers.length} volunteers
+                {selectedConstituency !== "ALL" && (
+                  <span className="ml-1 text-[#0B4DB8] font-semibold">in {selectedConstituency}</span>
+                )}
+              </span>
 
-            {(selectedConstituency !== "ALL" || selectedWard !== "ALL" || selectedStation !== "ALL" || selectedStatus !== "ALL" || search) && (
+              {(selectedConstituency !== "ALL" || selectedWard !== "ALL" || selectedStation !== "ALL" || selectedStatus !== "ALL" || search) && (
+                <button
+                  onClick={() => {
+                    setSelectedConstituency("ALL");
+                    setSelectedWard("ALL");
+                    setSelectedStation("ALL");
+                    setSelectedStatus("ALL");
+                    setSearch("");
+                  }}
+                  className="text-[#0B4DB8] hover:underline font-semibold text-[11px] cursor-pointer"
+                >
+                  Reset filters
+                </button>
+              )}
+            </div>
+
+            {/* View Mode Toggle: Cards vs List */}
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/80 shrink-0">
               <button
-                onClick={() => {
-                  setSelectedConstituency("ALL");
-                  setSelectedWard("ALL");
-                  setSelectedStation("ALL");
-                  setSelectedStatus("ALL");
-                  setSearch("");
-                }}
-                className="text-[#0B4DB8] hover:underline font-semibold text-[11px]"
+                type="button"
+                onClick={() => setViewMode("cards")}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all cursor-pointer select-none ${
+                  viewMode === "cards"
+                    ? "bg-white text-[#0B4DB8] shadow-2xs font-bold"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+                title="Current Card View"
               >
-                Reset filters
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="text-[11px]">Cards</span>
               </button>
-            )}
+
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all cursor-pointer select-none ${
+                  viewMode === "list"
+                    ? "bg-white text-[#0B4DB8] shadow-2xs font-bold"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+                title="Compact List View"
+              >
+                <List className="w-3.5 h-3.5" />
+                <span className="text-[11px]">List</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -508,7 +685,193 @@ export default function AdminDashboardPage() {
               Try adjusting your search query or filter selection.
             </p>
           </div>
+        ) : viewMode === "list" ? (
+          /* List View: High-density compact view on mobile & desktop */
+          <div className="space-y-3">
+            {/* Mobile Compact Rows */}
+            <div className="space-y-1.5 sm:hidden">
+              {filteredVolunteers.map((vol) => (
+                <div
+                  key={vol._id}
+                  className="ios-card p-3 border-[#e2e8f0] flex items-center justify-between gap-2.5 hover:border-[#0B4DB8]/30 transition-all"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-bold text-[#0f172a] truncate">
+                        {vol.fullName}
+                      </span>
+                      {vol.idNumber && (
+                        <span className="text-[9px] font-mono bg-slate-100 text-slate-600 px-1 py-0.2 rounded shrink-0">
+                          ID: {vol.idNumber}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[10px] text-[#64748b] mt-0.5 truncate">
+                      {vol.constituency && (
+                        <span className="font-semibold text-[#0B4DB8]">{vol.constituency} &bull;</span>
+                      )}
+                      <span className="font-medium text-[#0f172a]">{vol.ward}</span>
+                      <span>&bull;</span>
+                      <span className="truncate">{vol.pollingStation}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-1">
+                      <a
+                        href={`tel:${vol.phoneNumber}`}
+                        className="text-[10px] font-mono font-semibold text-[#0B4DB8] hover:underline flex items-center gap-1"
+                      >
+                        <Phone className="w-2.5 h-2.5" />
+                        {vol.phoneNumber}
+                      </a>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#0B4DB8]/10 text-[#0B4DB8] font-medium">
+                        {vol.volunteerRole || "Mobilizer"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <button
+                      onClick={() => handleToggleStatus(vol)}
+                      className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border cursor-pointer transition-all ${
+                        vol.status === "verified"
+                          ? "bg-[#0B4DB8]/10 text-[#0B4DB8] border-[#0B4DB8]/30"
+                          : "bg-[#f8fafc] text-[#64748b] border-[#e2e8f0]"
+                      }`}
+                      title="Toggle verification"
+                    >
+                      {vol.status}
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      <a
+                        href={`https://wa.me/${vol.phoneNumber.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1 rounded text-[#0B4DB8] hover:bg-[#0B4DB8]/10 transition-colors"
+                        title="WhatsApp"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                      </a>
+                      <button
+                        onClick={() => setDeleteTarget(vol)}
+                        className="p-1 rounded text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                        title="Delete volunteer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden sm:block ios-card overflow-hidden border-[#e2e8f0]">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="px-4 py-3">Volunteer</th>
+                    <th className="px-4 py-3">Phone</th>
+                    <th className="px-4 py-3">Role</th>
+                    <th className="px-4 py-3">Constituency</th>
+                    <th className="px-4 py-3">Ward</th>
+                    <th className="px-4 py-3">Landmark</th>
+                    <th className="px-4 py-3">Kazi</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#e2e8f0]">
+                  {filteredVolunteers.map((vol) => (
+                    <tr key={vol._id} className="hover:bg-[#f8fafc]/80 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-semibold text-[#0f172a]">{vol.fullName}</p>
+                          {vol.idNumber && (
+                            <span className="text-[10px] font-mono bg-[#f1f5f9] text-[#0f172a] px-1.5 py-0.2 rounded-xs border border-[#e2e8f0]" title="National ID">
+                              ID: {vol.idNumber}
+                            </span>
+                          )}
+                        </div>
+                        {vol.notes && (
+                          <p className="text-[10px] text-[#64748b] italic truncate max-w-xs">
+                            {vol.notes}
+                          </p>
+                        )}
+                        {vol.comment && (
+                          <p className="text-[10px] text-[#0B4DB8] truncate max-w-xs">
+                            💬 {vol.comment}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-[#0f172a]">
+                        <a
+                          href={`tel:${vol.phoneNumber}`}
+                          className="hover:text-[#0B4DB8] hover:underline"
+                        >
+                          {vol.phoneNumber}
+                        </a>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-[11px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-sm whitespace-nowrap">
+                          {vol.volunteerRole || "Mobilizer"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-[#0B4DB8] whitespace-nowrap">
+                        {vol.constituency || <span className="text-[#94a3b8]">—</span>}
+                      </td>
+                      <td className="px-4 py-3 text-[#0f172a] font-medium whitespace-nowrap">{vol.ward}</td>
+                      <td className="px-4 py-3 text-[#64748b]">
+                        {vol.pollingStation}
+                        {vol.isOtherStation && (
+                          <span className="ml-1 text-[10px] text-[#0B4DB8] font-semibold">(Other)</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-[#64748b]">
+                        {vol.occupation || <span className="text-[#94a3b8]">—</span>}
+                        {vol.educationLevel && (
+                          <span className="block text-[10px] text-[#0B4DB8]">{vol.educationLevel}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => handleToggleStatus(vol)}
+                          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border cursor-pointer transition-all ${
+                            vol.status === "verified"
+                              ? "bg-[#0B4DB8]/10 text-[#0B4DB8] border-[#0B4DB8]/30 hover:bg-[#0B4DB8]/20"
+                              : "bg-[#f8fafc] text-[#64748b] border-[#e2e8f0] hover:bg-[#e2e8f0]"
+                          }`}
+                          title="Click to toggle status"
+                        >
+                          {vol.status}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 text-right space-x-2">
+                        <a
+                          href={`https://wa.me/${vol.phoneNumber.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[#0B4DB8] hover:underline font-semibold"
+                        >
+                          WhatsApp
+                        </a>
+                        <button
+                          onClick={() => setDeleteTarget(vol)}
+                          className="text-[#64748b] hover:text-red-600 p-1 rounded cursor-pointer"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 inline" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
+          /* Cards View: Current detailed cards view */
           <div className="space-y-3">
             {/* Mobile Cards (Shown on small screens) */}
             <div className="space-y-2.5 sm:hidden">
