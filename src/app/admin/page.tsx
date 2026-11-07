@@ -21,7 +21,7 @@ import {
   Unlock,
   Lock,
 } from "lucide-react";
-import { mombasaWards, totalConstituencyVoters } from "@/constants/mombasa-wards";
+import { mombasaWards, mombasaConstituencies, getWardsByConstituency } from "@/constants/mombasa-wards";
 import { ApiResponse, Volunteer, VolunteerStats } from "@/types";
 
 export default function AdminDashboardPage() {
@@ -36,6 +36,7 @@ export default function AdminDashboardPage() {
 
   // Filters
   const [search, setSearch] = useState("");
+  const [selectedConstituency, setSelectedConstituency] = useState("ALL");
   const [selectedWard, setSelectedWard] = useState("ALL");
   const [selectedStation, setSelectedStation] = useState("ALL");
   const [selectedStatus, setSelectedStatus] = useState("ALL");
@@ -101,18 +102,30 @@ export default function AdminDashboardPage() {
     }
   }, [isAuthenticated]);
 
-  // Available stations based on chosen ward
-  const availableStationsForFilter = useMemo(() => {
-    if (selectedWard === "ALL") {
-      return mombasaWards.flatMap((w) => w.pollingStations);
+  // Available wards based on chosen constituency
+  const availableWardsForFilter = useMemo(() => {
+    if (selectedConstituency === "ALL") {
+      return mombasaWards;
     }
-    const wardObj = mombasaWards.find((w) => w.ward === selectedWard);
-    return wardObj ? wardObj.pollingStations : [];
-  }, [selectedWard]);
+    return getWardsByConstituency(selectedConstituency);
+  }, [selectedConstituency]);
+
+  // Available stations based on chosen ward & constituency
+  const availableStationsForFilter = useMemo(() => {
+    if (selectedWard !== "ALL") {
+      const wardObj = mombasaWards.find((w) => w.ward === selectedWard);
+      return wardObj ? wardObj.pollingStations : [];
+    }
+    if (selectedConstituency !== "ALL") {
+      return getWardsByConstituency(selectedConstituency).flatMap((w) => w.pollingStations);
+    }
+    return mombasaWards.flatMap((w) => w.pollingStations);
+  }, [selectedConstituency, selectedWard]);
 
   // Client-side filtering
   const filteredVolunteers = useMemo(() => {
     return volunteers.filter((item) => {
+      if (selectedConstituency !== "ALL" && item.constituency !== selectedConstituency) return false;
       if (selectedWard !== "ALL" && item.ward !== selectedWard) return false;
       if (selectedStation !== "ALL" && item.pollingStation !== selectedStation) return false;
       if (selectedStatus !== "ALL" && item.status !== selectedStatus) return false;
@@ -121,15 +134,29 @@ export default function AdminDashboardPage() {
         const matchesName = item.fullName.toLowerCase().includes(q);
         const matchesId = (item.idNumber || "").toLowerCase().includes(q);
         const matchesPhone = item.phoneNumber.toLowerCase().includes(q);
+        const matchesConstituency = (item.constituency || "").toLowerCase().includes(q);
+        const matchesWard = item.ward.toLowerCase().includes(q);
         const matchesStation = item.pollingStation.toLowerCase().includes(q);
         const matchesOccupation = (item.occupation || "").toLowerCase().includes(q);
         const matchesEducation = (item.educationLevel || "").toLowerCase().includes(q);
         const matchesRole = (item.volunteerRole || "").toLowerCase().includes(q);
-        if (!matchesName && !matchesId && !matchesPhone && !matchesStation && !matchesOccupation && !matchesEducation && !matchesRole) return false;
+        if (
+          !matchesName &&
+          !matchesId &&
+          !matchesPhone &&
+          !matchesConstituency &&
+          !matchesWard &&
+          !matchesStation &&
+          !matchesOccupation &&
+          !matchesEducation &&
+          !matchesRole
+        ) {
+          return false;
+        }
       }
       return true;
     });
-  }, [volunteers, selectedWard, selectedStation, selectedStatus, search]);
+  }, [volunteers, selectedConstituency, selectedWard, selectedStation, selectedStatus, search]);
 
   // Toggle status
   const handleToggleStatus = async (volunteer: Volunteer) => {
@@ -173,6 +200,7 @@ export default function AdminDashboardPage() {
   // Export CSV
   const handleExportCsv = () => {
     const params = new URLSearchParams();
+    if (selectedConstituency !== "ALL") params.append("constituency", selectedConstituency);
     if (selectedWard !== "ALL") params.append("ward", selectedWard);
     if (selectedStation !== "ALL") params.append("pollingStation", selectedStation);
     window.open(`/api/v1/volunteers/export?${params.toString()}`, "_blank");
@@ -297,12 +325,12 @@ export default function AdminDashboardPage() {
       {/* Main Content Area */}
       <main className="max-w-4xl mx-auto w-full px-4 pt-4 flex-1 space-y-4">
         {/* KPI Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="ios-card p-3.5 sm:col-span-1 lg:col-span-1">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+          <div className="ios-card p-3 sm:col-span-1">
             <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider">
               Total
             </p>
-            <p className="text-2xl font-bold text-[#111827] mt-0.5">
+            <p className="text-xl font-bold text-[#111827] mt-0.5">
               {volunteers.length}
             </p>
             <p className="text-[10px] text-[#8e524d] mt-1 flex items-center gap-1">
@@ -311,26 +339,42 @@ export default function AdminDashboardPage() {
             </p>
           </div>
 
-          {mombasaWards.map((w) => (
-            <div key={w.ward} className="ios-card p-3.5">
-              <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider truncate">
-                {w.ward}
-              </p>
-              <p className="text-xl font-bold text-[#111827] mt-0.5">
-                {volunteers.filter((v) => v.ward === w.ward).length}
-              </p>
-              <p className="text-[10px] text-[#6b7280] mt-1">
-                {w.pollingStations.length} landmarks
-              </p>
-            </div>
-          ))}
+          {mombasaConstituencies.map((c) => {
+            const count = volunteers.filter((v) => (v.constituency || "") === c).length;
+            const wardsInC = getWardsByConstituency(c);
+            const isSelected = selectedConstituency === c;
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => {
+                  setSelectedConstituency(isSelected ? "ALL" : c);
+                  setSelectedWard("ALL");
+                  setSelectedStation("ALL");
+                }}
+                className={`ios-card p-3 text-left transition-all cursor-pointer ${
+                  isSelected ? "ring-2 ring-[#8e524d] bg-[#8e524d]/5" : "hover:border-[#8e524d]/40"
+                }`}
+              >
+                <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider truncate">
+                  {c}
+                </p>
+                <p className="text-xl font-bold text-[#111827] mt-0.5">
+                  {count}
+                </p>
+                <p className="text-[10px] text-[#6b7280] mt-1">
+                  {wardsInC.length} wards
+                </p>
+              </button>
+            );
+          })}
         </div>
 
         {/* Filter & Search Bar */}
         <div className="ios-card p-4 space-y-3">
-          <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
             {/* Search Input */}
-            <div className="relative flex-1">
+            <div className="relative lg:col-span-1">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b7280]">
                 <Search className="w-4 h-4" />
               </div>
@@ -338,8 +382,8 @@ export default function AdminDashboardPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search volunteer, phone, landmark, role..."
-                className="ios-input ios-input-icon !pl-10 text-xs"
+                placeholder="Search volunteer..."
+                className="ios-input ios-input-icon !pl-10 text-xs w-full"
               />
               {search && (
                 <button
@@ -351,6 +395,24 @@ export default function AdminDashboardPage() {
               )}
             </div>
 
+            {/* Constituency Selector */}
+            <select
+              value={selectedConstituency}
+              onChange={(e) => {
+                setSelectedConstituency(e.target.value);
+                setSelectedWard("ALL");
+                setSelectedStation("ALL");
+              }}
+              className="ios-input text-xs bg-white cursor-pointer w-full"
+            >
+              <option value="ALL">All Constituencies (6)</option>
+              {mombasaConstituencies.map((c) => (
+                <option key={c} value={c}>
+                  {c} Constituency
+                </option>
+              ))}
+            </select>
+
             {/* Ward Selector */}
             <select
               value={selectedWard}
@@ -358,12 +420,16 @@ export default function AdminDashboardPage() {
                 setSelectedWard(e.target.value);
                 setSelectedStation("ALL");
               }}
-              className="ios-input sm:w-44 text-xs bg-white cursor-pointer"
+              className="ios-input text-xs bg-white cursor-pointer w-full"
             >
-              <option value="ALL">All Wards ({mombasaWards.length})</option>
-              {mombasaWards.map((w) => (
+              <option value="ALL">
+                {selectedConstituency === "ALL"
+                  ? `All Wards (${mombasaWards.length})`
+                  : `All in ${selectedConstituency}`}
+              </option>
+              {availableWardsForFilter.map((w) => (
                 <option key={w.ward} value={w.ward}>
-                  {w.ward}
+                  {w.ward} Ward
                 </option>
               ))}
             </select>
@@ -372,7 +438,7 @@ export default function AdminDashboardPage() {
             <select
               value={selectedStation}
               onChange={(e) => setSelectedStation(e.target.value)}
-              className="ios-input sm:w-56 text-xs bg-white cursor-pointer"
+              className="ios-input text-xs bg-white cursor-pointer w-full"
             >
               <option value="ALL">All Landmarks</option>
               {availableStationsForFilter.map((station) => (
@@ -386,7 +452,7 @@ export default function AdminDashboardPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="ios-input sm:w-32 text-xs bg-white cursor-pointer"
+              className="ios-input text-xs bg-white cursor-pointer w-full"
             >
               <option value="ALL">All Status</option>
               <option value="active">Active</option>
@@ -397,11 +463,15 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between text-xs text-[#6b7280] pt-1 border-t border-[#e6dfdc]">
             <span>
               Showing <strong className="text-[#111827]">{filteredVolunteers.length}</strong> of {volunteers.length} volunteers
+              {selectedConstituency !== "ALL" && (
+                <span className="ml-1 text-[#8e524d] font-medium">in {selectedConstituency}</span>
+              )}
             </span>
 
-            {(selectedWard !== "ALL" || selectedStation !== "ALL" || selectedStatus !== "ALL" || search) && (
+            {(selectedConstituency !== "ALL" || selectedWard !== "ALL" || selectedStation !== "ALL" || selectedStatus !== "ALL" || search) && (
               <button
                 onClick={() => {
+                  setSelectedConstituency("ALL");
                   setSelectedWard("ALL");
                   setSelectedStation("ALL");
                   setSelectedStatus("ALL");
@@ -448,8 +518,11 @@ export default function AdminDashboardPage() {
                           {vol.volunteerRole || "Mobilizer"}
                         </span>
                       </div>
-                      <p className="text-xs text-[#6b7280] flex items-center gap-1 mt-0.5">
+                      <p className="text-xs text-[#6b7280] flex items-center gap-1 mt-0.5 flex-wrap">
                         <MapPin className="w-3 h-3 text-[#8e524d]" />
+                        {vol.constituency && (
+                          <span className="font-semibold text-[#8e524d]">{vol.constituency} &bull;</span>
+                        )}
                         <span>{vol.ward} &bull; {vol.pollingStation}</span>
                         {vol.isOtherStation && (
                           <span className="text-[#8e524d] text-[10px]">(Custom)</span>
@@ -532,10 +605,10 @@ export default function AdminDashboardPage() {
                     <th className="px-4 py-3">Volunteer</th>
                     <th className="px-4 py-3">Phone</th>
                     <th className="px-4 py-3">Role</th>
-                    <th className="px-4 py-3">Kazi</th>
-                    <th className="px-4 py-3">Education</th>
+                    <th className="px-4 py-3">Constituency</th>
                     <th className="px-4 py-3">Ward</th>
                     <th className="px-4 py-3">Landmark</th>
+                    <th className="px-4 py-3">Kazi</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
@@ -576,13 +649,20 @@ export default function AdminDashboardPage() {
                           {vol.volunteerRole || "Mobilizer"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#6b7280]">{vol.occupation || <span className="text-[#d8cfcb]">—</span>}</td>
-                      <td className="px-4 py-3 text-[#6b7280]">{vol.educationLevel || <span className="text-[#d8cfcb]">—</span>}</td>
-                      <td className="px-4 py-3 text-[#111827] font-medium">{vol.ward}</td>
+                      <td className="px-4 py-3 font-semibold text-[#8e524d] whitespace-nowrap">
+                        {vol.constituency || <span className="text-[#d8cfcb]">—</span>}
+                      </td>
+                      <td className="px-4 py-3 text-[#111827] font-medium whitespace-nowrap">{vol.ward}</td>
                       <td className="px-4 py-3 text-[#6b7280]">
                         {vol.pollingStation}
                         {vol.isOtherStation && (
                           <span className="ml-1 text-[10px] text-[#8e524d] font-semibold">(Other)</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-[#6b7280]">
+                        {vol.occupation || <span className="text-[#d8cfcb]">—</span>}
+                        {vol.educationLevel && (
+                          <span className="block text-[10px] text-[#8e524d]">{vol.educationLevel}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">

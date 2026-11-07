@@ -4,16 +4,18 @@ import { getVolunteers } from "@/lib/volunteer-service";
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    const constituency = searchParams.get("constituency") || undefined;
     const ward = searchParams.get("ward") || undefined;
     const pollingStation = searchParams.get("pollingStation") || undefined;
 
-    const list = await getVolunteers({ ward, pollingStation });
+    const list = await getVolunteers({ constituency, ward, pollingStation });
 
     const headers = [
       "ID",
       "Full Name",
       "National ID",
       "Phone Number",
+      "Constituency",
       "Ward",
       "Landmark / Station",
       "Station (Other?)",
@@ -32,6 +34,7 @@ export async function GET(req: NextRequest) {
       `"${v.fullName.replace(/"/g, '""')}"`,
       `"${(v.idNumber || "").replace(/"/g, '""')}"`,
       `"${v.phoneNumber}"`,
+      `"${(v.constituency || "").replace(/"/g, '""')}"`,
       `"${v.ward}"`,
       `"${v.pollingStation.replace(/"/g, '""')}"`,
       `"${v.isOtherStation ? "Yes" : "No"}"`,

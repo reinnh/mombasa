@@ -15,6 +15,7 @@ const volunteerSchema = z.object({
     .min(9, "Valid phone number is required")
     .max(20, "Phone number is too long")
     .regex(/^[+0-9\s-]{9,20}$/, "Invalid phone format"),
+  constituency: z.string().optional(),
   ward: z.enum(["Port Reitz", "Kipevu", "Airport", "Changamwe", "Chaani", "Jomvu Kuu", "Mikindani", "Miritini", "Mjambere", "Junda", "Bamburi", "Mwakirunge", "Mtopanga", "Magogoni", "Shanzu", "Mtongwe", "Shika Adabu", "Bofu", "Likoni", "Timbwani", "Mji wa Kale/Makadara", "Tudor", "Tononoka", "Shimanzi/Ganjoni", "Majengo", "Frere Town", "Ziwa La Ng'ombe", "Mkomani", "Kongowea", "Kadzandani"], {
     errorMap: () => ({ message: "Please select a valid Mombasa ward" }),
   }),
@@ -67,12 +68,14 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    const constituency = searchParams.get("constituency") || undefined;
     const ward = searchParams.get("ward") || undefined;
     const pollingStation = searchParams.get("pollingStation") || undefined;
     const search = searchParams.get("search") || undefined;
     const status = searchParams.get("status") || undefined;
 
     const list = await getVolunteers({
+      constituency,
       ward,
       pollingStation,
       search,

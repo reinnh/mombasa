@@ -4,6 +4,7 @@ export interface IVolunteer extends Document {
   fullName: string;
   idNumber?: string;
   phoneNumber: string;
+  constituency?: string;
   ward: string;
   pollingStation: string;
   isOtherStation: boolean;
@@ -37,6 +38,12 @@ const VolunteerSchema = new Schema<IVolunteer>(
       type: String,
       required: [true, "Phone number is required"],
       trim: true,
+      index: true,
+    },
+    constituency: {
+      type: String,
+      trim: true,
+      default: "",
       index: true,
     },
     ward: {
@@ -102,6 +109,7 @@ const VolunteerSchema = new Schema<IVolunteer>(
 // Indexes for unique volunteer phone prevention and fast query lookups
 VolunteerSchema.index({ phoneNumber: 1 }, { unique: true });
 VolunteerSchema.index({ phoneNumber: 1, ward: 1 });
+VolunteerSchema.index({ constituency: 1, ward: 1 });
 VolunteerSchema.index({ createdAt: -1 });
 
 export const VolunteerModel: Model<IVolunteer> =

@@ -7,6 +7,7 @@ export interface ApiResponse<T = unknown> {
 
 export interface WardInfo {
   ward: string;
+  constituency: string;
   registeredVoters: number;
   pollingStations: string[];
 }
@@ -16,6 +17,7 @@ export interface Volunteer {
   fullName: string;
   idNumber?: string;
   phoneNumber: string;
+  constituency?: string;
   ward: string;
   pollingStation: string;
   isOtherStation?: boolean;
@@ -34,6 +36,7 @@ export interface VolunteerInput {
   fullName: string;
   idNumber?: string;
   phoneNumber: string;
+  constituency?: string;
   ward: string;
   pollingStation: string;
   isOtherStation?: boolean;

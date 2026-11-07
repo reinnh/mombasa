@@ -1,7 +1,7 @@
 import { connectMongo } from "./mongodb";
 import { VolunteerModel, IVolunteer } from "@/models/volunteer";
 import { Volunteer, VolunteerInput, VolunteerStats, WardStat } from "@/types";
-import { mombasaWards, totalConstituencyVoters } from "@/constants/mombasa-wards";
+import { mombasaWards, totalConstituencyVoters, getConstituencyByWard } from "@/constants/mombasa-wards";
 
 // Fallback in-memory storage for resilient local/offline operation
 let inMemoryVolunteers: Volunteer[] = [
@@ -9,6 +9,7 @@ let inMemoryVolunteers: Volunteer[] = [
     _id: "demo-v1",
     fullName: "Wycliffe Omwitsa",
     phoneNumber: "+254712345678",
+    constituency: "Changamwe",
     ward: "Port Reitz",
     pollingStation: "Bomu Primary School",
     status: "verified",
@@ -23,6 +24,7 @@ let inMemoryVolunteers: Volunteer[] = [
     _id: "demo-v2",
     fullName: "Amina Makokha",
     phoneNumber: "+254722987654",
+    constituency: "Nyali",
     ward: "Kongowea",
     pollingStation: "Kongowea Primary School",
     status: "active",
@@ -37,6 +39,7 @@ let inMemoryVolunteers: Volunteer[] = [
     _id: "demo-v3",
     fullName: "David Baraza",
     phoneNumber: "+254733555111",
+    constituency: "Kisauni",
     ward: "Bamburi",
     pollingStation: "Kiembeni Primary School",
     status: "verified",
@@ -55,6 +58,7 @@ function docToVolunteer(doc: IVolunteer): Volunteer {
     fullName: doc.fullName,
     idNumber: doc.idNumber || "",
     phoneNumber: doc.phoneNumber,
+    constituency: doc.constituency || getConstituencyByWard(doc.ward) || "",
     ward: doc.ward,
     pollingStation: doc.pollingStation,
     isOtherStation: doc.isOtherStation || false,
@@ -119,10 +123,12 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
     }
 
     try {
+      const derivedConstituency = input.constituency || getConstituencyByWard(input.ward) || "";
       const created = await VolunteerModel.create({
         fullName: trimmedName,
         idNumber: input.idNumber?.trim() || "",
         phoneNumber: normalizedPhone,
+        constituency: derivedConstituency,
         ward: input.ward,
         pollingStation: input.pollingStation,
         isOtherStation: input.isOtherStation || false,
@@ -172,11 +178,13 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
     );
   }
 
+  const derivedConstituency = input.constituency || getConstituencyByWard(input.ward) || "";
   const newVolunteer: Volunteer = {
     _id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     fullName: trimmedName,
     idNumber: input.idNumber?.trim() || "",
     phoneNumber: normalizedPhone,
+    constituency: derivedConstituency,
     ward: input.ward,
     pollingStation: input.pollingStation,
     isOtherStation: input.isOtherStation || false,
@@ -196,6 +204,7 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
 }
 
 export async function getVolunteers(filter?: {
+  constituency?: string;
   ward?: string;
   pollingStation?: string;
   search?: string;
@@ -205,6 +214,9 @@ export async function getVolunteers(filter?: {
 
   if (mongo) {
     const query: Record<string, unknown> = {};
+    if (filter?.constituency && filter.constituency !== "ALL") {
+      query.constituency = filter.constituency;
+    }
     if (filter?.ward && filter.ward !== "ALL") {
       query.ward = filter.ward;
     }
@@ -226,6 +238,9 @@ export async function getVolunteers(filter?: {
   // Fallback
   let results = [...inMemoryVolunteers];
 
+  if (filter?.constituency && filter.constituency !== "ALL") {
+    results = results.filter((v) => v.constituency === filter.constituency);
+  }
   if (filter?.ward && filter.ward !== "ALL") {
     results = results.filter((v) => v.ward === filter.ward);
   }

@@ -20,8 +20,15 @@ import {
   Lock,
   Hash,
   CreditCard,
+  Building2,
 } from "lucide-react";
-import { mombasaWards, totalPollingStations } from "@/constants/mombasa-wards";
+import {
+  mombasaWards,
+  totalPollingStations,
+  mombasaConstituencies,
+  getWardsByConstituency,
+  getConstituencyByWard,
+} from "@/constants/mombasa-wards";
 import { ApiResponse, Volunteer } from "@/types";
 
 const OTHER_STATION = "__OTHER__";
@@ -31,6 +38,7 @@ export default function VolunteerRegistrationPage() {
   const [fullName, setFullName] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [constituency, setConstituency] = useState("");
   const [ward, setWard] = useState("");
   const [pollingStation, setPollingStation] = useState("");
   const [isOtherStation, setIsOtherStation] = useState(false);
@@ -47,13 +55,32 @@ export default function VolunteerRegistrationPage() {
   const [successVolunteer, setSuccessVolunteer] = useState<Volunteer | null>(null);
   const [showWardsAccordion, setShowWardsAccordion] = useState(false);
 
+  // Cascading wards based on selected constituency
+  const availableWards = constituency
+    ? getWardsByConstituency(constituency)
+    : mombasaWards;
+
   // Cascading polling stations based on selected ward
   const selectedWardData = mombasaWards.find((w) => w.ward === ward);
   const availableStations = selectedWardData ? selectedWardData.pollingStations : [];
 
+  const handleConstituencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newConst = e.target.value;
+    setConstituency(newConst);
+    setWard("");
+    setPollingStation("");
+    setIsOtherStation(false);
+    setOtherStationText("");
+    setError(null);
+  };
+
   const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newWard = e.target.value;
     setWard(newWard);
+    if (newWard && !constituency) {
+      const parentConst = getConstituencyByWard(newWard);
+      if (parentConst) setConstituency(parentConst);
+    }
     setPollingStation(""); // Reset cascading dropdown
     setIsOtherStation(false);
     setOtherStationText("");
@@ -86,6 +113,11 @@ export default function VolunteerRegistrationPage() {
     const cleanPhone = phoneNumber.trim().replace(/\s+/g, "");
     if (!cleanPhone || cleanPhone.length < 9) {
       setError("Please provide a valid active phone number.");
+      return;
+    }
+
+    if (!constituency) {
+      setError("Please select your Constituency.");
       return;
     }
 
@@ -122,6 +154,7 @@ export default function VolunteerRegistrationPage() {
           fullName: fullName.trim(),
           idNumber: idNumber.trim(),
           phoneNumber: cleanPhone,
+          constituency,
           ward,
           pollingStation: finalStation,
           isOtherStation,
@@ -151,6 +184,7 @@ export default function VolunteerRegistrationPage() {
     setFullName("");
     setIdNumber("");
     setPhoneNumber("");
+    setConstituency("");
     setWard("");
     setPollingStation("");
     setIsOtherStation(false);
@@ -228,6 +262,15 @@ export default function VolunteerRegistrationPage() {
                 </span>
               </div>
               <div className="h-px bg-[#e6dfdc]" />
+              {successVolunteer.constituency && (
+                <>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-[#6b6463]">Constituency</span>
+                    <span className="font-semibold text-[#191414]">{successVolunteer.constituency}</span>
+                  </div>
+                  <div className="h-px bg-[#e6dfdc]" />
+                </>
+              )}
               <div className="flex justify-between items-center text-xs">
                 <span className="text-[#6b6463]">Ward</span>
                 <span className="font-semibold text-[#191414]">{successVolunteer.ward}</span>
@@ -368,15 +411,19 @@ export default function VolunteerRegistrationPage() {
                   </div>
                 </div>
 
-                {/* Constituency Stats Strip */}
-                <div className="grid grid-cols-2 gap-2 p-2.5 bg-white text-center border-t border-[#e6dfdc]">
+                {/* County Stats Strip */}
+                <div className="grid grid-cols-3 gap-2 p-2.5 bg-white text-center border-t border-[#e6dfdc]">
                   <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
-                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Wards</p>
-                    <p className="text-xs font-bold text-[#191414]">{mombasaWards.length} Wards</p>
+                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Constituencies</p>
+                    <p className="text-xs font-bold text-[#191414]">{mombasaConstituencies.length}</p>
                   </div>
                   <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
-                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Landmarks</p>
-                    <p className="text-xs font-bold text-[#191414]">{totalPollingStations} Landmarks</p>
+                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Wards</p>
+                    <p className="text-xs font-bold text-[#191414]">{mombasaWards.length}</p>
+                  </div>
+                  <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
+                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Stations</p>
+                    <p className="text-xs font-bold text-[#191414]">{totalPollingStations}</p>
                   </div>
                 </div>
               </div>
@@ -394,12 +441,12 @@ export default function VolunteerRegistrationPage() {
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-[#191414]">
-                        County Wards &amp; Polling Stations
+                        Constituencies, Wards &amp; Polling Stations
                       </h4>
                       <p className="text-[10px] text-[#6b6463]">
                         {showWardsAccordion
                           ? "Tap to collapse mappings"
-                          : `${mombasaWards.length} Wards • ${totalPollingStations} Polling Stations (Tap to explore)`}
+                          : `${mombasaConstituencies.length} Constituencies • ${mombasaWards.length} Wards • ${totalPollingStations} Stations (Tap to explore)`}
                       </p>
                     </div>
                   </div>
@@ -424,51 +471,71 @@ export default function VolunteerRegistrationPage() {
                   <div className="overflow-hidden">
                     <div className="p-3 space-y-2.5 bg-[#f4efed]">
                       <p className="text-[10px] text-[#6b6463]">
-                        Tap any designated landmark below to pre-select it in the registration form:
+                        Tap any designated station below to pre-select it in the registration form:
                       </p>
 
-                      <div className="space-y-2">
-                        {mombasaWards.map((w) => (
-                          <div
-                            key={w.ward}
-                            className="bg-white rounded-sm border border-[#e6dfdc] p-2.5 space-y-1.5"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-xs font-bold text-[#191414]">
-                                  {w.ward} Ward
+                      <div className="space-y-3">
+                        {mombasaConstituencies.map((cName) => {
+                          const cWards = getWardsByConstituency(cName);
+                          return (
+                            <div
+                              key={cName}
+                              className="bg-white rounded-sm border border-[#e6dfdc] p-2.5 space-y-2"
+                            >
+                              <div className="flex items-center justify-between pb-1.5 border-b border-[#e6dfdc]">
+                                <p className="text-xs font-bold text-[#8e524d] uppercase tracking-wide">
+                                  {cName} Constituency
                                 </p>
-                                <p className="text-[10px] text-[#6b6463]">
-                                  {w.pollingStations.length} Landmarks
-                                </p>
+                                <span className="text-[10px] text-[#6b6463] font-medium">
+                                  {cWards.length} Wards
+                                </span>
+                              </div>
+
+                              <div className="space-y-2">
+                                {cWards.map((w) => (
+                                  <div
+                                    key={w.ward}
+                                    className="bg-[#f9f8f7] rounded-xs border border-[#e6dfdc]/70 p-2 space-y-1.5"
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <p className="text-[11px] font-bold text-[#191414]">
+                                        {w.ward} Ward
+                                      </p>
+                                      <p className="text-[10px] text-[#6b6463]">
+                                        {w.pollingStations.length} Stations
+                                      </p>
+                                    </div>
+
+                                    {/* Station Buttons */}
+                                    <div className="pt-1 border-t border-[#e6dfdc]/60 flex flex-wrap gap-1">
+                                      {w.pollingStations.map((station) => (
+                                        <button
+                                          key={station}
+                                          type="button"
+                                          onClick={() => {
+                                            setConstituency(cName);
+                                            setWard(w.ward);
+                                            setPollingStation(station);
+                                            setIsOtherStation(false);
+                                            setOtherStationText("");
+                                            window.scrollTo({ top: 120, behavior: "smooth" });
+                                          }}
+                                          className={`text-[10px] px-2 py-0.5 rounded-sm border transition-all cursor-pointer ${
+                                            constituency === cName && ward === w.ward && pollingStation === station
+                                              ? "bg-[#8e524d] text-white border-[#8e524d] font-semibold"
+                                              : "bg-white text-[#191414] border-[#e6dfdc] hover:bg-[#e6dfdc]"
+                                          }`}
+                                        >
+                                          {station}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-
-                            {/* Station Buttons */}
-                            <div className="pt-1 border-t border-[#e6dfdc] flex flex-wrap gap-1">
-                              {w.pollingStations.map((station) => (
-                                <button
-                                  key={station}
-                                  type="button"
-                                  onClick={() => {
-                                    setWard(w.ward);
-                                    setPollingStation(station);
-                                    setIsOtherStation(false);
-                                    setOtherStationText("");
-                                    window.scrollTo({ top: 120, behavior: "smooth" });
-                                  }}
-                                  className={`text-[10px] px-2 py-0.5 rounded-sm border transition-all cursor-pointer ${
-                                    ward === w.ward && pollingStation === station
-                                      ? "bg-[#8e524d] text-white border-[#8e524d] font-semibold"
-                                      : "bg-[#f4efed] text-[#191414] border-[#e6dfdc] hover:bg-[#e6dfdc]"
-                                  }`}
-                                >
-                                  {station}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -682,27 +749,32 @@ export default function VolunteerRegistrationPage() {
                     )}
                   </div>
 
-                  {/* 2 Cascading Dropdowns: Ward & Landmark */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {/* Ward Selection (Dropdown 1) */}
+                  {/* 3 Cascading Dropdowns: Constituency, Ward & Landmark */}
+                  <div className="space-y-3.5">
+                    {/* Constituency Selection (Dropdown 1) */}
                     <div>
-                      <label className="block text-xs font-semibold text-[#191414] mb-1.5">
-                        Select Ward <span className="text-red-500">*</span>
-                      </label>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="text-xs font-semibold text-[#191414]">
+                          Select Constituency <span className="text-red-500">*</span>
+                        </label>
+                        <span className="text-[10px] text-[#8e524d] font-medium">
+                          {mombasaConstituencies.length} in Mombasa County
+                        </span>
+                      </div>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
-                          <MapPin className="w-4 h-4" />
+                          <Building2 className="w-4 h-4" />
                         </div>
                         <select
                           required
-                          value={ward}
-                          onChange={handleWardChange}
+                          value={constituency}
+                          onChange={handleConstituencyChange}
                           className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
                         >
-                          <option value="">-- Choose Ward --</option>
-                          {mombasaWards.map((w) => (
-                            <option key={w.ward} value={w.ward}>
-                              {w.ward} Ward
+                          <option value="">-- Choose Constituency in Mombasa --</option>
+                          {mombasaConstituencies.map((c) => (
+                            <option key={c} value={c}>
+                              {c} Constituency
                             </option>
                           ))}
                         </select>
@@ -712,47 +784,90 @@ export default function VolunteerRegistrationPage() {
                       </div>
                     </div>
 
-                    {/* Landmark (Dropdown 2 - Cascading) */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1.5">
-                        <label className="text-xs font-semibold text-[#191414]">
-                          Select Landmark <span className="text-red-500">*</span>
-                        </label>
-                        {selectedWardData && (
-                          <span className="text-[10px] text-[#8e524d] font-semibold">
-                            {availableStations.length} in {ward}
-                          </span>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
-                          <Vote className="w-4 h-4" />
-                        </div>
-                        <select
-                          required
-                          disabled={!ward}
-                          value={pollingStation}
-                          onChange={handleStationChange}
-                          className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f4efed] disabled:text-[#6b6463] disabled:cursor-not-allowed"
-                        >
-                          <option value="">
-                            {ward
-                              ? `-- Choose Landmark in ${ward} --`
-                              : "-- Select Ward First --"}
-                          </option>
-                          {availableStations.map((station) => (
-                            <option key={station} value={station}>
-                              {station}
-                            </option>
-                          ))}
-                          {ward && (
-                            <option value={OTHER_STATION}>
-                              ⚠ My landmark is not listed above
-                            </option>
+                    {/* Ward & Landmark Grid (Dropdowns 2 & 3) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      {/* Ward Selection (Dropdown 2 - Cascading) */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <label className="text-xs font-semibold text-[#191414]">
+                            Select Ward <span className="text-red-500">*</span>
+                          </label>
+                          {constituency && (
+                            <span className="text-[10px] text-[#8e524d] font-semibold">
+                              {availableWards.length} in {constituency}
+                            </span>
                           )}
-                        </select>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
-                          <ChevronDown className="w-4 h-4" />
+                        </div>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                            <MapPin className="w-4 h-4" />
+                          </div>
+                          <select
+                            required
+                            disabled={!constituency}
+                            value={ward}
+                            onChange={handleWardChange}
+                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f4efed] disabled:text-[#6b6463] disabled:cursor-not-allowed"
+                          >
+                            <option value="">
+                              {constituency
+                                ? `-- Choose Ward in ${constituency} --`
+                                : "-- Select Constituency First --"}
+                            </option>
+                            {availableWards.map((w) => (
+                              <option key={w.ward} value={w.ward}>
+                                {w.ward} Ward
+                              </option>
+                            ))}
+                          </select>
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                            <ChevronDown className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Landmark (Dropdown 3 - Cascading) */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <label className="text-xs font-semibold text-[#191414]">
+                            Select Landmark <span className="text-red-500">*</span>
+                          </label>
+                          {selectedWardData && (
+                            <span className="text-[10px] text-[#8e524d] font-semibold">
+                              {availableStations.length} in {ward}
+                            </span>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                            <Vote className="w-4 h-4" />
+                          </div>
+                          <select
+                            required
+                            disabled={!ward}
+                            value={pollingStation}
+                            onChange={handleStationChange}
+                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f4efed] disabled:text-[#6b6463] disabled:cursor-not-allowed"
+                          >
+                            <option value="">
+                              {ward
+                                ? `-- Choose Landmark in ${ward} --`
+                                : "-- Select Ward First --"}
+                            </option>
+                            {availableStations.map((station) => (
+                              <option key={station} value={station}>
+                                {station}
+                              </option>
+                            ))}
+                            {ward && (
+                              <option value={OTHER_STATION}>
+                                ⚠ My landmark is not listed above
+                              </option>
+                            )}
+                          </select>
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                            <ChevronDown className="w-4 h-4" />
+                          </div>
                         </div>
                       </div>
                     </div>

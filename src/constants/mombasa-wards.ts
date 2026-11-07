@@ -1,12 +1,24 @@
 import { WardInfo } from "@/types";
 
 // Mombasa County — TND Youth League Mombasa Chapter
-// 6 Constituencies · 30 Wards
+// 6 Constituencies · 30 Wards · 229 Polling Stations
+
+export const mombasaConstituencies = [
+  "Changamwe",
+  "Jomvu",
+  "Kisauni",
+  "Likoni",
+  "Mvita",
+  "Nyali",
+] as const;
+
+export type MombasaConstituency = (typeof mombasaConstituencies)[number];
 
 export const mombasaWards: WardInfo[] = [
-  // ── CHANGAMWE CONSTITUENCY ──────────────────────────────────────
+  // ── 1. CHANGAMWE CONSTITUENCY ──────────────────────────────────
   {
     ward: "Port Reitz",
+    constituency: "Changamwe",
     registeredVoters: 0,
     pollingStations: [
       "Bomu Primary School",
@@ -14,11 +26,12 @@ export const mombasaWards: WardInfo[] = [
       "Lilongwe Garden",
       "Bomu Stadium",
       "Bomu Secondary School",
-      "Full Gospel Church Ground"
-    ]
+      "Full Gospel Church Ground",
+    ],
   },
   {
     ward: "Kipevu",
+    constituency: "Changamwe",
     registeredVoters: 0,
     pollingStations: [
       "Umoja Primary School",
@@ -26,22 +39,24 @@ export const mombasaWards: WardInfo[] = [
       "Kwa Hola Primary School",
       "Cape Town Ground",
       "Kaloleni Ground",
-      "Akamba Handcraft Coop. Society Hall"
-    ]
+      "Akamba Handcraft Coop. Society Hall",
+    ],
   },
   {
     ward: "Airport",
+    constituency: "Changamwe",
     registeredVoters: 0,
     pollingStations: [
       "Bokole Nursery School",
       "Baraka Village",
       "Al-Irshadi Nursery School",
       "Mwidani Social Hall",
-      "Portreitz Nursery School"
-    ]
+      "Portreitz Nursery School",
+    ],
   },
   {
     ward: "Changamwe",
+    constituency: "Changamwe",
     registeredVoters: 0,
     pollingStations: [
       "Changamwe Social Hall",
@@ -53,11 +68,12 @@ export const mombasaWards: WardInfo[] = [
       "Magongo Primary School",
       "Kimbilio Academy",
       "Bishop Mkala Academy",
-      "AIC Church Hall"
-    ]
+      "AIC Church Hall",
+    ],
   },
   {
     ward: "Chaani",
+    constituency: "Changamwe",
     registeredVoters: 0,
     pollingStations: [
       "Chaani Social Hall",
@@ -66,13 +82,14 @@ export const mombasaWards: WardInfo[] = [
       "Kipevu Primary School",
       "Chaani Chief's Office",
       "Kasarani Grounds",
-      "Chaani Secondary School"
-    ]
+      "Chaani Secondary School",
+    ],
   },
 
-  // ── JOMVU CONSTITUENCY ───────────────────────────────────────────
+  // ── 2. JOMVU CONSTITUENCY ───────────────────────────────────────
   {
     ward: "Jomvu Kuu",
+    constituency: "Jomvu",
     registeredVoters: 0,
     pollingStations: [
       "Miritini World Bank Primary School",
@@ -84,11 +101,12 @@ export const mombasaWards: WardInfo[] = [
       "Swaleh Khalid Social Hall",
       "Jomvu Narcol Nursery School",
       "Badi Twalib Primary School",
-      "Misufini Open Grounds"
-    ]
+      "Misufini Open Grounds",
+    ],
   },
   {
     ward: "Mikindani",
+    constituency: "Jomvu",
     registeredVoters: 0,
     pollingStations: [
       "Amani Primary School",
@@ -100,11 +118,12 @@ export const mombasaWards: WardInfo[] = [
       "Owino Uhuru Nursery School",
       "New Kibarani Primary School",
       "Nazarene Nursery School",
-      "Mwembeni Open Grounds"
-    ]
+      "Mwembeni Open Grounds",
+    ],
   },
   {
     ward: "Miritini",
+    constituency: "Jomvu",
     registeredVoters: 0,
     pollingStations: [
       "Railway Station Hall",
@@ -113,23 +132,25 @@ export const mombasaWards: WardInfo[] = [
       "Mwamlai Primary School",
       "Bamako Initiative Miritini",
       "Maganda Primary School",
-      "Chabeat Open Ground – Chamunyu"
-    ]
+      "Chabeat Open Ground – Chamunyu",
+    ],
   },
 
-  // ── KISAUNI CONSTITUENCY ─────────────────────────────────────────
+  // ── 3. KISAUNI CONSTITUENCY ─────────────────────────────────────
   {
     ward: "Mjambere",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "Kisauni Baptist Primary School",
       "Kadongo Grounds – Mishomoroni",
       "Kisauni Water & Sewerage Offices",
-      "Palani Grounds"
-    ]
+      "Palani Grounds",
+    ],
   },
   {
     ward: "Junda",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "IFC Church",
@@ -137,33 +158,36 @@ export const mombasaWards: WardInfo[] = [
       "Assistant Chief's Camp – Machafuko",
       "Emmas Academy",
       "Manyani Grounds",
-      "New Hope Secondary School – Makumba"
-    ]
+      "New Hope Secondary School – Makumba",
+    ],
   },
   {
     ward: "Bamburi",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "Kiembeni Primary School",
       "Majaoni Primary School",
       "St. Elizabeth Academy",
       "Kashani Primary School",
-      "Mdengerekeni Primary School"
-    ]
+      "Mdengerekeni Primary School",
+    ],
   },
   {
     ward: "Mwakirunge",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "Marimani Primary School",
       "Mwakirunge Primary School",
       "Voroni Community Primary School",
       "Colorado Primary School",
-      "Maunguja Primary School"
-    ]
+      "Maunguja Primary School",
+    ],
   },
   {
     ward: "Mtopanga",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "Mtopanga Primary School",
@@ -171,11 +195,12 @@ export const mombasaWards: WardInfo[] = [
       "St. Josephs Herman Primary School",
       "Community of Christ Church – Mtopanga",
       "Concordia Primary School",
-      "Perma Sharp Grounds"
-    ]
+      "Perma Sharp Grounds",
+    ],
   },
   {
     ward: "Magogoni",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "Mwandoni (Kishada) Play Grounds",
@@ -183,11 +208,12 @@ export const mombasaWards: WardInfo[] = [
       "Barsheba Sokoni Grounds",
       "Mwandoni Kwa Mtumwa Grounds",
       "Mwandoni Blue Bench Grounds",
-      "Mjahidina Muslim School"
-    ]
+      "Mjahidina Muslim School",
+    ],
   },
   {
     ward: "Shanzu",
+    constituency: "Kisauni",
     registeredVoters: 0,
     pollingStations: [
       "Shanzu Teachers Training College",
@@ -196,13 +222,14 @@ export const mombasaWards: WardInfo[] = [
       "Bamburi Primary School",
       "Zimlat Primary School",
       "Utange Primary School",
-      "Shimo La Tewa Primary School"
-    ]
+      "Shimo La Tewa Primary School",
+    ],
   },
 
-  // ── LIKONI CONSTITUENCY ──────────────────────────────────────────
+  // ── 4. LIKONI CONSTITUENCY ──────────────────────────────────────
   {
     ward: "Mtongwe",
+    constituency: "Likoni",
     registeredVoters: 0,
     pollingStations: [
       "Mtongwe Social Hall",
@@ -213,11 +240,12 @@ export const mombasaWards: WardInfo[] = [
       "Mweza Primary School",
       "Mkwajuni Market",
       "Mwangala Primary School",
-      "Mtongwe Vocational Training Center"
-    ]
+      "Mtongwe Vocational Training Center",
+    ],
   },
   {
     ward: "Shika Adabu",
+    constituency: "Likoni",
     registeredVoters: 0,
     pollingStations: [
       "Shika Adabu Primary School",
@@ -227,31 +255,34 @@ export const mombasaWards: WardInfo[] = [
       "Vijiweni Grounds",
       "Inspirations Primary School",
       "Shika Adabu Secondary School",
-      "Mishi Mboko Girls Secondary School"
-    ]
+      "Mishi Mboko Girls Secondary School",
+    ],
   },
   {
     ward: "Bofu",
+    constituency: "Likoni",
     registeredVoters: 0,
     pollingStations: [
       "Daru Ulum Madrasa",
       "Likoni Muslim Primary School",
       "Jamvi La Wageni Primary School",
       "Peleleza Primary School",
-      "Bomani Football Ground"
-    ]
+      "Bomani Football Ground",
+    ],
   },
   {
     ward: "Likoni",
+    constituency: "Likoni",
     registeredVoters: 0,
     pollingStations: [
       "Likoni Primary School",
       "Jesus Celebration Center (Soweto)",
-      "Likoni Secondary School"
-    ]
+      "Likoni Secondary School",
+    ],
   },
   {
     ward: "Timbwani",
+    constituency: "Likoni",
     registeredVoters: 0,
     pollingStations: [
       "Ushindi Baptist Primary School",
@@ -263,13 +294,14 @@ export const mombasaWards: WardInfo[] = [
       "Timbwani Primary School",
       "Timbwani Secondary School",
       "Caltex Grounds",
-      "Timbwani Baptist Primary School"
-    ]
+      "Timbwani Baptist Primary School",
+    ],
   },
 
-  // ── MVITA CONSTITUENCY ───────────────────────────────────────────
+  // ── 5. MVITA CONSTITUENCY ───────────────────────────────────────
   {
     ward: "Mji wa Kale/Makadara",
+    constituency: "Mvita",
     registeredVoters: 0,
     pollingStations: [
       "Tijara Gardens",
@@ -283,11 +315,12 @@ export const mombasaWards: WardInfo[] = [
       "Mombasa Primary School",
       "Allidina Visram High School",
       "Serani Primary School",
-      "Mbaraki Primary School"
-    ]
+      "Mbaraki Primary School",
+    ],
   },
   {
     ward: "Tudor",
+    constituency: "Mvita",
     registeredVoters: 0,
     pollingStations: [
       "Tudor Village Hall",
@@ -300,11 +333,12 @@ export const mombasaWards: WardInfo[] = [
       "Tudor Day Secondary School",
       "Sparki Primary School",
       "KPA Hall Makande",
-      "Fahari Primary School"
-    ]
+      "Fahari Primary School",
+    ],
   },
   {
     ward: "Tononoka",
+    constituency: "Mvita",
     registeredVoters: 0,
     pollingStations: [
       "Tononoka Social Hall",
@@ -317,11 +351,12 @@ export const mombasaWards: WardInfo[] = [
       "Shariff Nassir Secondary School",
       "Buxton Estate Hall",
       "Kikowani Primary School",
-      "Central Girls Primary School"
-    ]
+      "Central Girls Primary School",
+    ],
   },
   {
     ward: "Shimanzi/Ganjoni",
+    constituency: "Mvita",
     registeredVoters: 0,
     pollingStations: [
       "Sacred Heart Primary School",
@@ -336,11 +371,12 @@ export const mombasaWards: WardInfo[] = [
       "King'orani Prison (Jela Baridi)",
       "Bandari College",
       "KPA Social Hall",
-      "Public Works Offices"
-    ]
+      "Public Works Offices",
+    ],
   },
   {
     ward: "Majengo",
+    constituency: "Mvita",
     registeredVoters: 0,
     pollingStations: [
       "Majengo Village Hall",
@@ -353,13 +389,14 @@ export const mombasaWards: WardInfo[] = [
       "Mvita Boys Secondary School",
       "Lasco Social Hall (KPA)",
       "Uhuru Gardens",
-      "Koblenz Hall"
-    ]
+      "Koblenz Hall",
+    ],
   },
 
-  // ── NYALI CONSTITUENCY ───────────────────────────────────────────
+  // ── 6. NYALI CONSTITUENCY ───────────────────────────────────────
   {
     ward: "Frere Town",
+    constituency: "Nyali",
     registeredVoters: 0,
     pollingStations: [
       "Frere Town Primary School",
@@ -370,33 +407,36 @@ export const mombasaWards: WardInfo[] = [
       "Victoria Baptist Primary School",
       "Mwandoni Kadiria Grounds",
       "Frere Town Secondary School",
-      "Khadija Secondary School"
-    ]
+      "Khadija Secondary School",
+    ],
   },
   {
     ward: "Ziwa La Ng'ombe",
+    constituency: "Nyali",
     registeredVoters: 0,
     pollingStations: [
       "Ziwa La Ng'ombe Primary School",
       "Tumaini Academy/Church of Christ",
       "Olive Rehabilitation Centre – Mkunguni",
       "KICODEP Hall",
-      "Azhar Primary School"
-    ]
+      "Azhar Primary School",
+    ],
   },
   {
     ward: "Mkomani",
+    constituency: "Nyali",
     registeredVoters: 0,
     pollingStations: [
       "Pentrose Community Primary School",
       "Maweni Primary School",
       "ASK Ground – Gate A",
       "Mkomani Grounds",
-      "Maweni Mixed Secondary School"
-    ]
+      "Maweni Mixed Secondary School",
+    ],
   },
   {
     ward: "Kongowea",
+    constituency: "Nyali",
     registeredVoters: 0,
     pollingStations: [
       "Kongowea Primary School",
@@ -404,11 +444,12 @@ export const mombasaWards: WardInfo[] = [
       "Methodist Church – Kongowea",
       "Municipal Social Hall – Kongowea",
       "Kengeleni Primary School",
-      "Kongowea Secondary School"
-    ]
+      "Kongowea Secondary School",
+    ],
   },
   {
     ward: "Kadzandani",
+    constituency: "Nyali",
     registeredVoters: 0,
     pollingStations: [
       "Mwatamba Grounds",
@@ -419,9 +460,9 @@ export const mombasaWards: WardInfo[] = [
       "Bahawani Primary School",
       "Bombolulu Cultural Centre Workshop Hall",
       "Marianist Polytechnic",
-      "Teman Junior Academy"
-    ]
-  }
+      "Teman Junior Academy",
+    ],
+  },
 ];
 
 export const totalConstituencyVoters = mombasaWards.reduce(
@@ -429,9 +470,28 @@ export const totalConstituencyVoters = mombasaWards.reduce(
   0
 );
 
-export const allPollingStations = mombasaWards.flatMap(
-  (w) => w.pollingStations.map((station) => ({ ward: w.ward, station }))
+export const allPollingStations = mombasaWards.flatMap((w) =>
+  w.pollingStations.map((station) => ({
+    constituency: w.constituency,
+    ward: w.ward,
+    station,
+  }))
 );
 
 export const totalPollingStations = allPollingStations.length;
 export const totalLandmarks = totalPollingStations;
+
+// Helper lookup functions
+export function getConstituencyByWard(wardName: string): string {
+  const match = mombasaWards.find((w) => w.ward === wardName);
+  return match ? match.constituency : "";
+}
+
+export function getWardsByConstituency(constituencyName: string): WardInfo[] {
+  if (!constituencyName || constituencyName === "ALL") {
+    return mombasaWards;
+  }
+  return mombasaWards.filter(
+    (w) => w.constituency.toLowerCase() === constituencyName.toLowerCase()
+  );
+}
