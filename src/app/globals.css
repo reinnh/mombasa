@@ -19,6 +19,8 @@
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-ios-bg);
     color: var(--color-ios-text);
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
@@ -30,6 +32,27 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+}
+
+/* Lenis smooth scrolling with iOS inertia */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* Authentic iOS Fluid Curves & Interactions */
@@ -127,6 +150,15 @@
 
 .ios-pill-touch:active {
   transform: scale(0.94);
+}
+
+/* Hide scrollbar for clean horizontal swipe containers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Clean standard scrollbars */

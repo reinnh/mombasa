@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
+import Lenis from "lenis";
 import {
   User,
   Phone,
@@ -54,6 +56,36 @@ export default function VolunteerRegistrationPage() {
   const [error, setError] = useState<string | null>(null);
   const [successVolunteer, setSuccessVolunteer] = useState<Volunteer | null>(null);
   const [showWardsAccordion, setShowWardsAccordion] = useState(false);
+
+  // Lenis iOS smooth inertial spring scrolling
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      smoothWheel: true,
+      touchMultiplier: 1.35,
+    });
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, []);
+
+  // Stretchy iOS spring parallax on scroll
+  const { scrollY } = useScroll();
+  const rawHeroScale = useTransform(scrollY, [0, 260], [1, 0.975]);
+  const heroScale = useSpring(rawHeroScale, { stiffness: 220, damping: 28 });
+  const rawHeroY = useTransform(scrollY, [0, 260], [0, 10]);
+  const heroY = useSpring(rawHeroY, { stiffness: 220, damping: 28 });
 
   // Cascading wards based on selected constituency
   const availableWards = constituency
@@ -361,7 +393,12 @@ export default function VolunteerRegistrationPage() {
           /* Normal Registration: Stacked on mobile, 2-column side-by-side on LG screens */
           <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
             {/* Left Column (Hero & Geographic Accordion on LG) */}
-            <div className="lg:col-span-5 space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 26, mass: 0.8 }}
+              className="lg:col-span-5 space-y-3"
+            >
               {/* Hero Banner */}
               <div className="ios-card overflow-hidden bg-white border border-[#e2e8f0] shadow-xs">
                 {/* Edge-to-Edge Image Container spanning 100% container width */}
@@ -380,13 +417,18 @@ export default function VolunteerRegistrationPage() {
                     </div>
                   </div>
 
-                  {/* Full Container Width Image */}
+                  {/* Full Container Width Image with Stretchy Elastic Spring */}
                   <div className="w-full relative aspect-square sm:aspect-[4/3] lg:aspect-square bg-white flex items-center justify-center overflow-hidden">
-                    <img
-                      src="/images/candidate.jpg"
-                      alt="The New Democrats Youth League - Mombasa Chapter"
-                      className="w-full h-full object-cover object-center transition-transform duration-500 ease-out hover:scale-[1.015]"
-                    />
+                    <motion.div
+                      style={{ scale: heroScale, y: heroY }}
+                      className="w-full h-full origin-top"
+                    >
+                      <img
+                        src="/images/candidate.jpg"
+                        alt="The New Democrats Youth League - Mombasa Chapter"
+                        className="w-full h-full object-cover object-center transition-transform duration-700 ease-out hover:scale-[1.015]"
+                      />
+                    </motion.div>
                   </div>
 
                   {/* Header and Subtitle Under Graphic */}
@@ -405,18 +447,33 @@ export default function VolunteerRegistrationPage() {
 
                 {/* County Stats Strip */}
                 <div className="grid grid-cols-3 gap-2 p-3 bg-[#f8fafc] text-center border-t border-[#e2e8f0]">
-                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#0B4DB8]/40 active:scale-95 transition-all duration-150">
+                  <motion.div
+                    whileHover={{ y: -2, scale: 1.02 }}
+                    whileTap={{ scale: 0.94 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                    className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#0B4DB8]/40 transition-colors cursor-default select-none"
+                  >
                     <p className="text-[10px] text-[#64748b] uppercase font-semibold">Constituencies</p>
                     <p className="text-sm font-extrabold text-[#0B4DB8]">{mombasaConstituencies.length}</p>
-                  </div>
-                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#0B4DB8]/40 active:scale-95 transition-all duration-150">
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ y: -2, scale: 1.02 }}
+                    whileTap={{ scale: 0.94 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                    className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#0B4DB8]/40 transition-colors cursor-default select-none"
+                  >
                     <p className="text-[10px] text-[#64748b] uppercase font-semibold">Wards</p>
                     <p className="text-sm font-extrabold text-[#0B4DB8]">{mombasaWards.length}</p>
-                  </div>
-                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#E51A24]/40 active:scale-95 transition-all duration-150">
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ y: -2, scale: 1.02 }}
+                    whileTap={{ scale: 0.94 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                    className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#E51A24]/40 transition-colors cursor-default select-none"
+                  >
                     <p className="text-[10px] text-[#64748b] uppercase font-semibold">Stations</p>
                     <p className="text-sm font-extrabold text-[#E51A24]">{totalPollingStations}</p>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
 
@@ -452,91 +509,101 @@ export default function VolunteerRegistrationPage() {
                   </div>
                 </button>
 
-                {/* Smooth Grid Accordion Content */}
-                <div
-                  className={`grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                    showWardsAccordion
-                      ? "grid-rows-[1fr] opacity-100 border-t border-[#e2e8f0]"
-                      : "grid-rows-[0fr] opacity-0"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    <div className="p-3 space-y-2.5 bg-[#f8fafc]">
-                      <p className="text-[10px] text-[#64748b]">
-                        Tap any designated station below to pre-select it in the registration form:
-                      </p>
+                {/* Stretchy Spring Accordion Content */}
+                <AnimatePresence initial={false}>
+                  {showWardsAccordion && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                      className="overflow-hidden border-t border-[#e2e8f0]"
+                    >
+                      <div className="p-3 space-y-2.5 bg-[#f8fafc]">
+                        <p className="text-[10px] text-[#64748b]">
+                          Tap any designated station below to pre-select it in the registration form:
+                        </p>
 
-                      <div className="space-y-3">
-                        {mombasaConstituencies.map((cName) => {
-                          const cWards = getWardsByConstituency(cName);
-                          return (
-                            <div
-                              key={cName}
-                              className="bg-white rounded-sm border border-[#e2e8f0] p-2.5 space-y-2 shadow-xs"
-                            >
-                              <div className="flex items-center justify-between pb-1.5 border-b border-[#e2e8f0]">
-                                <p className="text-xs font-bold text-[#0B4DB8] uppercase tracking-wide">
-                                  {cName} Constituency
-                                </p>
-                                <span className="text-[10px] text-[#64748b] font-medium">
-                                  {cWards.length} Wards
-                                </span>
-                              </div>
+                        <div className="space-y-3">
+                          {mombasaConstituencies.map((cName) => {
+                            const cWards = getWardsByConstituency(cName);
+                            return (
+                              <div
+                                key={cName}
+                                className="bg-white rounded-sm border border-[#e2e8f0] p-2.5 space-y-2 shadow-xs"
+                              >
+                                <div className="flex items-center justify-between pb-1.5 border-b border-[#e2e8f0]">
+                                  <p className="text-xs font-bold text-[#0B4DB8] uppercase tracking-wide">
+                                    {cName} Constituency
+                                  </p>
+                                  <span className="text-[10px] text-[#64748b] font-medium">
+                                    {cWards.length} Wards
+                                  </span>
+                                </div>
 
-                              <div className="space-y-2">
-                                {cWards.map((w) => (
-                                  <div
-                                    key={w.ward}
-                                    className="bg-[#f8fafc] rounded-xs border border-[#e2e8f0]/80 p-2 space-y-1.5"
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <p className="text-[11px] font-bold text-[#0f172a]">
-                                        {w.ward} Ward
-                                      </p>
-                                      <p className="text-[10px] text-[#64748b]">
-                                        {w.pollingStations.length} Stations
-                                      </p>
+                                <div className="space-y-2">
+                                  {cWards.map((w) => (
+                                    <div
+                                      key={w.ward}
+                                      className="bg-[#f8fafc] rounded-xs border border-[#e2e8f0]/80 p-2 space-y-1.5"
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <p className="text-[11px] font-bold text-[#0f172a]">
+                                          {w.ward} Ward
+                                        </p>
+                                        <p className="text-[10px] text-[#64748b]">
+                                          {w.pollingStations.length} Stations
+                                        </p>
+                                      </div>
+
+                                      {/* Station Buttons with iOS Spring Tactile Feedback */}
+                                      <div className="pt-1 border-t border-[#e2e8f0]/60 flex flex-wrap gap-1">
+                                        {w.pollingStations.map((station) => (
+                                          <motion.button
+                                            key={station}
+                                            type="button"
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.93 }}
+                                            transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                                            onClick={() => {
+                                              setConstituency(cName);
+                                              setWard(w.ward);
+                                              setPollingStation(station);
+                                              setIsOtherStation(false);
+                                              setOtherStationText("");
+                                              window.scrollTo({ top: 120, behavior: "smooth" });
+                                            }}
+                                            className={`text-[10px] px-2.5 py-1 rounded-sm border cursor-pointer select-none ${
+                                              constituency === cName && ward === w.ward && pollingStation === station
+                                                ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs ring-1 ring-[#0B4DB8]"
+                                                : "bg-white text-[#0f172a] border-[#e2e8f0] hover:bg-[#eef4fb] hover:border-[#0B4DB8]/30"
+                                            }`}
+                                          >
+                                            {station}
+                                          </motion.button>
+                                        ))}
+                                      </div>
                                     </div>
-
-                                    {/* Station Buttons with iOS Touch Feedback */}
-                                    <div className="pt-1 border-t border-[#e2e8f0]/60 flex flex-wrap gap-1">
-                                      {w.pollingStations.map((station) => (
-                                        <button
-                                          key={station}
-                                          type="button"
-                                          onClick={() => {
-                                            setConstituency(cName);
-                                            setWard(w.ward);
-                                            setPollingStation(station);
-                                            setIsOtherStation(false);
-                                            setOtherStationText("");
-                                            window.scrollTo({ top: 120, behavior: "smooth" });
-                                          }}
-                                          className={`text-[10px] px-2.5 py-1 rounded-sm border ios-pill-touch cursor-pointer select-none ${
-                                            constituency === cName && ward === w.ward && pollingStation === station
-                                              ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs ring-1 ring-[#0B4DB8]"
-                                              : "bg-white text-[#0f172a] border-[#e2e8f0] hover:bg-[#eef4fb] hover:border-[#0B4DB8]/30"
-                                          }`}
-                                        >
-                                          {station}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right Column (Volunteer Registration Form on LG) */}
-            <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 26, delay: 0.05, mass: 0.8 }}
+              className="lg:col-span-7"
+            >
               {/* Error Banner */}
               {error && (
                 <div className="bg-white border-l-4 border-red-600 text-red-800 p-3 rounded-sm border border-[#e2e8f0] text-xs flex items-start gap-2 mb-3">
@@ -941,9 +1008,12 @@ export default function VolunteerRegistrationPage() {
 
                 {/* Submit CTA */}
                 <div className="pt-2">
-                  <button
+                  <motion.button
                     type="submit"
                     disabled={loading}
+                    whileHover={{ scale: 1.008 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
                     className="ios-button-primary cursor-pointer disabled:opacity-60 text-sm py-3 font-semibold shadow-xs hover:shadow-sm"
                   >
                     {loading ? (
@@ -957,7 +1027,7 @@ export default function VolunteerRegistrationPage() {
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </div>
 
                 <p className="text-[10px] text-center text-[#64748b] pt-1">
@@ -967,7 +1037,7 @@ export default function VolunteerRegistrationPage() {
                   </Link>
                 </p>
               </form>
-            </div>
+            </motion.div>
           </div>
         )}
       </main>
