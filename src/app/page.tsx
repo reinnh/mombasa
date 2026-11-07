@@ -200,30 +200,30 @@ export default function VolunteerRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f8f7] text-[#191414] flex flex-col justify-between pb-12">
+    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-col justify-between pb-12 selection:bg-[#0B4DB8]/15 selection:text-[#0B4DB8]">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#e6dfdc] px-4 py-2.5">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#e2e8f0] px-4 py-2.5">
         <div className="max-w-md lg:max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 overflow-hidden border border-[#e6dfdc] shrink-0 bg-white rounded-sm">
+            <div className="w-8 h-8 overflow-hidden border border-[#e2e8f0] shrink-0 bg-white rounded-sm p-0.5">
               <img
                 src="/images/tnd-logo.jpg"
                 alt="TND Youth League"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
             <div>
-              <h1 className="text-xs font-bold tracking-tight text-[#191414] leading-none">
+              <h1 className="text-xs font-bold tracking-tight text-[#0f172a] leading-none">
                 Mombasa Volunteer Hub
               </h1>
-              <p className="text-[10px] text-[#6b6463] mt-0.5">
-                TND Youth League
+              <p className="text-[10px] text-[#64748b] mt-0.5 font-medium">
+                The New Democrats Youth League
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-[#8e524d] bg-[#8e524d]/10 px-2.5 py-0.5 rounded-sm border border-[#8e524d]/25 uppercase tracking-wide">
+            <span className="text-[10px] font-bold text-[#E51A24] bg-[#E51A24]/10 px-2.5 py-0.5 rounded-sm border border-[#E51A24]/20 uppercase tracking-wide">
               2027
             </span>
           </div>
@@ -234,107 +234,107 @@ export default function VolunteerRegistrationPage() {
       <main className="max-w-md lg:max-w-6xl mx-auto w-full px-3.5 lg:px-6 pt-3 lg:pt-6 flex-1">
         {successVolunteer ? (
           /* Success Receipt Card */
-          <div className="ios-card max-w-md lg:max-w-lg mx-auto p-6 mt-3 lg:mt-8 text-center">
-            <div className="w-14 h-14 rounded-full bg-[#8e524d]/10 text-[#8e524d] flex items-center justify-center mx-auto mb-3">
+          <div className="ios-card max-w-md lg:max-w-lg mx-auto p-6 mt-3 lg:mt-8 text-center border-[#e2e8f0]">
+            <div className="w-14 h-14 rounded-full bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center mx-auto mb-3">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
-            <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-[#8e524d] bg-[#8e524d]/10 px-2.5 py-0.5 rounded-sm mb-2">
+            <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-[#0B4DB8] bg-[#0B4DB8]/10 px-2.5 py-0.5 rounded-sm mb-2">
               Registration Confirmed
             </span>
 
-            <h2 className="text-lg font-bold text-[#191414]">
+            <h2 className="text-lg font-bold text-[#0f172a]">
               Welcome, {successVolunteer.fullName}!
             </h2>
-            <p className="text-xs text-[#6b6463] mt-0.5 mb-5">
+            <p className="text-xs text-[#64748b] mt-0.5 mb-5">
               You are registered as a volunteer agent for Mombasa County (2027).
             </p>
 
             {/* Receipt Summary Details */}
-            <div className="bg-[#f4efed] rounded-sm p-3.5 text-left border border-[#e6dfdc] space-y-2.5 mb-5">
+            <div className="bg-[#f8fafc] rounded-sm p-3.5 text-left border border-[#e2e8f0] space-y-2.5 mb-5">
               {/* Volunteer ID */}
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#6b6463] flex items-center gap-1">
+                <span className="text-[#64748b] flex items-center gap-1">
                   <Hash className="w-3 h-3" /> Volunteer ID
                 </span>
-                <span className="font-mono font-semibold text-[#8e524d] text-[10px] tracking-tight select-all">
+                <span className="font-mono font-semibold text-[#0B4DB8] text-[10px] tracking-tight select-all">
                   {successVolunteer._id}
                 </span>
               </div>
-              <div className="h-px bg-[#e6dfdc]" />
+              <div className="h-px bg-[#e2e8f0]" />
               {successVolunteer.constituency && (
                 <>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-[#6b6463]">Constituency</span>
-                    <span className="font-semibold text-[#191414]">{successVolunteer.constituency}</span>
+                    <span className="text-[#64748b]">Constituency</span>
+                    <span className="font-semibold text-[#0f172a]">{successVolunteer.constituency}</span>
                   </div>
-                  <div className="h-px bg-[#e6dfdc]" />
+                  <div className="h-px bg-[#e2e8f0]" />
                 </>
               )}
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#6b6463]">Ward</span>
-                <span className="font-semibold text-[#191414]">{successVolunteer.ward}</span>
+                <span className="text-[#64748b]">Ward</span>
+                <span className="font-semibold text-[#0f172a]">{successVolunteer.ward}</span>
               </div>
               {successVolunteer.idNumber && (
                 <>
-                  <div className="h-px bg-[#e6dfdc]" />
+                  <div className="h-px bg-[#e2e8f0]" />
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-[#6b6463]">National ID</span>
-                    <span className="font-semibold text-[#191414]">{successVolunteer.idNumber}</span>
+                    <span className="text-[#64748b]">National ID</span>
+                    <span className="font-semibold text-[#0f172a]">{successVolunteer.idNumber}</span>
                   </div>
                 </>
               )}
-              <div className="h-px bg-[#e6dfdc]" />
+              <div className="h-px bg-[#e2e8f0]" />
               <div className="flex justify-between items-start text-xs">
-                <span className="text-[#6b6463]">Landmark</span>
-                <span className="font-semibold text-[#191414] text-right max-w-[65%]">
+                <span className="text-[#64748b]">Landmark</span>
+                <span className="font-semibold text-[#0f172a] text-right max-w-[65%]">
                   {successVolunteer.pollingStation}
                   {successVolunteer.isOtherStation && (
-                    <span className="text-[#8e524d] text-[10px] block">Not in list</span>
+                    <span className="text-[#0B4DB8] text-[10px] block">Not in list</span>
                   )}
                 </span>
               </div>
-              <div className="h-px bg-[#e6dfdc]" />
+              <div className="h-px bg-[#e2e8f0]" />
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#6b6463]">Volunteer As</span>
-                <span className="font-semibold text-[#8e524d]">
+                <span className="text-[#64748b]">Volunteer As</span>
+                <span className="font-semibold text-[#0B4DB8]">
                   {successVolunteer.volunteerRole || "Mobilizer"}
                 </span>
               </div>
-              <div className="h-px bg-[#e6dfdc]" />
+              <div className="h-px bg-[#e2e8f0]" />
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#6b6463]">Phone</span>
-                <span className="font-semibold text-[#191414]">{successVolunteer.phoneNumber}</span>
+                <span className="text-[#64748b]">Phone</span>
+                <span className="font-semibold text-[#0f172a]">{successVolunteer.phoneNumber}</span>
               </div>
               {successVolunteer.occupation && (
                 <>
-                  <div className="h-px bg-[#e6dfdc]" />
+                  <div className="h-px bg-[#e2e8f0]" />
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-[#6b6463]">Occupation</span>
-                    <span className="font-semibold text-[#191414]">{successVolunteer.occupation}</span>
+                    <span className="text-[#64748b]">Occupation</span>
+                    <span className="font-semibold text-[#0f172a]">{successVolunteer.occupation}</span>
                   </div>
                 </>
               )}
               {successVolunteer.educationLevel && (
                 <>
-                  <div className="h-px bg-[#e6dfdc]" />
+                  <div className="h-px bg-[#e2e8f0]" />
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-[#6b6463]">Education</span>
-                    <span className="font-semibold text-[#191414]">{successVolunteer.educationLevel}</span>
+                    <span className="text-[#64748b]">Education</span>
+                    <span className="font-semibold text-[#0f172a]">{successVolunteer.educationLevel}</span>
                   </div>
                 </>
               )}
-              <div className="h-px bg-[#e6dfdc]" />
+              <div className="h-px bg-[#e2e8f0]" />
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#6b6463]">Commitment</span>
+                <span className="text-[#64748b]">Commitment</span>
                 <span className="font-semibold text-emerald-700">
                   Confirmed Pledge ✓
                 </span>
               </div>
-              <div className="h-px bg-[#e6dfdc]" />
+              <div className="h-px bg-[#e2e8f0]" />
               <div className="flex justify-between items-center text-xs">
-                <span className="text-[#6b6463]">Status</span>
-                <span className="font-semibold text-[#8e524d] capitalize">
+                <span className="text-[#64748b]">Status</span>
+                <span className="font-semibold text-[#0B4DB8] capitalize">
                   {successVolunteer.status}
                 </span>
               </div>
@@ -363,87 +363,83 @@ export default function VolunteerRegistrationPage() {
             {/* Left Column (Hero & Geographic Accordion on LG) */}
             <div className="lg:col-span-5 space-y-3">
               {/* Hero Banner */}
-              <div className="ios-card overflow-hidden bg-white border border-[#e6dfdc]">
-                {/* Image Container */}
-                <div className="relative w-full h-[47vh] min-h-[350px] max-h-[520px] lg:h-[440px] bg-[#2a1e1d] overflow-hidden">
-                  <img
-                    src="/images/candidate.jpg"
-                    alt="TND Youth League Mombasa Chapter"
-                    className="w-full h-full object-cover object-top"
-                  />
+              <div className="ios-card overflow-hidden bg-white border border-[#e2e8f0] shadow-sm">
+                {/* Image Container with subtle coastal/presidential gradient */}
+                <div className="relative w-full bg-gradient-to-b from-[#f8fafc] via-[#eef4fb] to-white p-5 sm:p-6 flex flex-col items-center justify-center overflow-hidden border-b border-[#e2e8f0]">
+                  {/* Decorative subtle ambient glows */}
+                  <div className="absolute -top-16 -left-16 w-44 h-44 rounded-full bg-[#0B4DB8]/10 blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-16 -right-16 w-44 h-44 rounded-full bg-[#E51A24]/10 blur-2xl pointer-events-none" />
 
-                  {/* Subtle contrast gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/25 pointer-events-none" />
-
-                  {/* Top Floating Badges */}
-                  <div className="absolute top-3 inset-x-3 flex items-center justify-between">
-                    {/* Movement Badge */}
-                    <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-md px-2.5 py-1 rounded-sm border border-white/20 text-white shadow-sm">
-                      <div className="w-4 h-4 overflow-hidden rounded-xs shrink-0">
-                        <img
-                          src="/images/tnd-logo.jpg"
-                          alt="TND"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <span className="text-[11px] font-semibold tracking-wide">
-                        TND Youth League
+                  {/* Top Badges */}
+                  <div className="w-full flex items-center justify-between mb-3 z-10">
+                    <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-sm border border-[#e2e8f0] text-[#0f172a] shadow-xs">
+                      <span className="w-2 h-2 rounded-full bg-[#0B4DB8] animate-pulse" />
+                      <span className="text-[11px] font-semibold tracking-wide text-[#0B4DB8]">
+                        Official Portal
                       </span>
                     </div>
 
-                    {/* Year Tag */}
-                    <div className="bg-[#8e524d] text-white px-2.5 py-1 rounded-sm text-[10px] font-bold tracking-wider uppercase border border-white/20 shadow-sm">
-                      2027
+                    <div className="bg-[#E51A24] text-white px-2.5 py-1 rounded-sm text-[10px] font-bold tracking-wider uppercase shadow-xs">
+                      2027 Election
                     </div>
                   </div>
 
-                  {/* Bottom Floating Info - Light translucent frosted glass */}
-                  <div className="absolute bottom-3 inset-x-3 bg-black/30 backdrop-blur-md p-3 rounded-sm border border-white/15 text-white shadow-md">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#e6c1bd] drop-shadow-sm">
-                      Mombasa County
+                  {/* The Official Hero Image Graphic */}
+                  <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-square flex items-center justify-center my-1 z-10 drop-shadow-md transition-transform hover:scale-[1.02] duration-300">
+                    <img
+                      src="/images/candidate.jpg"
+                      alt="The New Democrats Youth League - Mombasa Chapter"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+
+                  {/* Header and Subtitle Under Graphic */}
+                  <div className="text-center mt-3 z-10">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#E51A24] bg-[#E51A24]/10 px-3 py-0.5 rounded-full border border-[#E51A24]/20 inline-block mb-1">
+                      Mombasa County Chapter
                     </span>
-                    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-tight mt-0.5 drop-shadow-sm">
-                      TND Youth League
+                    <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#0f172a] leading-tight">
+                      Ground Volunteer Network
                     </h2>
-                    <p className="text-[11px] text-white/90 mt-0.5 drop-shadow-sm">
-                      Mombasa Chapter &bull; Official Volunteer Mobilization Portal
+                    <p className="text-xs text-[#64748b] mt-1 max-w-sm mx-auto">
+                      Mobilizing 6 Constituencies, 30 Wards &amp; 229 Polling Stations across Mombasa.
                     </p>
                   </div>
                 </div>
 
                 {/* County Stats Strip */}
-                <div className="grid grid-cols-3 gap-2 p-2.5 bg-white text-center border-t border-[#e6dfdc]">
-                  <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
-                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Constituencies</p>
-                    <p className="text-xs font-bold text-[#191414]">{mombasaConstituencies.length}</p>
+                <div className="grid grid-cols-3 gap-2 p-3 bg-[#f8fafc] text-center border-t border-[#e2e8f0]">
+                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs">
+                    <p className="text-[10px] text-[#64748b] uppercase font-semibold">Constituencies</p>
+                    <p className="text-sm font-extrabold text-[#0B4DB8]">{mombasaConstituencies.length}</p>
                   </div>
-                  <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
-                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Wards</p>
-                    <p className="text-xs font-bold text-[#191414]">{mombasaWards.length}</p>
+                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs">
+                    <p className="text-[10px] text-[#64748b] uppercase font-semibold">Wards</p>
+                    <p className="text-sm font-extrabold text-[#0B4DB8]">{mombasaWards.length}</p>
                   </div>
-                  <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
-                    <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Stations</p>
-                    <p className="text-xs font-bold text-[#191414]">{totalPollingStations}</p>
+                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs">
+                    <p className="text-[10px] text-[#64748b] uppercase font-semibold">Stations</p>
+                    <p className="text-sm font-extrabold text-[#E51A24]">{totalPollingStations}</p>
                   </div>
                 </div>
               </div>
 
               {/* Geographical Mappings - Smooth Accordion */}
-              <div className="ios-card overflow-hidden">
+              <div className="ios-card overflow-hidden border-[#e2e8f0]">
                 <button
                   type="button"
                   onClick={() => setShowWardsAccordion((prev) => !prev)}
-                  className="w-full p-3.5 flex items-center justify-between text-left cursor-pointer hover:bg-[#f4efed] transition-colors"
+                  className="w-full p-3.5 flex items-center justify-between text-left cursor-pointer hover:bg-[#f1f5f9] transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-sm bg-[#8e524d]/10 text-[#8e524d] flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-sm bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center shrink-0">
                       <MapPin className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-[#191414]">
+                      <h4 className="text-xs font-bold text-[#0f172a]">
                         Constituencies, Wards &amp; Polling Stations
                       </h4>
-                      <p className="text-[10px] text-[#6b6463]">
+                      <p className="text-[10px] text-[#64748b]">
                         {showWardsAccordion
                           ? "Tap to collapse mappings"
                           : `${mombasaConstituencies.length} Constituencies • ${mombasaWards.length} Wards • ${totalPollingStations} Stations (Tap to explore)`}
@@ -452,7 +448,7 @@ export default function VolunteerRegistrationPage() {
                   </div>
 
                   <div
-                    className={`p-1 text-[#6b6463] transition-transform duration-300 ${
+                    className={`p-1 text-[#64748b] transition-transform duration-300 ${
                       showWardsAccordion ? "rotate-180" : ""
                     }`}
                   >
@@ -464,13 +460,13 @@ export default function VolunteerRegistrationPage() {
                 <div
                   className={`grid transition-all duration-300 ease-in-out ${
                     showWardsAccordion
-                      ? "grid-rows-[1fr] opacity-100 border-t border-[#e6dfdc]"
+                      ? "grid-rows-[1fr] opacity-100 border-t border-[#e2e8f0]"
                       : "grid-rows-[0fr] opacity-0"
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="p-3 space-y-2.5 bg-[#f4efed]">
-                      <p className="text-[10px] text-[#6b6463]">
+                    <div className="p-3 space-y-2.5 bg-[#f8fafc]">
+                      <p className="text-[10px] text-[#64748b]">
                         Tap any designated station below to pre-select it in the registration form:
                       </p>
 
@@ -480,13 +476,13 @@ export default function VolunteerRegistrationPage() {
                           return (
                             <div
                               key={cName}
-                              className="bg-white rounded-sm border border-[#e6dfdc] p-2.5 space-y-2"
+                              className="bg-white rounded-sm border border-[#e2e8f0] p-2.5 space-y-2"
                             >
-                              <div className="flex items-center justify-between pb-1.5 border-b border-[#e6dfdc]">
-                                <p className="text-xs font-bold text-[#8e524d] uppercase tracking-wide">
+                              <div className="flex items-center justify-between pb-1.5 border-b border-[#e2e8f0]">
+                                <p className="text-xs font-bold text-[#0B4DB8] uppercase tracking-wide">
                                   {cName} Constituency
                                 </p>
-                                <span className="text-[10px] text-[#6b6463] font-medium">
+                                <span className="text-[10px] text-[#64748b] font-medium">
                                   {cWards.length} Wards
                                 </span>
                               </div>
@@ -495,19 +491,19 @@ export default function VolunteerRegistrationPage() {
                                 {cWards.map((w) => (
                                   <div
                                     key={w.ward}
-                                    className="bg-[#f9f8f7] rounded-xs border border-[#e6dfdc]/70 p-2 space-y-1.5"
+                                    className="bg-[#f8fafc] rounded-xs border border-[#e2e8f0]/80 p-2 space-y-1.5"
                                   >
                                     <div className="flex items-center justify-between">
-                                      <p className="text-[11px] font-bold text-[#191414]">
+                                      <p className="text-[11px] font-bold text-[#0f172a]">
                                         {w.ward} Ward
                                       </p>
-                                      <p className="text-[10px] text-[#6b6463]">
+                                      <p className="text-[10px] text-[#64748b]">
                                         {w.pollingStations.length} Stations
                                       </p>
                                     </div>
 
                                     {/* Station Buttons */}
-                                    <div className="pt-1 border-t border-[#e6dfdc]/60 flex flex-wrap gap-1">
+                                    <div className="pt-1 border-t border-[#e2e8f0]/60 flex flex-wrap gap-1">
                                       {w.pollingStations.map((station) => (
                                         <button
                                           key={station}
@@ -522,8 +518,8 @@ export default function VolunteerRegistrationPage() {
                                           }}
                                           className={`text-[10px] px-2 py-0.5 rounded-sm border transition-all cursor-pointer ${
                                             constituency === cName && ward === w.ward && pollingStation === station
-                                              ? "bg-[#8e524d] text-white border-[#8e524d] font-semibold"
-                                              : "bg-white text-[#191414] border-[#e6dfdc] hover:bg-[#e6dfdc]"
+                                              ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs"
+                                              : "bg-white text-[#0f172a] border-[#e2e8f0] hover:bg-[#eef4fb] hover:border-[#0B4DB8]/30"
                                           }`}
                                         >
                                           {station}
@@ -547,28 +543,28 @@ export default function VolunteerRegistrationPage() {
             <div className="lg:col-span-7">
               {/* Error Banner */}
               {error && (
-                <div className="bg-white border-l-4 border-red-600 text-red-800 p-3 rounded-sm border border-[#e6dfdc] text-xs flex items-start gap-2 mb-3">
+                <div className="bg-white border-l-4 border-red-600 text-red-800 p-3 rounded-sm border border-[#e2e8f0] text-xs flex items-start gap-2 mb-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-600 mt-1 shrink-0" />
                   <div>
-                    <p className="font-semibold text-[#191414]">Notice</p>
-                    <p className="text-[#6b6463] mt-0.5">{error}</p>
+                    <p className="font-semibold text-[#0f172a]">Notice</p>
+                    <p className="text-[#64748b] mt-0.5">{error}</p>
                   </div>
                 </div>
               )}
 
               {/* Registration Form Card */}
-              <form onSubmit={handleSubmit} className="ios-card p-4 sm:p-5 lg:p-6 space-y-4">
-                <div className="border-b border-[#e6dfdc] pb-3">
+              <form onSubmit={handleSubmit} className="ios-card p-4 sm:p-5 lg:p-6 space-y-4 border-[#e2e8f0]">
+                <div className="border-b border-[#e2e8f0] pb-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-[#191414]">
+                      <h3 className="text-base font-bold text-[#0f172a]">
                         Volunteer Registration
                       </h3>
-                      <p className="text-xs text-[#6b6463] mt-0.5">
+                      <p className="text-xs text-[#64748b] mt-0.5">
                         Join the ground mobilization network across Mombasa County.
                       </p>
                     </div>
-                    <span className="hidden sm:inline-block text-[11px] font-semibold text-[#8e524d] bg-[#8e524d]/10 px-2.5 py-1 rounded-sm border border-[#8e524d]/20">
+                    <span className="hidden sm:inline-block text-[11px] font-semibold text-[#0B4DB8] bg-[#0B4DB8]/10 px-2.5 py-1 rounded-sm border border-[#0B4DB8]/20">
                       TND Mombasa
                     </span>
                   </div>
@@ -577,11 +573,11 @@ export default function VolunteerRegistrationPage() {
                 <div className="space-y-4">
                   {/* Full Name */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#191414] mb-1.5">
+                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5">
                       Full Legal Name <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                         <User className="w-4 h-4" />
                       </div>
                       <input
@@ -599,12 +595,12 @@ export default function VolunteerRegistrationPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* National ID Number */}
                     <div>
-                      <label className="block text-xs font-semibold text-[#191414] mb-1.5 flex items-center justify-between">
+                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
                         <span>National ID Number</span>
-                        <span className="text-[10px] font-normal text-[#6b6463]">Kitambulisho</span>
+                        <span className="text-[10px] font-normal text-[#64748b]">Kitambulisho</span>
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                           <CreditCard className="w-4 h-4" />
                         </div>
                         <input
@@ -615,18 +611,18 @@ export default function VolunteerRegistrationPage() {
                           className="ios-input ios-input-icon !pl-11"
                         />
                       </div>
-                      <p className="text-[10px] text-[#6b6463] mt-1 pl-0.5">
+                      <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
                         Strictly for voter verification &amp; tallying.
                       </p>
                     </div>
 
                     {/* Phone Number */}
                     <div>
-                      <label className="block text-xs font-semibold text-[#191414] mb-1.5">
+                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5">
                         Mobile Phone Number <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                           <Phone className="w-4 h-4" />
                         </div>
                         <input
@@ -638,7 +634,7 @@ export default function VolunteerRegistrationPage() {
                           className="ios-input ios-input-icon !pl-11"
                         />
                       </div>
-                      <p className="text-[10px] text-[#6b6463] mt-1 pl-0.5">
+                      <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
                         Used for SMS station alerts and direct WhatsApp coordination.
                       </p>
                     </div>
@@ -648,13 +644,13 @@ export default function VolunteerRegistrationPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* Occupation (Kazi) - Optional */}
                     <div>
-                      <label className="block text-xs font-semibold text-[#191414] mb-1.5 flex items-center gap-1.5">
+                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
                         <span>Kazi</span>
-                        <span className="text-[10px] font-normal text-[#6b6463] line-through decoration-[#8e524d]/50">Occupation</span>
-                        <span className="text-[10px] font-normal text-[#6b6463]">(Optional)</span>
+                        <span className="text-[10px] font-normal text-[#64748b] line-through decoration-[#0B4DB8]/50">Occupation</span>
+                        <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                           <Briefcase className="w-4 h-4" />
                         </div>
                         <input
@@ -669,12 +665,12 @@ export default function VolunteerRegistrationPage() {
 
                     {/* Level of Education - Optional */}
                     <div>
-                      <label className="block text-xs font-semibold text-[#191414] mb-1.5 flex items-center gap-1.5">
+                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
                         <span>Level of Education</span>
-                        <span className="text-[10px] font-normal text-[#6b6463]">(Optional)</span>
+                        <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                           <GraduationCap className="w-4 h-4" />
                         </div>
                         <select
@@ -691,7 +687,7 @@ export default function VolunteerRegistrationPage() {
                           <option value="Postgraduate">Postgraduate (Masters / PhD)</option>
                           <option value="Other">Other</option>
                         </select>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
                           <ChevronDown className="w-4 h-4" />
                         </div>
                       </div>
@@ -700,16 +696,16 @@ export default function VolunteerRegistrationPage() {
 
                   {/* Volunteer As (Role) Dropdown */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#191414] mb-1.5 flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <Award className="w-3.5 h-3.5 text-[#8e524d]" />
+                        <Award className="w-3.5 h-3.5 text-[#0B4DB8]" />
                         <span>Volunteer As</span>
                         <span className="text-red-500">*</span>
                       </span>
-                      <span className="text-[10px] font-normal text-[#6b6463]">Select your primary capacity</span>
+                      <span className="text-[10px] font-normal text-[#64748b]">Select your primary capacity</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                         <Award className="w-4 h-4" />
                       </div>
                       <select
@@ -730,7 +726,7 @@ export default function VolunteerRegistrationPage() {
                         <option value="Logistics & Transport">Logistics & Transport</option>
                         <option value={OTHER_ROLE}>Other (Specify)</option>
                       </select>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
                         <ChevronDown className="w-4 h-4" />
                       </div>
                     </div>
@@ -754,15 +750,15 @@ export default function VolunteerRegistrationPage() {
                     {/* Constituency Selection (Dropdown 1) */}
                     <div>
                       <div className="flex justify-between items-center mb-1.5">
-                        <label className="text-xs font-semibold text-[#191414]">
+                        <label className="text-xs font-semibold text-[#0f172a]">
                           Select Constituency <span className="text-red-500">*</span>
                         </label>
-                        <span className="text-[10px] text-[#8e524d] font-medium">
+                        <span className="text-[10px] text-[#0B4DB8] font-semibold">
                           {mombasaConstituencies.length} in Mombasa County
                         </span>
                       </div>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                           <Building2 className="w-4 h-4" />
                         </div>
                         <select
@@ -778,7 +774,7 @@ export default function VolunteerRegistrationPage() {
                             </option>
                           ))}
                         </select>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
                           <ChevronDown className="w-4 h-4" />
                         </div>
                       </div>
@@ -789,17 +785,17 @@ export default function VolunteerRegistrationPage() {
                       {/* Ward Selection (Dropdown 2 - Cascading) */}
                       <div>
                         <div className="flex justify-between items-center mb-1.5">
-                          <label className="text-xs font-semibold text-[#191414]">
+                          <label className="text-xs font-semibold text-[#0f172a]">
                             Select Ward <span className="text-red-500">*</span>
                           </label>
                           {constituency && (
-                            <span className="text-[10px] text-[#8e524d] font-semibold">
+                            <span className="text-[10px] text-[#0B4DB8] font-semibold">
                               {availableWards.length} in {constituency}
                             </span>
                           )}
                         </div>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                             <MapPin className="w-4 h-4" />
                           </div>
                           <select
@@ -807,7 +803,7 @@ export default function VolunteerRegistrationPage() {
                             disabled={!constituency}
                             value={ward}
                             onChange={handleWardChange}
-                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f4efed] disabled:text-[#6b6463] disabled:cursor-not-allowed"
+                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
                           >
                             <option value="">
                               {constituency
@@ -820,7 +816,7 @@ export default function VolunteerRegistrationPage() {
                               </option>
                             ))}
                           </select>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
                             <ChevronDown className="w-4 h-4" />
                           </div>
                         </div>
@@ -829,17 +825,17 @@ export default function VolunteerRegistrationPage() {
                       {/* Landmark (Dropdown 3 - Cascading) */}
                       <div>
                         <div className="flex justify-between items-center mb-1.5">
-                          <label className="text-xs font-semibold text-[#191414]">
+                          <label className="text-xs font-semibold text-[#0f172a]">
                             Select Landmark <span className="text-red-500">*</span>
                           </label>
                           {selectedWardData && (
-                            <span className="text-[10px] text-[#8e524d] font-semibold">
+                            <span className="text-[10px] text-[#0B4DB8] font-semibold">
                               {availableStations.length} in {ward}
                             </span>
                           )}
                         </div>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                             <Vote className="w-4 h-4" />
                           </div>
                           <select
@@ -847,7 +843,7 @@ export default function VolunteerRegistrationPage() {
                             disabled={!ward}
                             value={pollingStation}
                             onChange={handleStationChange}
-                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f4efed] disabled:text-[#6b6463] disabled:cursor-not-allowed"
+                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
                           >
                             <option value="">
                               {ward
@@ -865,7 +861,7 @@ export default function VolunteerRegistrationPage() {
                               </option>
                             )}
                           </select>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6b6463]">
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
                             <ChevronDown className="w-4 h-4" />
                           </div>
                         </div>
@@ -875,15 +871,15 @@ export default function VolunteerRegistrationPage() {
 
                   {/* "Other" Landmark Text Input — shown when user selects "not listed" */}
                   {isOtherStation && (
-                    <div className="bg-[#f4efed] border border-[#e6dfdc] rounded-sm p-3 space-y-2">
+                    <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 space-y-2">
                       <div className="flex items-start gap-2">
-                        <HelpCircle className="w-4 h-4 text-[#8e524d] shrink-0 mt-0.5" />
-                        <p className="text-[11px] text-[#6b6463]">
+                        <HelpCircle className="w-4 h-4 text-[#0B4DB8] shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-[#64748b]">
                           No problem — please type the name of your landmark or nearest center below. Our team will verify and record your location.
                         </p>
                       </div>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                           <MapPin className="w-4 h-4" />
                         </div>
                         <input
@@ -900,12 +896,12 @@ export default function VolunteerRegistrationPage() {
 
                   {/* Comment / Message - Optional */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#191414] mb-1.5 flex items-center gap-1.5">
+                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
                       <span>Message / Comment</span>
-                      <span className="text-[10px] font-normal text-[#6b6463]">(Optional)</span>
+                      <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute top-3 left-0 pl-3.5 flex items-start pointer-events-none text-[#6b6463]">
+                      <div className="absolute top-3 left-0 pl-3.5 flex items-start pointer-events-none text-[#64748b]">
                         <MessageSquare className="w-4 h-4" />
                       </div>
                       <textarea
@@ -918,29 +914,29 @@ export default function VolunteerRegistrationPage() {
                       />
                     </div>
                     {comment.length > 0 && (
-                      <p className="text-[10px] text-[#6b6463] mt-1 text-right">
+                      <p className="text-[10px] text-[#64748b] mt-1 text-right">
                         {comment.length}/1000
                       </p>
                     )}
                   </div>
 
                   {/* Commitment Checkbox ("Are you really committed") */}
-                  <div className="bg-[#f4efed] border border-[#e6dfdc] rounded-sm p-3 transition-colors hover:border-[#8e524d]/40">
+                  <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 transition-colors hover:border-[#0B4DB8]/40">
                     <label className="flex items-start gap-2.5 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         required
                         checked={isCommitted}
                         onChange={(e) => setIsCommitted(e.target.checked)}
-                        className="mt-0.5 w-4 h-4 rounded-xs text-[#8e524d] accent-[#8e524d] cursor-pointer"
+                        className="mt-0.5 w-4 h-4 rounded-xs text-[#0B4DB8] accent-[#0B4DB8] cursor-pointer"
                       />
                       <div className="text-xs">
-                        <span className="font-bold text-[#191414] flex items-center gap-1">
+                        <span className="font-bold text-[#0f172a] flex items-center gap-1">
                           <span>Are you really committed?</span>
                           <span className="text-red-500">*</span>
                         </span>
-                        <p className="text-[11px] text-[#6b6463] mt-0.5 leading-snug">
-                          Yes, I confirm my voluntary commitment and active dedication to the ground campaign of TND Youth League Mombasa Chapter (2027).
+                        <p className="text-[11px] text-[#64748b] mt-0.5 leading-snug">
+                          Yes, I confirm my voluntary commitment and active dedication to the ground campaign of The New Democrats Youth League Mombasa Chapter (2027).
                         </p>
                       </div>
                     </label>
@@ -968,9 +964,9 @@ export default function VolunteerRegistrationPage() {
                   </button>
                 </div>
 
-                <p className="text-[10px] text-center text-[#6b6463] pt-1">
+                <p className="text-[10px] text-center text-[#64748b] pt-1">
                   Your data is strictly for identification &amp; tallying &bull; Never shared with third parties.{" "}
-                  <Link href="/privacy" className="text-[#8e524d] font-semibold underline hover:text-[#7d423d]">
+                  <Link href="/privacy" className="text-[#0B4DB8] font-semibold underline hover:text-[#083B8F]">
                     Privacy Policy &amp; Terms
                   </Link>
                 </p>
@@ -982,25 +978,25 @@ export default function VolunteerRegistrationPage() {
 
       {/* Floating Bottom Coordinator Dock */}
       <footer className="max-w-md lg:max-w-lg mx-auto w-full px-3.5 mt-6">
-        <div className="bg-white rounded-sm border border-[#e6dfdc] p-1.5 flex items-center justify-around shadow-xs">
+        <div className="bg-white rounded-sm border border-[#e2e8f0] p-1.5 flex items-center justify-around shadow-xs">
           <Link
             href="/"
-            className="flex-1 py-1.5 text-center rounded-sm bg-[#8e524d] text-white text-xs font-semibold flex items-center justify-center gap-1.5"
+            className="flex-1 py-1.5 text-center rounded-sm bg-[#0B4DB8] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs"
           >
             <User className="w-3.5 h-3.5" />
             Volunteer Form
           </Link>
           <Link
             href="/admin"
-            className="flex-1 py-1.5 text-center rounded-sm text-[#191414] hover:bg-[#f4efed] text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 py-1.5 text-center rounded-sm text-[#0f172a] hover:bg-[#f1f5f9] text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
           >
-            <Shield className="w-3.5 h-3.5 text-[#6b6463]" />
+            <Shield className="w-3.5 h-3.5 text-[#64748b]" />
             Coordinator Admin
           </Link>
         </div>
-        <p className="text-[10px] text-center text-[#6b6463] mt-2.5">
+        <p className="text-[10px] text-center text-[#64748b] mt-2.5">
           <span>Mombasa County &bull; TND Youth League Mombasa Chapter 2027 &bull; </span>
-          <Link href="/privacy" className="text-[#8e524d] hover:underline font-semibold">
+          <Link href="/privacy" className="text-[#0B4DB8] hover:underline font-semibold">
             Privacy Policy &amp; Terms
           </Link>
         </p>

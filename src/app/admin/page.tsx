@@ -209,14 +209,14 @@ export default function AdminDashboardPage() {
   // If not authenticated, show sleek iOS passcode screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#f9f8f7] text-[#111827] flex items-center justify-center p-4 selection:bg-[#8e524d]/10">
-        <div className="ios-card max-w-sm w-full p-6 text-center animate-in fade-in duration-200">
-          <div className="w-14 h-14 rounded-full bg-[#8e524d]/10 text-[#8e524d] flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex items-center justify-center p-4 selection:bg-[#0B4DB8]/15 selection:text-[#0B4DB8]">
+        <div className="ios-card max-w-sm w-full p-6 text-center animate-in fade-in duration-200 border-[#e2e8f0]">
+          <div className="w-14 h-14 rounded-full bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center mx-auto mb-4">
             <Lock className="w-7 h-7" />
           </div>
 
-          <h2 className="text-lg font-bold text-[#111827]">Coordinator Access</h2>
-          <p className="text-xs text-[#6b7280] mt-1 mb-5">
+          <h2 className="text-lg font-bold text-[#0f172a]">Coordinator Access</h2>
+          <p className="text-xs text-[#64748b] mt-1 mb-5">
             Admin console for managing Mombasa County volunteer rosters.
           </p>
 
@@ -244,12 +244,12 @@ export default function AdminDashboardPage() {
             </button>
           </form>
 
-          <div className="mt-5 pt-4 border-t border-[#e6dfdc] flex items-center justify-between text-xs">
-            <Link href="/" className="text-[#6b7280] hover:text-[#111827] flex items-center gap-1">
+          <div className="mt-5 pt-4 border-t border-[#e2e8f0] flex items-center justify-between text-xs">
+            <Link href="/" className="text-[#64748b] hover:text-[#0f172a] flex items-center gap-1">
               <ArrowLeft className="w-3.5 h-3.5" />
               Volunteer Form
             </Link>
-            <span className="text-[#6b7280]">Coordinator Access</span>
+            <span className="text-[#64748b]">Coordinator Access</span>
           </div>
         </div>
       </div>
@@ -257,35 +257,35 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f8f7] text-[#111827] flex flex-col selection:bg-[#8e524d]/10 pb-16">
+    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-col selection:bg-[#0B4DB8]/15 selection:text-[#0B4DB8] pb-16">
       {/* Top iOS Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-[#e6dfdc] px-4 py-3">
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-[#e2e8f0] px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link
               href="/"
-              className="p-1.5 rounded-lg hover:bg-[#f9f8f7] text-[#6b7280] hover:text-[#111827] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[#f8fafc] text-[#64748b] hover:text-[#0f172a] transition-colors"
               title="Return to Volunteer Form"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-[#e6dfdc] shrink-0 bg-white">
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-[#e2e8f0] shrink-0 bg-white p-0.5">
               <img
                 src="/images/tnd-logo.jpg"
                 alt="TND"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-sm font-bold text-[#111827] tracking-tight">
+                <h1 className="text-sm font-bold text-[#0f172a] tracking-tight">
                   Coordinator Command
                 </h1>
-                <span className="text-[10px] font-semibold bg-[#8e524d]/10 text-[#8e524d] px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-full">
                   Admin
                 </span>
               </div>
-              <p className="text-[11px] text-[#6b7280]">
+              <p className="text-[11px] text-[#64748b]">
                 Mombasa County &bull; TND Youth League Mombasa Chapter 2027
               </p>
             </div>
@@ -295,16 +295,16 @@ export default function AdminDashboardPage() {
             <button
               onClick={fetchData}
               disabled={refreshing}
-              className="p-2 rounded-xl bg-white border border-[#e6dfdc] text-[#111827] hover:bg-[#f9f8f7] active:scale-95 transition-all text-xs flex items-center gap-1"
+              className="p-2 rounded-xl bg-white border border-[#e2e8f0] text-[#0f172a] hover:bg-[#f8fafc] active:scale-95 transition-all text-xs flex items-center gap-1"
               title="Refresh Data"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-[#8e524d]" : ""}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-[#0B4DB8]" : ""}`} />
               <span className="hidden sm:inline">Sync</span>
             </button>
 
             <button
               onClick={handleExportCsv}
-              className="p-2 px-3 rounded-xl bg-[#8e524d] text-white hover:bg-[#7d423d] active:scale-95 transition-all text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+              className="p-2 px-3 rounded-xl bg-[#0B4DB8] text-white hover:bg-[#083B8F] active:scale-95 transition-all text-xs font-semibold flex items-center gap-1.5 shadow-xs"
               title="Export filtered list to CSV"
             >
               <Download className="w-3.5 h-3.5" />
@@ -313,7 +313,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-[#6b7280] hover:text-[#111827] hover:bg-[#f9f8f7] text-xs"
+              className="p-2 rounded-xl text-[#64748b] hover:text-[#0f172a] hover:bg-[#f8fafc] text-xs"
               title="Lock Admin"
             >
               <Lock className="w-4 h-4" />
@@ -326,14 +326,14 @@ export default function AdminDashboardPage() {
       <main className="max-w-4xl mx-auto w-full px-4 pt-4 flex-1 space-y-4">
         {/* KPI Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-          <div className="ios-card p-3 sm:col-span-1">
-            <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider">
+          <div className="ios-card p-3 sm:col-span-1 border-[#e2e8f0]">
+            <p className="text-[11px] font-medium text-[#64748b] uppercase tracking-wider">
               Total
             </p>
-            <p className="text-xl font-bold text-[#111827] mt-0.5">
+            <p className="text-xl font-bold text-[#0f172a] mt-0.5">
               {volunteers.length}
             </p>
-            <p className="text-[10px] text-[#8e524d] mt-1 flex items-center gap-1">
+            <p className="text-[10px] text-[#0B4DB8] mt-1 flex items-center gap-1">
               <CheckCircle className="w-3 h-3" />
               {volunteers.filter((v) => v.status === "verified").length} Verified
             </p>
@@ -352,17 +352,17 @@ export default function AdminDashboardPage() {
                   setSelectedWard("ALL");
                   setSelectedStation("ALL");
                 }}
-                className={`ios-card p-3 text-left transition-all cursor-pointer ${
-                  isSelected ? "ring-2 ring-[#8e524d] bg-[#8e524d]/5" : "hover:border-[#8e524d]/40"
+                className={`ios-card p-3 text-left transition-all cursor-pointer border-[#e2e8f0] ${
+                  isSelected ? "ring-2 ring-[#0B4DB8] bg-[#0B4DB8]/5" : "hover:border-[#0B4DB8]/40"
                 }`}
               >
-                <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider truncate">
+                <p className="text-[11px] font-medium text-[#64748b] uppercase tracking-wider truncate">
                   {c}
                 </p>
-                <p className="text-xl font-bold text-[#111827] mt-0.5">
+                <p className="text-xl font-bold text-[#0f172a] mt-0.5">
                   {count}
                 </p>
-                <p className="text-[10px] text-[#6b7280] mt-1">
+                <p className="text-[10px] text-[#64748b] mt-1">
                   {wardsInC.length} wards
                 </p>
               </button>
@@ -371,11 +371,11 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="ios-card p-4 space-y-3">
+        <div className="ios-card p-4 space-y-3 border-[#e2e8f0]">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
             {/* Search Input */}
             <div className="relative lg:col-span-1">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b7280]">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
                 <Search className="w-4 h-4" />
               </div>
               <input
@@ -388,7 +388,7 @@ export default function AdminDashboardPage() {
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6b7280] hover:text-[#111827]"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#64748b] hover:text-[#0f172a]"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -460,11 +460,11 @@ export default function AdminDashboardPage() {
             </select>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-[#6b7280] pt-1 border-t border-[#e6dfdc]">
+          <div className="flex items-center justify-between text-xs text-[#64748b] pt-1 border-t border-[#e2e8f0]">
             <span>
-              Showing <strong className="text-[#111827]">{filteredVolunteers.length}</strong> of {volunteers.length} volunteers
+              Showing <strong className="text-[#0f172a]">{filteredVolunteers.length}</strong> of {volunteers.length} volunteers
               {selectedConstituency !== "ALL" && (
-                <span className="ml-1 text-[#8e524d] font-medium">in {selectedConstituency}</span>
+                <span className="ml-1 text-[#0B4DB8] font-semibold">in {selectedConstituency}</span>
               )}
             </span>
 
@@ -477,7 +477,7 @@ export default function AdminDashboardPage() {
                   setSelectedStatus("ALL");
                   setSearch("");
                 }}
-                className="text-[#8e524d] hover:underline font-medium text-[11px]"
+                className="text-[#0B4DB8] hover:underline font-semibold text-[11px]"
               >
                 Reset filters
               </button>
@@ -487,15 +487,15 @@ export default function AdminDashboardPage() {
 
         {/* Volunteers List (Responsive Cards for mobile, Table for wide screens) */}
         {loading ? (
-          <div className="ios-card p-12 text-center text-[#6b7280]">
-            <div className="w-8 h-8 border-2 border-[#8e524d] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="ios-card p-12 text-center text-[#64748b] border-[#e2e8f0]">
+            <div className="w-8 h-8 border-2 border-[#0B4DB8] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-xs">Loading volunteer records...</p>
           </div>
         ) : filteredVolunteers.length === 0 ? (
-          <div className="ios-card p-10 text-center">
-            <User className="w-10 h-10 text-[#6b7280] mx-auto mb-2 opacity-50" />
-            <p className="text-sm font-semibold text-[#111827]">No volunteers found</p>
-            <p className="text-xs text-[#6b7280] mt-1">
+          <div className="ios-card p-10 text-center border-[#e2e8f0]">
+            <User className="w-10 h-10 text-[#64748b] mx-auto mb-2 opacity-50" />
+            <p className="text-sm font-semibold text-[#0f172a]">No volunteers found</p>
+            <p className="text-xs text-[#64748b] mt-1">
               Try adjusting your search query or filter selection.
             </p>
           </div>
@@ -504,28 +504,28 @@ export default function AdminDashboardPage() {
             {/* Mobile Cards (Shown on small screens) */}
             <div className="space-y-2.5 sm:hidden">
               {filteredVolunteers.map((vol) => (
-                <div key={vol._id} className="ios-card p-4 space-y-2.5">
+                <div key={vol._id} className="ios-card p-4 space-y-2.5 border-[#e2e8f0]">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <h4 className="text-sm font-bold text-[#111827]">{vol.fullName}</h4>
+                        <h4 className="text-sm font-bold text-[#0f172a]">{vol.fullName}</h4>
                         {vol.idNumber && (
-                          <span className="text-[10px] font-mono bg-[#f4efed] text-[#191414] px-1.5 py-0.5 rounded-xs border border-[#e6dfdc]">
+                          <span className="text-[10px] font-mono bg-[#f1f5f9] text-[#0f172a] px-1.5 py-0.5 rounded-xs border border-[#e2e8f0]">
                             ID: {vol.idNumber}
                           </span>
                         )}
-                        <span className="text-[10px] font-semibold bg-[#8e524d]/10 text-[#8e524d] px-2 py-0.5 rounded-sm border border-[#8e524d]/20">
+                        <span className="text-[10px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-sm border border-[#0B4DB8]/20">
                           {vol.volunteerRole || "Mobilizer"}
                         </span>
                       </div>
-                      <p className="text-xs text-[#6b7280] flex items-center gap-1 mt-0.5 flex-wrap">
-                        <MapPin className="w-3 h-3 text-[#8e524d]" />
+                      <p className="text-xs text-[#64748b] flex items-center gap-1 mt-0.5 flex-wrap">
+                        <MapPin className="w-3 h-3 text-[#0B4DB8]" />
                         {vol.constituency && (
-                          <span className="font-semibold text-[#8e524d]">{vol.constituency} &bull;</span>
+                          <span className="font-semibold text-[#0B4DB8]">{vol.constituency} &bull;</span>
                         )}
                         <span>{vol.ward} &bull; {vol.pollingStation}</span>
                         {vol.isOtherStation && (
-                          <span className="text-[#8e524d] text-[10px]">(Custom)</span>
+                          <span className="text-[#0B4DB8] text-[10px]">(Custom)</span>
                         )}
                       </p>
                     </div>
@@ -534,8 +534,8 @@ export default function AdminDashboardPage() {
                       onClick={() => handleToggleStatus(vol)}
                       className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border transition-all ${
                         vol.status === "verified"
-                          ? "bg-[#8e524d]/10 text-[#8e524d] border-[#8e524d]/30"
-                          : "bg-[#f9f8f7] text-[#6b7280] border-[#e6dfdc]"
+                          ? "bg-[#0B4DB8]/10 text-[#0B4DB8] border-[#0B4DB8]/30"
+                          : "bg-[#f8fafc] text-[#64748b] border-[#e2e8f0]"
                       }`}
                     >
                       {vol.status}
@@ -543,43 +543,43 @@ export default function AdminDashboardPage() {
                   </div>
 
                   {vol.notes && (
-                    <p className="text-xs bg-[#f9f8f7] p-2 rounded-lg text-[#111827] italic border border-[#e6dfdc]">
+                    <p className="text-xs bg-[#f8fafc] p-2 rounded-lg text-[#0f172a] italic border border-[#e2e8f0]">
                       &quot;{vol.notes}&quot;
                     </p>
                   )}
 
                   {vol.comment && (
-                    <p className="text-xs bg-[#8e524d]/5 p-2 rounded-sm text-[#191414] border border-[#8e524d]/15">
+                    <p className="text-xs bg-[#0B4DB8]/5 p-2 rounded-sm text-[#0f172a] border border-[#0B4DB8]/15">
                       💬 {vol.comment}
                     </p>
                   )}
 
                   {vol.occupation && (
-                    <p className="text-[11px] text-[#6b7280] flex items-center gap-1">
-                      <span className="font-semibold text-[#191414]">Kazi:</span> {vol.occupation}
+                    <p className="text-[11px] text-[#64748b] flex items-center gap-1">
+                      <span className="font-semibold text-[#0f172a]">Kazi:</span> {vol.occupation}
                     </p>
                   )}
 
                   {vol.educationLevel && (
-                    <p className="text-[11px] text-[#6b7280] flex items-center gap-1">
-                      <span className="font-semibold text-[#191414]">Education:</span> {vol.educationLevel}
+                    <p className="text-[11px] text-[#64748b] flex items-center gap-1">
+                      <span className="font-semibold text-[#0f172a]">Education:</span> {vol.educationLevel}
                     </p>
                   )}
 
-                  <div className="pt-2 border-t border-[#e6dfdc] flex items-center justify-between text-xs">
+                  <div className="pt-2 border-t border-[#e2e8f0] flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <a
                         href={`tel:${vol.phoneNumber}`}
-                        className="px-2.5 py-1.5 rounded-lg bg-[#f9f8f7] text-[#111827] hover:bg-[#e6dfdc] font-semibold flex items-center gap-1 border border-[#e6dfdc]"
+                        className="px-2.5 py-1.5 rounded-lg bg-[#f8fafc] text-[#0f172a] hover:bg-[#e2e8f0] font-semibold flex items-center gap-1 border border-[#e2e8f0]"
                       >
-                        <Phone className="w-3 h-3 text-[#8e524d]" />
+                        <Phone className="w-3 h-3 text-[#0B4DB8]" />
                         Call
                       </a>
                       <a
                         href={`https://wa.me/${vol.phoneNumber.replace(/[^0-9]/g, "")}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg bg-[#8e524d]/10 text-[#8e524d] font-semibold flex items-center gap-1 border border-[#8e524d]/20"
+                        className="px-2.5 py-1.5 rounded-lg bg-[#0B4DB8]/10 text-[#0B4DB8] font-semibold flex items-center gap-1 border border-[#0B4DB8]/20"
                       >
                         WhatsApp
                       </a>
@@ -587,7 +587,7 @@ export default function AdminDashboardPage() {
 
                     <button
                       onClick={() => setDeleteTarget(vol)}
-                      className="p-1.5 text-[#6b7280] hover:text-red-600 rounded-lg transition-colors"
+                      className="p-1.5 text-[#64748b] hover:text-red-600 rounded-lg transition-colors"
                       title="Delete volunteer"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -598,9 +598,9 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Desktop Table View (Shown on sm+ screens) */}
-            <div className="hidden sm:block ios-card overflow-hidden">
+            <div className="hidden sm:block ios-card overflow-hidden border-[#e2e8f0]">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#f9f8f7] border-b border-[#e6dfdc] text-[#6b7280] uppercase tracking-wider font-semibold">
+                <thead className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] uppercase tracking-wider font-semibold">
                   <tr>
                     <th className="px-4 py-3">Volunteer</th>
                     <th className="px-4 py-3">Phone</th>
@@ -613,56 +613,56 @@ export default function AdminDashboardPage() {
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#e6dfdc]">
+                <tbody className="divide-y divide-[#e2e8f0]">
                   {filteredVolunteers.map((vol) => (
-                    <tr key={vol._id} className="hover:bg-[#f9f8f7]/60 transition-colors">
+                    <tr key={vol._id} className="hover:bg-[#f8fafc]/80 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <p className="font-semibold text-[#111827]">{vol.fullName}</p>
+                          <p className="font-semibold text-[#0f172a]">{vol.fullName}</p>
                           {vol.idNumber && (
-                            <span className="text-[10px] font-mono bg-[#f4efed] text-[#191414] px-1.5 py-0.2 rounded-xs border border-[#e6dfdc]" title="National ID">
+                            <span className="text-[10px] font-mono bg-[#f1f5f9] text-[#0f172a] px-1.5 py-0.2 rounded-xs border border-[#e2e8f0]" title="National ID">
                               ID: {vol.idNumber}
                             </span>
                           )}
                         </div>
                         {vol.notes && (
-                          <p className="text-[10px] text-[#6b7280] italic truncate max-w-xs">
+                          <p className="text-[10px] text-[#64748b] italic truncate max-w-xs">
                             {vol.notes}
                           </p>
                         )}
                         {vol.comment && (
-                          <p className="text-[10px] text-[#8e524d] truncate max-w-xs">
+                          <p className="text-[10px] text-[#0B4DB8] truncate max-w-xs">
                             💬 {vol.comment}
                           </p>
                         )}
                       </td>
-                      <td className="px-4 py-3 font-mono text-[#111827]">
+                      <td className="px-4 py-3 font-mono text-[#0f172a]">
                         <a
                           href={`tel:${vol.phoneNumber}`}
-                          className="hover:text-[#8e524d] hover:underline"
+                          className="hover:text-[#0B4DB8] hover:underline"
                         >
                           {vol.phoneNumber}
                         </a>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-[11px] font-semibold bg-[#8e524d]/10 text-[#8e524d] px-2 py-0.5 rounded-sm whitespace-nowrap">
+                        <span className="text-[11px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-sm whitespace-nowrap">
                           {vol.volunteerRole || "Mobilizer"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-semibold text-[#8e524d] whitespace-nowrap">
-                        {vol.constituency || <span className="text-[#d8cfcb]">—</span>}
+                      <td className="px-4 py-3 font-semibold text-[#0B4DB8] whitespace-nowrap">
+                        {vol.constituency || <span className="text-[#94a3b8]">—</span>}
                       </td>
-                      <td className="px-4 py-3 text-[#111827] font-medium whitespace-nowrap">{vol.ward}</td>
-                      <td className="px-4 py-3 text-[#6b7280]">
+                      <td className="px-4 py-3 text-[#0f172a] font-medium whitespace-nowrap">{vol.ward}</td>
+                      <td className="px-4 py-3 text-[#64748b]">
                         {vol.pollingStation}
                         {vol.isOtherStation && (
-                          <span className="ml-1 text-[10px] text-[#8e524d] font-semibold">(Other)</span>
+                          <span className="ml-1 text-[10px] text-[#0B4DB8] font-semibold">(Other)</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-[#6b7280]">
-                        {vol.occupation || <span className="text-[#d8cfcb]">—</span>}
+                      <td className="px-4 py-3 text-[#64748b]">
+                        {vol.occupation || <span className="text-[#94a3b8]">—</span>}
                         {vol.educationLevel && (
-                          <span className="block text-[10px] text-[#8e524d]">{vol.educationLevel}</span>
+                          <span className="block text-[10px] text-[#0B4DB8]">{vol.educationLevel}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -670,8 +670,8 @@ export default function AdminDashboardPage() {
                           onClick={() => handleToggleStatus(vol)}
                           className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border cursor-pointer transition-all ${
                             vol.status === "verified"
-                              ? "bg-[#8e524d]/10 text-[#8e524d] border-[#8e524d]/30 hover:bg-[#8e524d]/20"
-                              : "bg-[#f9f8f7] text-[#6b7280] border-[#e6dfdc] hover:bg-[#e6dfdc]"
+                              ? "bg-[#0B4DB8]/10 text-[#0B4DB8] border-[#0B4DB8]/30 hover:bg-[#0B4DB8]/20"
+                              : "bg-[#f8fafc] text-[#64748b] border-[#e2e8f0] hover:bg-[#e2e8f0]"
                           }`}
                           title="Click to toggle status"
                         >
@@ -683,13 +683,13 @@ export default function AdminDashboardPage() {
                           href={`https://wa.me/${vol.phoneNumber.replace(/[^0-9]/g, "")}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[#8e524d] hover:underline font-semibold"
+                          className="text-[#0B4DB8] hover:underline font-semibold"
                         >
                           WhatsApp
                         </a>
                         <button
                           onClick={() => setDeleteTarget(vol)}
-                          className="text-[#6b7280] hover:text-red-600 p-1 rounded"
+                          className="text-[#64748b] hover:text-red-600 p-1 rounded"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5 inline" />
@@ -707,14 +707,14 @@ export default function AdminDashboardPage() {
       {/* Confirmation Modal for Delete */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="ios-card max-w-xs w-full p-5 text-center animate-in zoom-in-95">
+          <div className="ios-card max-w-xs w-full p-5 text-center animate-in zoom-in-95 border-[#e2e8f0]">
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
               <Trash2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-[#111827]">Remove Volunteer?</h3>
-            <p className="text-xs text-[#6b7280] mt-1 mb-5">
+            <h3 className="text-base font-bold text-[#0f172a]">Remove Volunteer?</h3>
+            <p className="text-xs text-[#64748b] mt-1 mb-5">
               Are you sure you want to remove{" "}
-              <strong className="text-[#111827]">{deleteTarget.fullName}</strong> ({deleteTarget.pollingStation})?
+              <strong className="text-[#0f172a]">{deleteTarget.fullName}</strong> ({deleteTarget.pollingStation})?
             </p>
 
             <div className="space-y-2">

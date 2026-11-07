@@ -1,36 +1,24 @@
 # 📋 TND Youth League Mombasa Chapter — Setup Checklist
 
-The wards and polling stations have been configured (6 Constituencies, 30 Wards, 229 Polling Stations across Mombasa County).
-
-Here is the final checklist to complete the swap:
+The wards, polling stations, official emblem, and brand palette have been configured across the application:
+- **Coverage**: 6 Constituencies, 30 Wards, 229 Polling Stations across Mombasa County.
+- **Brand Colors**: Democratic Royal Blue (`#0B4DB8`), Vibrant Crimson Red (`#E51A24`), Crisp White (`#FFFFFF`), Sky/Cyan accents (`#29ABE2`), and Deep Slate (`#0F172A`).
+- **Official Artwork**: Derived and loaded into `public/images/candidate.jpg`, `public/images/tnd-hero.jpg`, and `public/images/tnd-logo.jpg`.
 
 ---
 
-## 1. 🖼️ Images (Only 2 Needed)
+## 🔐 Coordinator Dashboard Access
 
-| Asset | Details | File to replace |
+| Field | Description | Current Value |
 |---|---|---|
-| **TND Logo** | Official logo of TND Youth League / TND Party (PNG or JPG) | `public/images/tnd-logo.jpg` |
-| **Hero Poster / Photo** | Official campaign/movement banner or leadership poster | `public/images/candidate.jpg` |
-
-*(You can send these as image attachments or a Google Drive link).*
+| **Admin Passcode** | The private passcode coordinators type to access the `/admin` console | `@tnd2027` *(ready to update if you want a custom code)* |
 
 ---
 
-## 2. 🔐 Coordinator Dashboard Passcode
-
-| Field | Description | Current Default |
-|---|---|---|
-| **Admin Passcode** | The private password coordinators will type to view & export registered volunteers | `@tnd2027` *(or any custom code you choose)* |
-
----
-
-## 3. 🗄️ Database (Optional / If ready)
+## 🗄️ Database (Optional / When ready for live launch)
 
 | Field | Description |
 |---|---|
-| **MongoDB URI** | Your MongoDB Atlas connection string (or we can keep using the current active database) |
+| **MongoDB URI** | Custom MongoDB Atlas connection string in `.env.local` (or continue using the active database) |
 
----
-
-Once the two images and preferred passcode are provided, the portal is 100% ready for launch. 🚀
+The portal is completely updated with the official colors and emblem. 🚀

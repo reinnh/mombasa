@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-ios-bg: #f9f8f7;
+  --color-ios-bg: #f8fafc;
   --color-ios-card: #ffffff;
-  --color-ios-tint: #8e524d;
-  --color-ios-tint-hover: #7d423d;
-  --color-ios-tint-active: #6e3732;
-  --color-ios-text: #191414;
-  --color-ios-subtext: #6b6463;
-  --color-ios-border: #e6dfdc;
+  --color-ios-tint: #0B4DB8;
+  --color-ios-tint-hover: #083B8F;
+  --color-ios-tint-active: #062E70;
+  --color-ios-text: #0f172a;
+  --color-ios-subtext: #64748b;
+  --color-ios-border: #e2e8f0;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -34,19 +34,19 @@
 /* Crisp Clean Card & Form Elements */
 .ios-card {
   background: #ffffff;
-  border: 1px solid #e6dfdc;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
   transition: all 0.2s ease;
 }
 
 .ios-input {
   background: #ffffff;
-  border: 1px solid #d8cfcb;
+  border: 1px solid #cbd5e1;
   border-radius: 0.375rem;
   padding: 0.75rem 0.875rem;
   font-size: 0.95rem;
-  color: #191414;
+  color: #0f172a;
   transition: all 0.15s ease-in-out;
   outline: none;
   width: 100%;
@@ -67,12 +67,12 @@
 }
 
 .ios-input:focus {
-  border-color: #8e524d;
-  box-shadow: 0 0 0 2px rgba(142, 82, 77, 0.18);
+  border-color: #0B4DB8;
+  box-shadow: 0 0 0 2px rgba(11, 77, 184, 0.16);
 }
 
 .ios-button-primary {
-  background-color: #8e524d;
+  background-color: #0B4DB8;
   color: #ffffff;
   font-weight: 600;
   border-radius: 0.375rem;
@@ -86,19 +86,19 @@
 }
 
 .ios-button-primary:hover {
-  background-color: #7d423d;
+  background-color: #083B8F;
 }
 
 .ios-button-primary:active {
   transform: scale(0.99);
-  background-color: #6e3732;
+  background-color: #062E70;
 }
 
 .ios-button-secondary {
-  background-color: #f4efed;
-  color: #191414;
+  background-color: #eef4fb;
+  color: #0B4DB8;
   font-weight: 600;
-  border: 1px solid #e6dfdc;
+  border: 1px solid #d6e2f0;
   border-radius: 0.375rem;
   padding: 0.8rem 1.25rem;
   display: flex;
@@ -110,7 +110,7 @@
 
 .ios-button-secondary:active {
   transform: scale(0.99);
-  background-color: #e6dfdc;
+  background-color: #dbe7f6;
 }
 
 /* Clean standard scrollbars */
@@ -122,9 +122,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d8cfcb;
+  background: #cbd5e1;
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #b8aba6;
+  background: #94a3b8;
 }
