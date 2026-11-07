@@ -28,28 +28,34 @@
 
   button, a, input, select {
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 }
 
-/* Crisp Clean Card & Form Elements */
+/* Authentic iOS Fluid Curves & Interactions */
 .ios-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
-  transition: all 0.2s ease;
+  border-radius: 0.625rem;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .ios-input {
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 0.375rem;
+  border-radius: 0.45rem;
   padding: 0.75rem 0.875rem;
   font-size: 0.95rem;
   color: #0f172a;
-  transition: all 0.15s ease-in-out;
+  transition: border-color 0.2s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.2s cubic-bezier(0.32, 0.72, 0, 1), transform 0.15s ease-out;
   outline: none;
   width: 100%;
+}
+
+.ios-input:focus {
+  border-color: #0B4DB8;
+  box-shadow: 0 0 0 3px rgba(11, 77, 184, 0.12);
 }
 
 /* High-priority padding for inputs/selects with left icons so placeholders never overlap */
@@ -58,7 +64,7 @@
 .ios-input.pl-10,
 .ios-input.pl-11,
 .ios-input.pl-9 {
-  padding-left: 2.75rem !important; /* 44px: leaves ample room after 16px icon */
+  padding-left: 2.75rem !important;
 }
 
 .ios-select-icon {
@@ -66,23 +72,20 @@
   padding-right: 2.25rem !important;
 }
 
-.ios-input:focus {
-  border-color: #0B4DB8;
-  box-shadow: 0 0 0 2px rgba(11, 77, 184, 0.16);
-}
-
 .ios-button-primary {
   background-color: #0B4DB8;
   color: #ffffff;
   font-weight: 600;
-  border-radius: 0.375rem;
+  border-radius: 0.45rem;
   padding: 0.85rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
-  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px 0 rgba(11, 77, 184, 0.2);
+  transition: background-color 0.18s cubic-bezier(0.32, 0.72, 0, 1), transform 0.12s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.18s ease-out;
+  user-select: none;
 }
 
 .ios-button-primary:hover {
@@ -90,8 +93,9 @@
 }
 
 .ios-button-primary:active {
-  transform: scale(0.99);
+  transform: scale(0.975);
   background-color: #062E70;
+  box-shadow: none;
 }
 
 .ios-button-secondary {
@@ -99,18 +103,30 @@
   color: #0B4DB8;
   font-weight: 600;
   border: 1px solid #d6e2f0;
-  border-radius: 0.375rem;
+  border-radius: 0.45rem;
   padding: 0.8rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.15s ease;
+  transition: background-color 0.18s cubic-bezier(0.32, 0.72, 0, 1), transform 0.12s cubic-bezier(0.32, 0.72, 0, 1);
+  user-select: none;
 }
 
 .ios-button-secondary:active {
-  transform: scale(0.99);
+  transform: scale(0.975);
   background-color: #dbe7f6;
+}
+
+/* Touch-first station pills with iOS tactile spring feedback */
+.ios-pill-touch {
+  transition: transform 0.12s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.ios-pill-touch:active {
+  transform: scale(0.94);
 }
 
 /* Clean standard scrollbars */
@@ -123,7 +139,7 @@
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;

@@ -14,6 +14,7 @@ import {
   MapPin,
   RefreshCw,
   ArrowLeft,
+  ArrowRight,
   X,
   ExternalLink,
   ChevronRight,
@@ -209,47 +210,78 @@ export default function AdminDashboardPage() {
   // If not authenticated, show sleek iOS passcode screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex items-center justify-center p-4 selection:bg-[#0B4DB8]/15 selection:text-[#0B4DB8]">
-        <div className="ios-card max-w-sm w-full p-6 text-center animate-in fade-in duration-200 border-[#e2e8f0]">
-          <div className="w-14 h-14 rounded-full bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-7 h-7" />
+      <div className="min-h-screen bg-gradient-to-b from-slate-100/60 via-[#f8fafc] to-white text-[#0f172a] flex items-center justify-center p-4 selection:bg-[#0B4DB8]/15 selection:text-[#0B4DB8]">
+        <div className="w-full max-w-[370px] bg-white rounded-2xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-7 animate-in fade-in duration-200">
+          {/* Header & Logo */}
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="relative mb-3.5">
+              <div className="w-12 h-12 rounded-xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-center overflow-hidden p-1">
+                <img
+                  src="/images/tnd-logo.jpg"
+                  alt="TND Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#0B4DB8] text-white flex items-center justify-center shadow-xs ring-2 ring-white">
+                <Lock className="w-2.5 h-2.5" />
+              </div>
+            </div>
+
+            <span className="text-[10px] font-semibold text-[#0B4DB8] tracking-widest uppercase mb-1">
+              TND Youth League &bull; Mombasa
+            </span>
+            <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+              Coordinator Console
+            </h1>
+            <p className="text-xs text-slate-500 mt-1 max-w-[260px] leading-relaxed">
+              Protected administrative access to Mombasa County volunteer rosters and field operations.
+            </p>
           </div>
 
-          <h2 className="text-lg font-bold text-[#0f172a]">Coordinator Access</h2>
-          <p className="text-xs text-[#64748b] mt-1 mb-5">
-            Admin console for managing Mombasa County volunteer rosters.
-          </p>
-
-          {authError && (
-            <div className="bg-red-50 text-red-700 text-xs p-2.5 rounded-lg mb-4 border border-red-200">
-              {authError}
-            </div>
-          )}
-
+          {/* Form */}
           <form onSubmit={handleUnlock} className="space-y-3.5">
             <div>
               <input
                 type="password"
                 value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter Passcode"
-                className="ios-input text-center text-lg tracking-widest"
+                onChange={(e) => {
+                  setPasscode(e.target.value);
+                  if (authError) setAuthError("");
+                }}
+                placeholder="••••••••"
+                className="w-full text-center text-lg tracking-[0.35em] font-mono py-3 px-4 bg-slate-50/70 hover:bg-slate-50 focus:bg-white border border-slate-200 focus:border-[#0B4DB8] rounded-xl outline-none transition-all duration-200 focus:ring-4 focus:ring-[#0B4DB8]/10 text-slate-900 placeholder:tracking-normal placeholder:font-sans placeholder:text-slate-400 placeholder:text-sm"
                 autoFocus
               />
             </div>
 
-            <button type="submit" className="ios-button-primary">
-              <Unlock className="w-4 h-4 mr-1" />
-              Unlock Dashboard
+            {authError && (
+              <div className="text-xs text-[#E51A24] bg-[#E51A24]/8 border border-[#E51A24]/20 py-2 px-3 rounded-lg text-center font-medium animate-in fade-in duration-150">
+                {authError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full py-3 px-4 rounded-xl bg-[#0B4DB8] hover:bg-[#083B8F] active:scale-[0.98] text-white text-xs font-semibold tracking-wide transition-all duration-150 flex items-center justify-center gap-2 shadow-xs select-none cursor-pointer"
+            >
+              <span>Unlock Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
 
-          <div className="mt-5 pt-4 border-t border-[#e2e8f0] flex items-center justify-between text-xs">
-            <Link href="/" className="text-[#64748b] hover:text-[#0f172a] flex items-center gap-1">
+          {/* Clean Footer */}
+          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+            <Link
+              href="/"
+              className="text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1.5 font-medium"
+            >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Volunteer Form
+              <span>Volunteer Form</span>
             </Link>
-            <span className="text-[#64748b]">Coordinator Access</span>
+            <span className="flex items-center gap-1 text-[11px] text-slate-400">
+              <Shield className="w-3 h-3 text-[#0B4DB8]" />
+              <span>2027 Roster</span>
+            </span>
           </div>
         </div>
       </div>

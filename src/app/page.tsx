@@ -363,18 +363,14 @@ export default function VolunteerRegistrationPage() {
             {/* Left Column (Hero & Geographic Accordion on LG) */}
             <div className="lg:col-span-5 space-y-3">
               {/* Hero Banner */}
-              <div className="ios-card overflow-hidden bg-white border border-[#e2e8f0] shadow-sm">
-                {/* Image Container with subtle coastal/presidential gradient */}
-                <div className="relative w-full bg-gradient-to-b from-[#f8fafc] via-[#eef4fb] to-white p-5 sm:p-6 flex flex-col items-center justify-center overflow-hidden border-b border-[#e2e8f0]">
-                  {/* Decorative subtle ambient glows */}
-                  <div className="absolute -top-16 -left-16 w-44 h-44 rounded-full bg-[#0B4DB8]/10 blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-16 -right-16 w-44 h-44 rounded-full bg-[#E51A24]/10 blur-2xl pointer-events-none" />
-
-                  {/* Top Badges */}
-                  <div className="w-full flex items-center justify-between mb-3 z-10">
-                    <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-sm border border-[#e2e8f0] text-[#0f172a] shadow-xs">
+              <div className="ios-card overflow-hidden bg-white border border-[#e2e8f0] shadow-xs">
+                {/* Edge-to-Edge Image Container spanning 100% container width */}
+                <div className="relative w-full bg-white overflow-hidden border-b border-[#e2e8f0]">
+                  {/* Floating Badges over top of Image */}
+                  <div className="absolute top-3 inset-x-3 flex items-center justify-between z-20 pointer-events-none">
+                    <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-sm border border-[#e2e8f0] text-[#0f172a] shadow-xs">
                       <span className="w-2 h-2 rounded-full bg-[#0B4DB8] animate-pulse" />
-                      <span className="text-[11px] font-semibold tracking-wide text-[#0B4DB8]">
+                      <span className="text-[10px] font-semibold tracking-wide text-[#0B4DB8]">
                         Official Portal
                       </span>
                     </div>
@@ -384,40 +380,40 @@ export default function VolunteerRegistrationPage() {
                     </div>
                   </div>
 
-                  {/* The Official Hero Image Graphic */}
-                  <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-square flex items-center justify-center my-1 z-10 drop-shadow-md transition-transform hover:scale-[1.02] duration-300">
+                  {/* Full Container Width Image */}
+                  <div className="w-full relative aspect-square sm:aspect-[4/3] lg:aspect-square bg-white flex items-center justify-center overflow-hidden">
                     <img
                       src="/images/candidate.jpg"
                       alt="The New Democrats Youth League - Mombasa Chapter"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover object-center transition-transform duration-500 ease-out hover:scale-[1.015]"
                     />
                   </div>
 
                   {/* Header and Subtitle Under Graphic */}
-                  <div className="text-center mt-3 z-10">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#E51A24] bg-[#E51A24]/10 px-3 py-0.5 rounded-full border border-[#E51A24]/20 inline-block mb-1">
+                  <div className="text-center p-4 sm:p-5 bg-gradient-to-b from-white to-[#f8fafc] border-t border-[#e2e8f0]/80">
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-[#E51A24] bg-[#E51A24]/10 px-3 py-0.5 rounded-full border border-[#E51A24]/20 inline-block mb-1.5">
                       Mombasa County Chapter
                     </span>
-                    <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#0f172a] leading-tight">
+                    <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-[#475569] leading-tight font-sans">
                       Ground Volunteer Network
                     </h2>
-                    <p className="text-xs text-[#64748b] mt-1 max-w-sm mx-auto">
-                      Mobilizing 6 Constituencies, 30 Wards &amp; 229 Polling Stations across Mombasa.
+                    <p className="text-xs text-[#64748b] mt-1.5 max-w-sm mx-auto font-normal leading-relaxed">
+                      Mobilizing 6 Constituencies, 30 Wards &amp; 229 Polling Stations across Mombasa County.
                     </p>
                   </div>
                 </div>
 
                 {/* County Stats Strip */}
                 <div className="grid grid-cols-3 gap-2 p-3 bg-[#f8fafc] text-center border-t border-[#e2e8f0]">
-                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs">
+                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#0B4DB8]/40 active:scale-95 transition-all duration-150">
                     <p className="text-[10px] text-[#64748b] uppercase font-semibold">Constituencies</p>
                     <p className="text-sm font-extrabold text-[#0B4DB8]">{mombasaConstituencies.length}</p>
                   </div>
-                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs">
+                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#0B4DB8]/40 active:scale-95 transition-all duration-150">
                     <p className="text-[10px] text-[#64748b] uppercase font-semibold">Wards</p>
                     <p className="text-sm font-extrabold text-[#0B4DB8]">{mombasaWards.length}</p>
                   </div>
-                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs">
+                  <div className="bg-white py-2 px-1 rounded-sm border border-[#e2e8f0] shadow-xs hover:border-[#E51A24]/40 active:scale-95 transition-all duration-150">
                     <p className="text-[10px] text-[#64748b] uppercase font-semibold">Stations</p>
                     <p className="text-sm font-extrabold text-[#E51A24]">{totalPollingStations}</p>
                   </div>
@@ -429,7 +425,7 @@ export default function VolunteerRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => setShowWardsAccordion((prev) => !prev)}
-                  className="w-full p-3.5 flex items-center justify-between text-left cursor-pointer hover:bg-[#f1f5f9] transition-colors"
+                  className="w-full p-3.5 flex items-center justify-between text-left cursor-pointer hover:bg-[#f1f5f9] active:bg-[#eef4fb] transition-colors select-none"
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-sm bg-[#0B4DB8]/10 text-[#0B4DB8] flex items-center justify-center shrink-0">
@@ -448,7 +444,7 @@ export default function VolunteerRegistrationPage() {
                   </div>
 
                   <div
-                    className={`p-1 text-[#64748b] transition-transform duration-300 ${
+                    className={`p-1 text-[#64748b] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                       showWardsAccordion ? "rotate-180" : ""
                     }`}
                   >
@@ -458,7 +454,7 @@ export default function VolunteerRegistrationPage() {
 
                 {/* Smooth Grid Accordion Content */}
                 <div
-                  className={`grid transition-all duration-300 ease-in-out ${
+                  className={`grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
                     showWardsAccordion
                       ? "grid-rows-[1fr] opacity-100 border-t border-[#e2e8f0]"
                       : "grid-rows-[0fr] opacity-0"
@@ -476,7 +472,7 @@ export default function VolunteerRegistrationPage() {
                           return (
                             <div
                               key={cName}
-                              className="bg-white rounded-sm border border-[#e2e8f0] p-2.5 space-y-2"
+                              className="bg-white rounded-sm border border-[#e2e8f0] p-2.5 space-y-2 shadow-xs"
                             >
                               <div className="flex items-center justify-between pb-1.5 border-b border-[#e2e8f0]">
                                 <p className="text-xs font-bold text-[#0B4DB8] uppercase tracking-wide">
@@ -502,7 +498,7 @@ export default function VolunteerRegistrationPage() {
                                       </p>
                                     </div>
 
-                                    {/* Station Buttons */}
+                                    {/* Station Buttons with iOS Touch Feedback */}
                                     <div className="pt-1 border-t border-[#e2e8f0]/60 flex flex-wrap gap-1">
                                       {w.pollingStations.map((station) => (
                                         <button
@@ -516,9 +512,9 @@ export default function VolunteerRegistrationPage() {
                                             setOtherStationText("");
                                             window.scrollTo({ top: 120, behavior: "smooth" });
                                           }}
-                                          className={`text-[10px] px-2 py-0.5 rounded-sm border transition-all cursor-pointer ${
+                                          className={`text-[10px] px-2.5 py-1 rounded-sm border ios-pill-touch cursor-pointer select-none ${
                                             constituency === cName && ward === w.ward && pollingStation === station
-                                              ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs"
+                                              ? "bg-[#0B4DB8] text-white border-[#0B4DB8] font-semibold shadow-xs ring-1 ring-[#0B4DB8]"
                                               : "bg-white text-[#0f172a] border-[#e2e8f0] hover:bg-[#eef4fb] hover:border-[#0B4DB8]/30"
                                           }`}
                                         >
@@ -921,8 +917,8 @@ export default function VolunteerRegistrationPage() {
                   </div>
 
                   {/* Commitment Checkbox ("Are you really committed") */}
-                  <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 transition-colors hover:border-[#0B4DB8]/40">
-                    <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3.5 transition-all duration-200 hover:border-[#0B4DB8]/40 active:scale-[0.99] select-none">
+                    <label className="flex items-start gap-2.5 cursor-pointer">
                       <input
                         type="checkbox"
                         required
@@ -948,7 +944,7 @@ export default function VolunteerRegistrationPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="ios-button-primary cursor-pointer disabled:opacity-60 text-sm py-3"
+                    className="ios-button-primary cursor-pointer disabled:opacity-60 text-sm py-3 font-semibold shadow-xs hover:shadow-sm"
                   >
                     {loading ? (
                       <span className="flex items-center gap-2">
@@ -966,7 +962,7 @@ export default function VolunteerRegistrationPage() {
 
                 <p className="text-[10px] text-center text-[#64748b] pt-1">
                   Your data is strictly for identification &amp; tallying &bull; Never shared with third parties.{" "}
-                  <Link href="/privacy" className="text-[#0B4DB8] font-semibold underline hover:text-[#083B8F]">
+                  <Link href="/privacy" className="text-[#0B4DB8] font-semibold underline hover:text-[#083B8F] active:opacity-75 transition-opacity">
                     Privacy Policy &amp; Terms
                   </Link>
                 </p>
@@ -981,14 +977,14 @@ export default function VolunteerRegistrationPage() {
         <div className="bg-white rounded-sm border border-[#e2e8f0] p-1.5 flex items-center justify-around shadow-xs">
           <Link
             href="/"
-            className="flex-1 py-1.5 text-center rounded-sm bg-[#0B4DB8] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs"
+            className="flex-1 py-2 text-center rounded-sm bg-[#0B4DB8] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-transform duration-150 select-none"
           >
             <User className="w-3.5 h-3.5" />
             Volunteer Form
           </Link>
           <Link
             href="/admin"
-            className="flex-1 py-1.5 text-center rounded-sm text-[#0f172a] hover:bg-[#f1f5f9] text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 py-2 text-center rounded-sm text-[#0f172a] hover:bg-[#f1f5f9] active:scale-95 text-xs font-medium flex items-center justify-center gap-1.5 transition-all duration-150 select-none"
           >
             <Shield className="w-3.5 h-3.5 text-[#64748b]" />
             Coordinator Admin
@@ -996,7 +992,7 @@ export default function VolunteerRegistrationPage() {
         </div>
         <p className="text-[10px] text-center text-[#64748b] mt-2.5">
           <span>Mombasa County &bull; TND Youth League Mombasa Chapter 2027 &bull; </span>
-          <Link href="/privacy" className="text-[#0B4DB8] hover:underline font-semibold">
+          <Link href="/privacy" className="text-[#0B4DB8] hover:underline font-semibold active:opacity-75 transition-opacity">
             Privacy Policy &amp; Terms
           </Link>
         </p>
