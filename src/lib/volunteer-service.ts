@@ -1,7 +1,7 @@
 import { connectMongo } from "./mongodb";
 import { VolunteerModel, IVolunteer } from "@/models/volunteer";
 import { Volunteer, VolunteerInput, VolunteerStats, WardStat } from "@/types";
-import { matunguWards, totalConstituencyVoters } from "@/constants/matungu-wards";
+import { mombasaWards, totalConstituencyVoters } from "@/constants/mombasa-wards";
 
 // Fallback in-memory storage for resilient local/offline operation
 let inMemoryVolunteers: Volunteer[] = [
@@ -9,10 +9,10 @@ let inMemoryVolunteers: Volunteer[] = [
     _id: "demo-v1",
     fullName: "Wycliffe Omwitsa",
     phoneNumber: "+254712345678",
-    ward: "Koyonzo",
-    pollingStation: "Koyonzo Primary School",
+    ward: "Port Reitz",
+    pollingStation: "Bomu Primary School",
     status: "verified",
-    notes: "Youth mobilize lead",
+    notes: "Youth mobilization lead",
     occupation: "Teacher",
     comment: "",
     isOtherStation: false,
@@ -23,8 +23,8 @@ let inMemoryVolunteers: Volunteer[] = [
     _id: "demo-v2",
     fullName: "Amina Makokha",
     phoneNumber: "+254722987654",
-    ward: "Mayoni",
-    pollingStation: "Matungu Primary School",
+    ward: "Kongowea",
+    pollingStation: "Kongowea Primary School",
     status: "active",
     notes: "Women representative coordinator",
     occupation: "Business",
@@ -37,11 +37,11 @@ let inMemoryVolunteers: Volunteer[] = [
     _id: "demo-v3",
     fullName: "David Baraza",
     phoneNumber: "+254733555111",
-    ward: "Namamali",
-    pollingStation: "Mirere Primary School",
+    ward: "Bamburi",
+    pollingStation: "Kiembeni Primary School",
     status: "verified",
     notes: "Station captain",
-    occupation: "Farmer",
+    occupation: "Logistics",
     comment: "",
     isOtherStation: false,
     createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
@@ -53,6 +53,7 @@ function docToVolunteer(doc: IVolunteer): Volunteer {
   return {
     _id: (doc._id as unknown as { toString(): string }).toString(),
     fullName: doc.fullName,
+    idNumber: doc.idNumber || "",
     phoneNumber: doc.phoneNumber,
     ward: doc.ward,
     pollingStation: doc.pollingStation,
@@ -120,6 +121,7 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
     try {
       const created = await VolunteerModel.create({
         fullName: trimmedName,
+        idNumber: input.idNumber?.trim() || "",
         phoneNumber: normalizedPhone,
         ward: input.ward,
         pollingStation: input.pollingStation,
@@ -173,6 +175,7 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
   const newVolunteer: Volunteer = {
     _id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     fullName: trimmedName,
+    idNumber: input.idNumber?.trim() || "",
     phoneNumber: normalizedPhone,
     ward: input.ward,
     pollingStation: input.pollingStation,
@@ -284,7 +287,7 @@ export async function updateVolunteerStatus(
 export async function getVolunteerStatistics(): Promise<VolunteerStats> {
   const all = await getVolunteers();
 
-  const wardStats: WardStat[] = matunguWards.map((ward) => {
+  const wardStats: WardStat[] = mombasaWards.map((ward) => {
     const wardVolunteers = all.filter((v) => v.ward === ward.ward);
     const stationBreakdown: { [station: string]: number } = {};
 

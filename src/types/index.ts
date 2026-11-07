@@ -14,6 +14,7 @@ export interface WardInfo {
 export interface Volunteer {
   _id: string;
   fullName: string;
+  idNumber?: string;
   phoneNumber: string;
   ward: string;
   pollingStation: string;
@@ -31,6 +32,7 @@ export interface Volunteer {
 
 export interface VolunteerInput {
   fullName: string;
+  idNumber?: string;
   phoneNumber: string;
   ward: string;
   pollingStation: string;

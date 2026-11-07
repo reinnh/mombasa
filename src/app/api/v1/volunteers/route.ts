@@ -2,20 +2,21 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { createApiResponse, createApiError } from "@/lib/api-response";
 import { createVolunteer, getVolunteers } from "@/lib/volunteer-service";
-import { matunguWards } from "@/constants/matungu-wards";
+import { mombasaWards } from "@/constants/mombasa-wards";
 
 const volunteerSchema = z.object({
   fullName: z
     .string()
     .min(2, "Full name must be at least 2 characters")
     .max(100, "Full name is too long"),
+  idNumber: z.string().max(30).optional().default(""),
   phoneNumber: z
     .string()
     .min(9, "Valid phone number is required")
     .max(20, "Phone number is too long")
     .regex(/^[+0-9\s-]{9,20}$/, "Invalid phone format"),
-  ward: z.enum(["Koyonzo", "Mayoni", "Namamali", "Kholera", "Khalaba"], {
-    errorMap: () => ({ message: "Please select a valid Matungu ward" }),
+  ward: z.enum(["Port Reitz", "Kipevu", "Airport", "Changamwe", "Chaani", "Jomvu Kuu", "Mikindani", "Miritini", "Mjambere", "Junda", "Bamburi", "Mwakirunge", "Mtopanga", "Magogoni", "Shanzu", "Mtongwe", "Shika Adabu", "Bofu", "Likoni", "Timbwani", "Mji wa Kale/Makadara", "Tudor", "Tononoka", "Shimanzi/Ganjoni", "Majengo", "Frere Town", "Ziwa La Ng'ombe", "Mkomani", "Kongowea", "Kadzandani"], {
+    errorMap: () => ({ message: "Please select a valid Mombasa ward" }),
   }),
   pollingStation: z
     .string()
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     // Verify landmark belongs to the selected ward — unless "Other" was selected
     if (!validated.data.isOtherStation) {
-      const wardData = matunguWards.find((w) => w.ward === validated.data.ward);
+      const wardData = mombasaWards.find((w) => w.ward === validated.data.ward);
       if (!wardData || !wardData.pollingStations.includes(validated.data.pollingStation)) {
         return createApiError(
           `Selected landmark '${validated.data.pollingStation}' is not in ${validated.data.ward} ward.`,
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
     const volunteer = await createVolunteer(validated.data);
     return createApiResponse(
       volunteer,
-      "Volunteer registered successfully! Welcome to Team Hon. Shemaiah Kong'ani.",
+      "Volunteer registered successfully! Welcome to TND Youth League Mombasa Chapter.",
       201
     );
   } catch (error) {

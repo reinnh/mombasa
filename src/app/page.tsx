@@ -17,8 +17,11 @@ import {
   GraduationCap,
   Award,
   CheckSquare,
+  Lock,
+  Hash,
+  CreditCard,
 } from "lucide-react";
-import { matunguWards, totalPollingStations } from "@/constants/matungu-wards";
+import { mombasaWards, totalPollingStations } from "@/constants/mombasa-wards";
 import { ApiResponse, Volunteer } from "@/types";
 
 const OTHER_STATION = "__OTHER__";
@@ -26,6 +29,7 @@ const OTHER_ROLE = "Other (Specify)";
 
 export default function VolunteerRegistrationPage() {
   const [fullName, setFullName] = useState("");
+  const [idNumber, setIdNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [ward, setWard] = useState("");
   const [pollingStation, setPollingStation] = useState("");
@@ -44,7 +48,7 @@ export default function VolunteerRegistrationPage() {
   const [showWardsAccordion, setShowWardsAccordion] = useState(false);
 
   // Cascading polling stations based on selected ward
-  const selectedWardData = matunguWards.find((w) => w.ward === ward);
+  const selectedWardData = mombasaWards.find((w) => w.ward === ward);
   const availableStations = selectedWardData ? selectedWardData.pollingStations : [];
 
   const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -116,6 +120,7 @@ export default function VolunteerRegistrationPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fullName: fullName.trim(),
+          idNumber: idNumber.trim(),
           phoneNumber: cleanPhone,
           ward,
           pollingStation: finalStation,
@@ -144,6 +149,7 @@ export default function VolunteerRegistrationPage() {
 
   const handleReset = () => {
     setFullName("");
+    setIdNumber("");
     setPhoneNumber("");
     setWard("");
     setPollingStation("");
@@ -167,17 +173,17 @@ export default function VolunteerRegistrationPage() {
           <div className="flex items-center space-x-2.5">
             <div className="w-7 h-7 overflow-hidden border border-[#e6dfdc] shrink-0 bg-white rounded-sm">
               <img
-                src="/images/lmm-logo.jpg"
-                alt="Linda Mwananchi Movement"
+                src="/images/tnd-logo.jpg"
+                alt="TND Youth League"
                 className="w-full h-full object-cover"
               />
             </div>
             <div>
               <h1 className="text-xs font-bold tracking-tight text-[#191414] leading-none">
-                Matungu Volunteer Hub
+                Mombasa Volunteer Hub
               </h1>
               <p className="text-[10px] text-[#6b6463] mt-0.5">
-                Hon. Shemaiah Kong&apos;ani
+                TND Youth League
               </p>
             </div>
           </div>
@@ -207,15 +213,34 @@ export default function VolunteerRegistrationPage() {
               Welcome, {successVolunteer.fullName}!
             </h2>
             <p className="text-xs text-[#6b6463] mt-0.5 mb-5">
-              You are registered as a volunteer agent for Matungu Constituency (2027).
+              You are registered as a volunteer agent for Mombasa County (2027).
             </p>
 
             {/* Receipt Summary Details */}
             <div className="bg-[#f4efed] rounded-sm p-3.5 text-left border border-[#e6dfdc] space-y-2.5 mb-5">
+              {/* Volunteer ID */}
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-[#6b6463] flex items-center gap-1">
+                  <Hash className="w-3 h-3" /> Volunteer ID
+                </span>
+                <span className="font-mono font-semibold text-[#8e524d] text-[10px] tracking-tight select-all">
+                  {successVolunteer._id}
+                </span>
+              </div>
+              <div className="h-px bg-[#e6dfdc]" />
               <div className="flex justify-between items-center text-xs">
                 <span className="text-[#6b6463]">Ward</span>
                 <span className="font-semibold text-[#191414]">{successVolunteer.ward}</span>
               </div>
+              {successVolunteer.idNumber && (
+                <>
+                  <div className="h-px bg-[#e6dfdc]" />
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-[#6b6463]">National ID</span>
+                    <span className="font-semibold text-[#191414]">{successVolunteer.idNumber}</span>
+                  </div>
+                </>
+              )}
               <div className="h-px bg-[#e6dfdc]" />
               <div className="flex justify-between items-start text-xs">
                 <span className="text-[#6b6463]">Landmark</span>
@@ -300,7 +325,7 @@ export default function VolunteerRegistrationPage() {
                 <div className="relative w-full h-[47vh] min-h-[350px] max-h-[520px] lg:h-[440px] bg-[#2a1e1d] overflow-hidden">
                   <img
                     src="/images/candidate.jpg"
-                    alt="Hon. Shemaiah S. Kong'ani"
+                    alt="TND Youth League Mombasa Chapter"
                     className="w-full h-full object-cover object-top"
                   />
 
@@ -313,13 +338,13 @@ export default function VolunteerRegistrationPage() {
                     <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-md px-2.5 py-1 rounded-sm border border-white/20 text-white shadow-sm">
                       <div className="w-4 h-4 overflow-hidden rounded-xs shrink-0">
                         <img
-                          src="/images/lmm-logo.jpg"
-                          alt="LMM"
+                          src="/images/tnd-logo.jpg"
+                          alt="TND"
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <span className="text-[11px] font-semibold tracking-wide">
-                        Linda Mwananchi
+                        TND Youth League
                       </span>
                     </div>
 
@@ -332,13 +357,13 @@ export default function VolunteerRegistrationPage() {
                   {/* Bottom Floating Info - Light translucent frosted glass */}
                   <div className="absolute bottom-3 inset-x-3 bg-black/30 backdrop-blur-md p-3 rounded-sm border border-white/15 text-white shadow-md">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[#e6c1bd] drop-shadow-sm">
-                      Matungu Constituency
+                      Mombasa County
                     </span>
                     <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-tight mt-0.5 drop-shadow-sm">
-                      Hon. Shemaiah S. Kong&apos;ani
+                      TND Youth League
                     </h2>
                     <p className="text-[11px] text-white/90 mt-0.5 drop-shadow-sm">
-                      Official Volunteer Mobilization Portal
+                      Mombasa Chapter &bull; Official Volunteer Mobilization Portal
                     </p>
                   </div>
                 </div>
@@ -347,7 +372,7 @@ export default function VolunteerRegistrationPage() {
                 <div className="grid grid-cols-2 gap-2 p-2.5 bg-white text-center border-t border-[#e6dfdc]">
                   <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
                     <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Wards</p>
-                    <p className="text-xs font-bold text-[#191414]">{matunguWards.length} Wards</p>
+                    <p className="text-xs font-bold text-[#191414]">{mombasaWards.length} Wards</p>
                   </div>
                   <div className="bg-[#f4efed] py-1.5 px-1 rounded-sm border border-[#e6dfdc]">
                     <p className="text-[10px] text-[#6b6463] uppercase font-semibold">Landmarks</p>
@@ -369,12 +394,12 @@ export default function VolunteerRegistrationPage() {
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-[#191414]">
-                        Constituency Wards & Landmarks
+                        County Wards &amp; Polling Stations
                       </h4>
                       <p className="text-[10px] text-[#6b6463]">
                         {showWardsAccordion
                           ? "Tap to collapse mappings"
-                          : `${matunguWards.length} Wards • ${totalPollingStations} Landmarks (Tap to explore)`}
+                          : `${mombasaWards.length} Wards • ${totalPollingStations} Polling Stations (Tap to explore)`}
                       </p>
                     </div>
                   </div>
@@ -403,7 +428,7 @@ export default function VolunteerRegistrationPage() {
                       </p>
 
                       <div className="space-y-2">
-                        {matunguWards.map((w) => (
+                        {mombasaWards.map((w) => (
                           <div
                             key={w.ward}
                             className="bg-white rounded-sm border border-[#e6dfdc] p-2.5 space-y-1.5"
@@ -473,11 +498,11 @@ export default function VolunteerRegistrationPage() {
                         Volunteer Registration
                       </h3>
                       <p className="text-xs text-[#6b6463] mt-0.5">
-                        Join the ground mobilization network across Matungu Constituency.
+                        Join the ground mobilization network across Mombasa County.
                       </p>
                     </div>
                     <span className="hidden sm:inline-block text-[11px] font-semibold text-[#8e524d] bg-[#8e524d]/10 px-2.5 py-1 rounded-sm border border-[#8e524d]/20">
-                      Team Shemaiah
+                      TND Mombasa
                     </span>
                   </div>
                 </div>
@@ -503,27 +528,53 @@ export default function VolunteerRegistrationPage() {
                     </div>
                   </div>
 
-                  {/* Phone Number */}
-                  <div>
-                    <label className="block text-xs font-semibold text-[#191414] mb-1.5">
-                      Mobile Phone Number <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
-                        <Phone className="w-4 h-4" />
+                  {/* National ID & Phone Number */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {/* National ID Number */}
+                    <div>
+                      <label className="block text-xs font-semibold text-[#191414] mb-1.5 flex items-center justify-between">
+                        <span>National ID Number</span>
+                        <span className="text-[10px] font-normal text-[#6b6463]">Kitambulisho</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                          <CreditCard className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="text"
+                          value={idNumber}
+                          onChange={(e) => setIdNumber(e.target.value)}
+                          placeholder="e.g. 12345678"
+                          className="ios-input ios-input-icon !pl-11"
+                        />
                       </div>
-                      <input
-                        type="tel"
-                        required
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="0712 345 678 or +254 7..."
-                        className="ios-input ios-input-icon !pl-11"
-                      />
+                      <p className="text-[10px] text-[#6b6463] mt-1 pl-0.5">
+                        Strictly for voter verification &amp; tallying.
+                      </p>
                     </div>
-                    <p className="text-[10px] text-[#6b6463] mt-1 pl-0.5">
-                      Used for SMS station alerts and direct WhatsApp coordination.
-                    </p>
+
+                    {/* Phone Number */}
+                    <div>
+                      <label className="block text-xs font-semibold text-[#191414] mb-1.5">
+                        Mobile Phone Number <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6b6463]">
+                          <Phone className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="tel"
+                          required
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="0712 345 678 or +254 7..."
+                          className="ios-input ios-input-icon !pl-11"
+                        />
+                      </div>
+                      <p className="text-[10px] text-[#6b6463] mt-1 pl-0.5">
+                        Used for SMS station alerts and direct WhatsApp coordination.
+                      </p>
+                    </div>
                   </div>
 
                   {/* Occupation (Kazi) & Education Level */}
@@ -649,7 +700,7 @@ export default function VolunteerRegistrationPage() {
                           className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
                         >
                           <option value="">-- Choose Ward --</option>
-                          {matunguWards.map((w) => (
+                          {mombasaWards.map((w) => (
                             <option key={w.ward} value={w.ward}>
                               {w.ward} Ward
                             </option>
@@ -724,7 +775,7 @@ export default function VolunteerRegistrationPage() {
                           type="text"
                           value={otherStationText}
                           onChange={(e) => setOtherStationText(e.target.value)}
-                          placeholder="e.g. Near Matungu Market, Musango Center..."
+                          placeholder="e.g. Near Kongowea Market, Buxton, Likoni..."
                           className="ios-input ios-input-icon !pl-11"
                           required
                         />
@@ -774,7 +825,7 @@ export default function VolunteerRegistrationPage() {
                           <span className="text-red-500">*</span>
                         </span>
                         <p className="text-[11px] text-[#6b6463] mt-0.5 leading-snug">
-                          Yes, I confirm my voluntary commitment and active dedication to the ground campaign of Hon. Shemaiah S. Kong&apos;ani (2027).
+                          Yes, I confirm my voluntary commitment and active dedication to the ground campaign of TND Youth League Mombasa Chapter (2027).
                         </p>
                       </div>
                     </label>
@@ -803,7 +854,10 @@ export default function VolunteerRegistrationPage() {
                 </div>
 
                 <p className="text-[10px] text-center text-[#6b6463] pt-1">
-                  Official volunteer registry for Matungu Constituency &bull; 2027.
+                  Your data is strictly for identification &amp; tallying &bull; Never shared with third parties.{" "}
+                  <Link href="/privacy" className="text-[#8e524d] font-semibold underline hover:text-[#7d423d]">
+                    Privacy Policy &amp; Terms
+                  </Link>
                 </p>
               </form>
             </div>
@@ -830,7 +884,10 @@ export default function VolunteerRegistrationPage() {
           </Link>
         </div>
         <p className="text-[10px] text-center text-[#6b6463] mt-2.5">
-          Matungu Constituency &bull; Team Hon. Shemaiah Kong&apos;ani 2027
+          <span>Mombasa County &bull; TND Youth League Mombasa Chapter 2027 &bull; </span>
+          <Link href="/privacy" className="text-[#8e524d] hover:underline font-semibold">
+            Privacy Policy &amp; Terms
+          </Link>
         </p>
       </footer>
     </div>

@@ -21,7 +21,7 @@ import {
   Unlock,
   Lock,
 } from "lucide-react";
-import { matunguWards, totalConstituencyVoters } from "@/constants/matungu-wards";
+import { mombasaWards, totalConstituencyVoters } from "@/constants/mombasa-wards";
 import { ApiResponse, Volunteer, VolunteerStats } from "@/types";
 
 export default function AdminDashboardPage() {
@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
 
   // Check initial session or default unlock for development convenience
   useEffect(() => {
-    const saved = localStorage.getItem("matungu_admin_auth");
+    const saved = localStorage.getItem("mombasa_admin_auth");
     if (saved === "true") {
       setIsAuthenticated(true);
     }
@@ -55,9 +55,9 @@ export default function AdminDashboardPage() {
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = passcode.trim();
-    if (clean === "@shem36" || clean.toLowerCase() === "@shem36") {
+    if (clean === "@tnd2027" || clean.toLowerCase() === "@tnd2027") {
       setIsAuthenticated(true);
-      localStorage.setItem("matungu_admin_auth", "true");
+      localStorage.setItem("mombasa_admin_auth", "true");
       setAuthError("");
     } else {
       setAuthError("Incorrect coordinator passcode.");
@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem("matungu_admin_auth");
+    localStorage.removeItem("mombasa_admin_auth");
   };
 
   // Load volunteers & stats
@@ -104,9 +104,9 @@ export default function AdminDashboardPage() {
   // Available stations based on chosen ward
   const availableStationsForFilter = useMemo(() => {
     if (selectedWard === "ALL") {
-      return matunguWards.flatMap((w) => w.pollingStations);
+      return mombasaWards.flatMap((w) => w.pollingStations);
     }
-    const wardObj = matunguWards.find((w) => w.ward === selectedWard);
+    const wardObj = mombasaWards.find((w) => w.ward === selectedWard);
     return wardObj ? wardObj.pollingStations : [];
   }, [selectedWard]);
 
@@ -119,12 +119,13 @@ export default function AdminDashboardPage() {
       if (search.trim()) {
         const q = search.toLowerCase().trim();
         const matchesName = item.fullName.toLowerCase().includes(q);
+        const matchesId = (item.idNumber || "").toLowerCase().includes(q);
         const matchesPhone = item.phoneNumber.toLowerCase().includes(q);
         const matchesStation = item.pollingStation.toLowerCase().includes(q);
         const matchesOccupation = (item.occupation || "").toLowerCase().includes(q);
         const matchesEducation = (item.educationLevel || "").toLowerCase().includes(q);
         const matchesRole = (item.volunteerRole || "").toLowerCase().includes(q);
-        if (!matchesName && !matchesPhone && !matchesStation && !matchesOccupation && !matchesEducation && !matchesRole) return false;
+        if (!matchesName && !matchesId && !matchesPhone && !matchesStation && !matchesOccupation && !matchesEducation && !matchesRole) return false;
       }
       return true;
     });
@@ -188,7 +189,7 @@ export default function AdminDashboardPage() {
 
           <h2 className="text-lg font-bold text-[#111827]">Coordinator Access</h2>
           <p className="text-xs text-[#6b7280] mt-1 mb-5">
-            Admin console for managing Matungu volunteer rosters.
+            Admin console for managing Mombasa County volunteer rosters.
           </p>
 
           {authError && (
@@ -242,8 +243,8 @@ export default function AdminDashboardPage() {
             </Link>
             <div className="w-8 h-8 rounded-full overflow-hidden border border-[#e6dfdc] shrink-0 bg-white">
               <img
-                src="/images/lmm-logo.jpg"
-                alt="LMM"
+                src="/images/tnd-logo.jpg"
+                alt="TND"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -257,7 +258,7 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
               <p className="text-[11px] text-[#6b7280]">
-                Matungu Constituency &bull; Hon. Shemaiah Kong&apos;ani 2027
+                Mombasa County &bull; TND Youth League Mombasa Chapter 2027
               </p>
             </div>
           </div>
@@ -310,7 +311,7 @@ export default function AdminDashboardPage() {
             </p>
           </div>
 
-          {matunguWards.map((w) => (
+          {mombasaWards.map((w) => (
             <div key={w.ward} className="ios-card p-3.5">
               <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-wider truncate">
                 {w.ward}
@@ -359,8 +360,8 @@ export default function AdminDashboardPage() {
               }}
               className="ios-input sm:w-44 text-xs bg-white cursor-pointer"
             >
-              <option value="ALL">All Wards ({matunguWards.length})</option>
-              {matunguWards.map((w) => (
+              <option value="ALL">All Wards ({mombasaWards.length})</option>
+              {mombasaWards.map((w) => (
                 <option key={w.ward} value={w.ward}>
                   {w.ward}
                 </option>
@@ -438,6 +439,11 @@ export default function AdminDashboardPage() {
                     <div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <h4 className="text-sm font-bold text-[#111827]">{vol.fullName}</h4>
+                        {vol.idNumber && (
+                          <span className="text-[10px] font-mono bg-[#f4efed] text-[#191414] px-1.5 py-0.5 rounded-xs border border-[#e6dfdc]">
+                            ID: {vol.idNumber}
+                          </span>
+                        )}
                         <span className="text-[10px] font-semibold bg-[#8e524d]/10 text-[#8e524d] px-2 py-0.5 rounded-sm border border-[#8e524d]/20">
                           {vol.volunteerRole || "Mobilizer"}
                         </span>
@@ -538,7 +544,14 @@ export default function AdminDashboardPage() {
                   {filteredVolunteers.map((vol) => (
                     <tr key={vol._id} className="hover:bg-[#f9f8f7]/60 transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-[#111827]">{vol.fullName}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-semibold text-[#111827]">{vol.fullName}</p>
+                          {vol.idNumber && (
+                            <span className="text-[10px] font-mono bg-[#f4efed] text-[#191414] px-1.5 py-0.2 rounded-xs border border-[#e6dfdc]" title="National ID">
+                              ID: {vol.idNumber}
+                            </span>
+                          )}
+                        </div>
                         {vol.notes && (
                           <p className="text-[10px] text-[#6b7280] italic truncate max-w-xs">
                             {vol.notes}

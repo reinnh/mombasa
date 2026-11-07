@@ -27,6 +27,11 @@
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.28"
   },
+  "pnpm": {
+    "overrides": {
+      "magic-string": "0.30.17"
+    }
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.7",

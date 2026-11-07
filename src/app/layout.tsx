@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Volunteer Registration | Team Hon. Shemaiah Kong'ani 2027",
-  description: "Official volunteer mobilization portal for Matungu Constituency (2027). Join hands for development, transparency and empowerment.",
+  title: "Volunteer Registration | TND Youth League Mombasa Chapter",
+  description: "Official volunteer mobilization portal for Mombasa County (2027). Join hands with TND Youth League Mombasa Chapter.",
 };
 
 export const viewport: Viewport = {

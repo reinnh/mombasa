@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IVolunteer extends Document {
   fullName: string;
+  idNumber?: string;
   phoneNumber: string;
   ward: string;
   pollingStation: string;
@@ -26,6 +27,12 @@ const VolunteerSchema = new Schema<IVolunteer>(
       minlength: [2, "Name must be at least 2 characters"],
       maxlength: [100, "Name cannot exceed 100 characters"],
     },
+    idNumber: {
+      type: String,
+      trim: true,
+      default: "",
+      index: true,
+    },
     phoneNumber: {
       type: String,
       required: [true, "Phone number is required"],
@@ -35,7 +42,7 @@ const VolunteerSchema = new Schema<IVolunteer>(
     ward: {
       type: String,
       required: [true, "Ward is required"],
-      enum: ["Koyonzo", "Mayoni", "Namamali", "Kholera", "Khalaba"],
+      enum: ["Port Reitz", "Kipevu", "Airport", "Changamwe", "Chaani", "Jomvu Kuu", "Mikindani", "Miritini", "Mjambere", "Junda", "Bamburi", "Mwakirunge", "Mtopanga", "Magogoni", "Shanzu", "Mtongwe", "Shika Adabu", "Bofu", "Likoni", "Timbwani", "Mji wa Kale/Makadara", "Tudor", "Tononoka", "Shimanzi/Ganjoni", "Majengo", "Frere Town", "Ziwa La Ng'ombe", "Mkomani", "Kongowea", "Kadzandani"],
       index: true,
     },
     pollingStation: {

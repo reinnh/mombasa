@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
     const headers = [
       "ID",
       "Full Name",
+      "National ID",
       "Phone Number",
       "Ward",
       "Landmark / Station",
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
     const rows = list.map((v) => [
       `"${v._id}"`,
       `"${v.fullName.replace(/"/g, '""')}"`,
+      `"${(v.idNumber || "").replace(/"/g, '""')}"`,
       `"${v.phoneNumber}"`,
       `"${v.ward}"`,
       `"${v.pollingStation.replace(/"/g, '""')}"`,
@@ -46,7 +48,7 @@ export async function GET(req: NextRequest) {
     const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
 
     const dateStr = new Date().toISOString().split("T")[0];
-    const filename = `matungu-volunteers-${ward || "all"}-${dateStr}.csv`;
+    const filename = `mombasa-volunteers-${ward || "all"}-${dateStr}.csv`;
 
     return new NextResponse(csvContent, {
       status: 200,
