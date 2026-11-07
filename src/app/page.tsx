@@ -407,8 +407,7 @@ export default function VolunteerRegistrationPage() {
                 <div className="relative w-full bg-white overflow-hidden border-b border-[#e2e8f0]">
                   {/* Floating Badges over top of Image */}
                   <div className="absolute top-3 inset-x-3 flex items-center justify-between z-20 pointer-events-none">
-                    <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-sm border border-[#e2e8f0] text-[#0f172a] shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-[#0B4DB8] animate-pulse" />
+                    <div className="bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-sm border border-[#e2e8f0] text-[#0f172a] shadow-xs">
                       <span className="text-[10px] font-semibold tracking-wide text-[#0B4DB8]">
                         Official Portal
                       </span>
