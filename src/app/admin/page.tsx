@@ -749,14 +749,19 @@ export default function AdminDashboardPage() {
                   <div className="flex flex-col items-end gap-1.5 shrink-0">
                     <button
                       onClick={() => handleToggleStatus(vol)}
-                      className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border cursor-pointer transition-all ${
+                      className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors cursor-pointer select-none ${
                         vol.status === "verified"
-                          ? "bg-[#0B4DB8]/10 text-[#0B4DB8] border-[#0B4DB8]/30"
-                          : "bg-[#f8fafc] text-[#64748b] border-[#e2e8f0]"
+                          ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                       title="Toggle verification"
                     >
-                      {vol.status}
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          vol.status === "verified" ? "bg-emerald-500" : "bg-slate-400"
+                        }`}
+                      />
+                      <span className="capitalize">{vol.status}</span>
                     </button>
 
                     <div className="flex items-center gap-1">
@@ -892,93 +897,102 @@ export default function AdminDashboardPage() {
             {/* Mobile Cards (Shown on small screens) */}
             <div className="space-y-2.5 sm:hidden">
               {filteredVolunteers.map((vol) => (
-                <div key={vol._id} className="ios-card p-4 space-y-2.5 border-[#e2e8f0]">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <h4 className="text-sm font-bold text-[#0f172a]">{vol.fullName}</h4>
+                <div
+                  key={vol._id}
+                  className="bg-white rounded-xl p-3.5 border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-2.5 transition-all"
+                >
+                  {/* Top Row: Name, ID, and Status Toggle */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-sm font-semibold text-slate-900 tracking-tight">
+                          {vol.fullName}
+                        </h4>
                         {vol.idNumber && (
-                          <span className="text-[10px] font-mono bg-[#f1f5f9] text-[#0f172a] px-1.5 py-0.5 rounded-xs border border-[#e2e8f0]">
-                            ID: {vol.idNumber}
+                          <span className="text-[11px] font-mono text-slate-500">
+                            ID {vol.idNumber}
                           </span>
                         )}
-                        <span className="text-[10px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-sm border border-[#0B4DB8]/20">
+                      </div>
+
+                      {/* Location & Role on one cohesive line */}
+                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="font-medium text-[#0B4DB8]">
                           {vol.volunteerRole || "Mobilizer"}
                         </span>
-                      </div>
-                      <p className="text-xs text-[#64748b] flex items-center gap-1 mt-0.5 flex-wrap">
-                        <MapPin className="w-3 h-3 text-[#0B4DB8]" />
-                        {vol.constituency && (
-                          <span className="font-semibold text-[#0B4DB8]">{vol.constituency} &bull;</span>
-                        )}
-                        <span>{vol.ward} &bull; {vol.pollingStation}</span>
-                        {vol.isOtherStation && (
-                          <span className="text-[#0B4DB8] text-[10px]">(Custom)</span>
-                        )}
+                        <span className="text-slate-300">&bull;</span>
+                        <span className="truncate">
+                          {vol.constituency ? `${vol.constituency}, ` : ""}{vol.ward} &bull; {vol.pollingStation}
+                        </span>
                       </p>
                     </div>
 
+                    {/* Lean Status Toggle Pill */}
                     <button
+                      type="button"
                       onClick={() => handleToggleStatus(vol)}
-                      className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border transition-all ${
+                      className={`text-[11px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1.5 transition-colors cursor-pointer select-none shrink-0 ${
                         vol.status === "verified"
-                          ? "bg-[#0B4DB8]/10 text-[#0B4DB8] border-[#0B4DB8]/30"
-                          : "bg-[#f8fafc] text-[#64748b] border-[#e2e8f0]"
+                          ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100/80"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
                       }`}
+                      title="Tap to toggle status"
                     >
-                      {vol.status}
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          vol.status === "verified" ? "bg-emerald-500" : "bg-slate-400"
+                        }`}
+                      />
+                      <span className="capitalize">{vol.status}</span>
                     </button>
                   </div>
 
-                  {vol.notes && (
-                    <p className="text-xs bg-[#f8fafc] p-2 rounded-lg text-[#0f172a] italic border border-[#e2e8f0]">
-                      &quot;{vol.notes}&quot;
+                  {/* Comment or Note (Typographic quote with subtle left rule, zero colored boxes) */}
+                  {(vol.comment || vol.notes) && (
+                    <div className="border-l-2 border-slate-200 pl-2.5 py-0.5 text-xs text-slate-600 italic">
+                      {vol.comment ? `“${vol.comment}”` : `“${vol.notes}”`}
+                    </div>
+                  )}
+
+                  {/* Secondary Details: Clean inline text without noisy 'Kazi' headings */}
+                  {(vol.occupation || vol.educationLevel) && (
+                    <p className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap">
+                      {vol.occupation && <span>{vol.occupation}</span>}
+                      {vol.occupation && vol.educationLevel && (
+                        <span className="text-slate-300">&bull;</span>
+                      )}
+                      {vol.educationLevel && <span>{vol.educationLevel}</span>}
                     </p>
                   )}
 
-                  {vol.comment && (
-                    <p className="text-xs bg-[#0B4DB8]/5 p-2 rounded-sm text-[#0f172a] border border-[#0B4DB8]/15">
-                      💬 {vol.comment}
-                    </p>
-                  )}
-
-                  {vol.occupation && (
-                    <p className="text-[11px] text-[#64748b] flex items-center gap-1">
-                      <span className="font-semibold text-[#0f172a]">Kazi:</span> {vol.occupation}
-                    </p>
-                  )}
-
-                  {vol.educationLevel && (
-                    <p className="text-[11px] text-[#64748b] flex items-center gap-1">
-                      <span className="font-semibold text-[#0f172a]">Education:</span> {vol.educationLevel}
-                    </p>
-                  )}
-
-                  <div className="pt-2 border-t border-[#e2e8f0] flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
+                  {/* Action Bar: Lean tactile actions */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5">
                       <a
                         href={`tel:${vol.phoneNumber}`}
-                        className="px-2.5 py-1.5 rounded-lg bg-[#f8fafc] text-[#0f172a] hover:bg-[#e2e8f0] font-semibold flex items-center gap-1 border border-[#e2e8f0]"
+                        className="px-2.5 py-1 rounded-md text-slate-700 hover:text-[#0B4DB8] hover:bg-slate-50 font-medium flex items-center gap-1.5 border border-slate-200 transition-colors"
                       >
-                        <Phone className="w-3 h-3 text-[#0B4DB8]" />
-                        Call
+                        <Phone className="w-3 h-3 text-slate-400" />
+                        <span>Call</span>
                       </a>
                       <a
                         href={`https://wa.me/${vol.phoneNumber.replace(/[^0-9]/g, "")}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg bg-[#0B4DB8]/10 text-[#0B4DB8] font-semibold flex items-center gap-1 border border-[#0B4DB8]/20"
+                        className="px-2.5 py-1 rounded-md text-slate-700 hover:text-emerald-700 hover:bg-emerald-50/50 font-medium flex items-center gap-1.5 border border-slate-200 transition-colors"
                       >
-                        WhatsApp
+                        <span className="text-emerald-600 font-bold text-[10px]">WA</span>
+                        <span>WhatsApp</span>
                       </a>
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => setDeleteTarget(vol)}
-                      className="p-1.5 text-[#64748b] hover:text-red-600 rounded-lg transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
                       title="Delete volunteer"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
