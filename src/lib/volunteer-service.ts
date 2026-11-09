@@ -57,6 +57,7 @@ function docToVolunteer(doc: IVolunteer): Volunteer {
     _id: (doc._id as unknown as { toString(): string }).toString(),
     fullName: doc.fullName,
     idNumber: doc.idNumber || "",
+    dateOfBirth: doc.dateOfBirth || "",
     phoneNumber: doc.phoneNumber,
     constituency: doc.constituency || getConstituencyByWard(doc.ward) || "",
     ward: doc.ward,
@@ -127,6 +128,7 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
       const created = await VolunteerModel.create({
         fullName: trimmedName,
         idNumber: input.idNumber?.trim() || "",
+        dateOfBirth: input.dateOfBirth?.trim() || "",
         phoneNumber: normalizedPhone,
         constituency: derivedConstituency,
         ward: input.ward,
@@ -183,6 +185,7 @@ export async function createVolunteer(input: VolunteerInput): Promise<Volunteer>
     _id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     fullName: trimmedName,
     idNumber: input.idNumber?.trim() || "",
+    dateOfBirth: input.dateOfBirth?.trim() || "",
     phoneNumber: normalizedPhone,
     constituency: derivedConstituency,
     ward: input.ward,

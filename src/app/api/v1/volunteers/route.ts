@@ -10,6 +10,7 @@ const volunteerSchema = z.object({
     .min(2, "Full name must be at least 2 characters")
     .max(100, "Full name is too long"),
   idNumber: z.string().max(30).optional().default(""),
+  dateOfBirth: z.string().max(20).optional().default(""),
   phoneNumber: z
     .string()
     .min(9, "Valid phone number is required")

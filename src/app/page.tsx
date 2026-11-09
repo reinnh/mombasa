@@ -23,6 +23,7 @@ import {
   Hash,
   CreditCard,
   Building2,
+  Calendar,
 } from "lucide-react";
 import {
   mombasaWards,
@@ -50,6 +51,7 @@ export default function VolunteerRegistrationPage() {
   const [isCommitted, setIsCommitted] = useState(true);
   const [occupation, setOccupation] = useState("");
   const [educationLevel, setEducationLevel] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [comment, setComment] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -187,6 +189,7 @@ export default function VolunteerRegistrationPage() {
         body: JSON.stringify({
           fullName: fullName.trim(),
           idNumber: idNumber.trim(),
+          dateOfBirth: dateOfBirth.trim(),
           phoneNumber: cleanPhone,
           constituency,
           ward,
@@ -228,6 +231,7 @@ export default function VolunteerRegistrationPage() {
     setIsCommitted(true);
     setOccupation("");
     setEducationLevel("");
+    setDateOfBirth("");
     setComment("");
     setError(null);
     setSuccessVolunteer(null);
@@ -315,6 +319,17 @@ export default function VolunteerRegistrationPage() {
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-[#64748b]">National ID</span>
                     <span className="font-semibold text-[#0f172a]">{successVolunteer.idNumber}</span>
+                  </div>
+                </>
+              )}
+              {successVolunteer.dateOfBirth && (
+                <>
+                  <div className="h-px bg-[#e2e8f0]" />
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-[#64748b]">Date of Birth</span>
+                    <span className="font-semibold text-[#0f172a]">
+                      {new Date(successVolunteer.dateOfBirth).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                    </span>
                   </div>
                 </>
               )}
@@ -583,6 +598,33 @@ export default function VolunteerRegistrationPage() {
                         Used for SMS station alerts and direct WhatsApp coordination.
                       </p>
                     </div>
+                  </div>
+
+                  {/* Date of Birth */}
+                  <div>
+                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-[#0B4DB8]" />
+                        Date of Birth
+                      </span>
+                      <span className="text-[10px] font-normal text-[#64748b]">Optional · Tarehe ya Kuzaliwa</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                        <Calendar className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="date"
+                        value={dateOfBirth}
+                        onChange={(e) => setDateOfBirth(e.target.value)}
+                        max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
+                        min="1940-01-01"
+                        className="ios-input ios-input-icon !pl-11 text-[#0f172a] [color-scheme:light]"
+                      />
+                    </div>
+                    <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
+                      Used for age verification. Must be 18 or older to register.
+                    </p>
                   </div>
 
                   {/* Occupation (Kazi) & Education Level */}

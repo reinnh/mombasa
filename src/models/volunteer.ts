@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IVolunteer extends Document {
   fullName: string;
   idNumber?: string;
+  dateOfBirth?: string;
   phoneNumber: string;
   constituency?: string;
   ward: string;
@@ -33,6 +34,11 @@ const VolunteerSchema = new Schema<IVolunteer>(
       trim: true,
       default: "",
       index: true,
+    },
+    dateOfBirth: {
+      type: String,
+      trim: true,
+      default: "",
     },
     phoneNumber: {
       type: String,

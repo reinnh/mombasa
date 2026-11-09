@@ -794,6 +794,7 @@ export default function AdminDashboardPage() {
                   <tr>
                     <th className="px-4 py-3">Volunteer</th>
                     <th className="px-4 py-3">Phone</th>
+                    <th className="px-4 py-3">DOB</th>
                     <th className="px-4 py-3">Role</th>
                     <th className="px-4 py-3">Constituency</th>
                     <th className="px-4 py-3">Ward</th>
@@ -833,6 +834,11 @@ export default function AdminDashboardPage() {
                         >
                           {vol.phoneNumber}
                         </a>
+                      </td>
+                      <td className="px-4 py-3 text-[#64748b] whitespace-nowrap">
+                        {vol.dateOfBirth
+                          ? new Date(vol.dateOfBirth).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+                          : <span className="text-[#94a3b8]">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-[11px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-sm whitespace-nowrap">
@@ -955,8 +961,16 @@ export default function AdminDashboardPage() {
                   )}
 
                   {/* Secondary Details: Clean inline text without noisy 'Kazi' headings */}
-                  {(vol.occupation || vol.educationLevel) && (
+                  {(vol.occupation || vol.educationLevel || vol.dateOfBirth) && (
                     <p className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap">
+                      {vol.dateOfBirth && (
+                        <span title="Date of Birth">
+                          {new Date(vol.dateOfBirth).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                        </span>
+                      )}
+                      {vol.dateOfBirth && (vol.occupation || vol.educationLevel) && (
+                        <span className="text-slate-300">&bull;</span>
+                      )}
                       {vol.occupation && <span>{vol.occupation}</span>}
                       {vol.occupation && vol.educationLevel && (
                         <span className="text-slate-300">&bull;</span>
@@ -1006,6 +1020,7 @@ export default function AdminDashboardPage() {
                   <tr>
                     <th className="px-4 py-3">Volunteer</th>
                     <th className="px-4 py-3">Phone</th>
+                    <th className="px-4 py-3">DOB</th>
                     <th className="px-4 py-3">Role</th>
                     <th className="px-4 py-3">Constituency</th>
                     <th className="px-4 py-3">Ward</th>
@@ -1045,6 +1060,11 @@ export default function AdminDashboardPage() {
                         >
                           {vol.phoneNumber}
                         </a>
+                      </td>
+                      <td className="px-4 py-3 text-[#64748b] whitespace-nowrap">
+                        {vol.dateOfBirth
+                          ? new Date(vol.dateOfBirth).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+                          : <span className="text-[#94a3b8]">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-[11px] font-semibold bg-[#0B4DB8]/10 text-[#0B4DB8] px-2 py-0.5 rounded-sm whitespace-nowrap">

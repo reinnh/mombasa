@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
     const rowsHtml =
       list.length === 0
-        ? `<tr><td colspan="11" align="center" style="padding: 20px; font-family: Arial, sans-serif; color: #64748b;">No volunteer records found for this scope.</td></tr>`
+        ? `<tr><td colspan="12" align="center" style="padding: 20px; font-family: Arial, sans-serif; color: #64748b;">No volunteer records found for this scope.</td></tr>`
         : list
             .map((v, index) => {
               const regDate = v.createdAt
@@ -58,6 +58,7 @@ export async function GET(req: NextRequest) {
                 <td style="padding: 6px 6px; font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; border: 1px solid #cbd5e1; color: #0f172a;">${escapeHtml(v.fullName)}</td>
                 <td style="padding: 6px 6px; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; color: #0f172a; white-space: nowrap;">${escapeHtml(v.phoneNumber)}</td>
                 <td style="padding: 6px 6px; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; color: #475569;">${escapeHtml(v.idNumber || "-")}</td>
+                <td align="center" style="padding: 6px 4px; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; color: #475569;">${escapeHtml(v.dateOfBirth ? new Date(v.dateOfBirth).toLocaleDateString("en-GB") : "-")}</td>
                 <td style="padding: 6px 6px; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; color: #0f172a;">${escapeHtml(v.constituency || "-")}</td>
                 <td style="padding: 6px 6px; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; color: #0f172a;">${escapeHtml(v.ward)}</td>
                 <td style="padding: 6px 6px; font-family: Arial, sans-serif; font-size: 11px; border: 1px solid #cbd5e1; color: #0f172a;">${escapeHtml(v.pollingStation)}</td>
@@ -126,16 +127,17 @@ export async function GET(req: NextRequest) {
       <thead>
         <tr style="background-color: #0B4DB8; color: #ffffff;">
           <th width="3%" align="center" style="padding: 7px 4px; border: 1px solid #0B4DB8; color: #ffffff;">#</th>
-          <th width="16%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Full Name</th>
+          <th width="15%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Full Name</th>
           <th width="11%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Phone</th>
-          <th width="9%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">National ID</th>
-          <th width="10%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Constituency</th>
-          <th width="10%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Ward</th>
-          <th width="17%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Polling Station</th>
-          <th width="9%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Role</th>
-          <th width="9%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Occupation</th>
-          <th width="7%" align="center" style="padding: 7px 4px; border: 1px solid #0B4DB8; color: #ffffff;">Status</th>
-          <th width="7%" align="center" style="padding: 7px 4px; border: 1px solid #0B4DB8; color: #ffffff;">Date</th>
+          <th width="8%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">National ID</th>
+          <th width="8%" align="center" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Date of Birth</th>
+          <th width="9%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Constituency</th>
+          <th width="9%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Ward</th>
+          <th width="15%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Polling Station</th>
+          <th width="8%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Role</th>
+          <th width="8%" align="left" style="padding: 7px 6px; border: 1px solid #0B4DB8; color: #ffffff;">Occupation</th>
+          <th width="6%" align="center" style="padding: 7px 4px; border: 1px solid #0B4DB8; color: #ffffff;">Status</th>
+          <th width="6%" align="center" style="padding: 7px 4px; border: 1px solid #0B4DB8; color: #ffffff;">Reg. Date</th>
         </tr>
       </thead>
       <tbody>
