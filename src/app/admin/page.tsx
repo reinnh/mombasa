@@ -30,6 +30,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { mombasaWards, mombasaConstituencies, getWardsByConstituency } from "@/constants/mombasa-wards";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ApiResponse, Volunteer, VolunteerStats } from "@/types";
 import {
   exportToPdf,
@@ -565,68 +566,56 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Constituency Selector */}
-            <select
+            <CustomSelect
               value={selectedConstituency}
-              onChange={(e) => {
-                setSelectedConstituency(e.target.value);
+              placeholder="All Constituencies (6)"
+              options={[
+                { value: "ALL", label: "All Constituencies (6)" },
+                ...mombasaConstituencies.map((c) => ({ value: c, label: `${c} Constituency` })),
+              ]}
+              onChange={(val) => {
+                setSelectedConstituency(val);
                 setSelectedWard("ALL");
                 setSelectedStation("ALL");
               }}
-              className="ios-input text-xs bg-white cursor-pointer w-full"
-            >
-              <option value="ALL">All Constituencies (6)</option>
-              {mombasaConstituencies.map((c) => (
-                <option key={c} value={c}>
-                  {c} Constituency
-                </option>
-              ))}
-            </select>
+            />
 
             {/* Ward Selector */}
-            <select
+            <CustomSelect
               value={selectedWard}
-              onChange={(e) => {
-                setSelectedWard(e.target.value);
+              placeholder={selectedConstituency === "ALL" ? `All Wards (${mombasaWards.length})` : `All in ${selectedConstituency}`}
+              options={[
+                { value: "ALL", label: selectedConstituency === "ALL" ? `All Wards (${mombasaWards.length})` : `All in ${selectedConstituency}` },
+                ...availableWardsForFilter.map((w) => ({ value: w.ward, label: `${w.ward} Ward` })),
+              ]}
+              onChange={(val) => {
+                setSelectedWard(val);
                 setSelectedStation("ALL");
               }}
-              className="ios-input text-xs bg-white cursor-pointer w-full"
-            >
-              <option value="ALL">
-                {selectedConstituency === "ALL"
-                  ? `All Wards (${mombasaWards.length})`
-                  : `All in ${selectedConstituency}`}
-              </option>
-              {availableWardsForFilter.map((w) => (
-                <option key={w.ward} value={w.ward}>
-                  {w.ward} Ward
-                </option>
-              ))}
-            </select>
+            />
 
             {/* Station / Landmark Selector */}
-            <select
+            <CustomSelect
               value={selectedStation}
-              onChange={(e) => setSelectedStation(e.target.value)}
-              className="ios-input text-xs bg-white cursor-pointer w-full"
-            >
-              <option value="ALL">All Landmarks</option>
-              {availableStationsForFilter.map((station) => (
-                <option key={station} value={station}>
-                  {station}
-                </option>
-              ))}
-            </select>
+              placeholder="All Landmarks"
+              options={[
+                { value: "ALL", label: "All Landmarks" },
+                ...availableStationsForFilter.map((s) => ({ value: s, label: s })),
+              ]}
+              onChange={(val) => setSelectedStation(val)}
+            />
 
             {/* Status Selector */}
-            <select
+            <CustomSelect
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="ios-input text-xs bg-white cursor-pointer w-full"
-            >
-              <option value="ALL">All Status</option>
-              <option value="active">Active</option>
-              <option value="verified">Verified</option>
-            </select>
+              placeholder="All Status"
+              options={[
+                { value: "ALL", label: "All Status" },
+                { value: "active", label: "Active" },
+                { value: "verified", label: "Verified" },
+              ]}
+              onChange={(val) => setSelectedStatus(val)}
+            />
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#64748b] pt-1.5 border-t border-[#e2e8f0]">

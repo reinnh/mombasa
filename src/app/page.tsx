@@ -27,6 +27,7 @@ import {
   Building2,
   Calendar,
 } from "lucide-react";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
   mombasaWards,
   totalPollingStations,
@@ -92,95 +93,40 @@ const YEAR_OPTIONS = Array.from(
   }
 );
 
-function CustomSelect({
-  value,
-  placeholder,
-  options,
-  onChange,
-}: {
-  value: string;
-  placeholder: string;
-  options: { value: string; label: string }[];
-  onChange: (val: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+const VOLUNTEER_ROLE_OPTIONS = [
+  { value: "Mobilizer (Ground Agent)", label: "Mobilizer (Ground Agent)" },
+  { value: "Campaign Team & Strategy", label: "Campaign Team & Strategy" },
+  { value: "Sponsor & Well Wisher", label: "Sponsor & Well Wisher" },
+  { value: "Blogger & Social Media", label: "Blogger & Social Media" },
+  { value: "Media & Communications", label: "Media & Communications" },
+  { value: "Office & Administration", label: "Office & Administration" },
+  { value: "Women League Leader", label: "Women League Leader" },
+  { value: "Youth & Bodaboda Mobilizer", label: "Youth & Bodaboda Mobilizer" },
+  { value: "Polling Day Agent", label: "Polling Day Agent" },
+  { value: "Logistics & Transport", label: "Logistics & Transport" },
+  { value: OTHER_ROLE, label: "Other (Specify)" },
+];
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent | TouchEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, [isOpen]);
+const EDUCATION_LEVEL_OPTIONS = [
+  { value: "Primary School", label: "Primary School (KCPE)" },
+  { value: "Secondary School", label: "Secondary School (KCSE)" },
+  { value: "Certificate / TVET", label: "Certificate / TVET" },
+  { value: "Diploma", label: "Diploma" },
+  { value: "Undergraduate Degree", label: "Undergraduate Degree (Bachelors)" },
+  { value: "Postgraduate", label: "Postgraduate (Masters / PhD)" },
+  { value: "Other", label: "Other" },
+];
 
-  const selected = options.find((o) => o.value === value);
+const DISABILITY_OPTIONS = [
+  { value: "", label: "-- None / Not Applicable --" },
+  { value: "Visual Impairment", label: "Visual Impairment (Blind / Low Vision)" },
+  { value: "Hearing Impairment", label: "Hearing Impairment (Deaf / Hard of Hearing)" },
+  { value: "Physical / Mobility", label: "Physical / Mobility Impairment" },
+  { value: "Speech Impairment", label: "Speech Impairment" },
+  { value: "Cognitive / Intellectual", label: "Cognitive / Intellectual Disability" },
+  { value: "Prefer not to say", label: "Prefer Not to Say" },
+];
 
-  return (
-    <div ref={containerRef} className="relative w-full">
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className={`ios-input !px-2.5 !pr-7 text-xs flex items-center justify-between text-left bg-white cursor-pointer select-none transition-all ${
-          isOpen ? "ring-2 ring-[#0B4DB8]/20 border-[#0B4DB8]" : ""
-        }`}
-      >
-        <span className={selected ? "text-[#0f172a] font-medium truncate" : "text-[#94a3b8]"}>
-          {selected ? selected.label : placeholder}
-        </span>
-        <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
-          <ChevronDown
-            className={`w-3.5 h-3.5 transition-transform duration-200 ${
-              isOpen ? "rotate-180 text-[#0B4DB8]" : ""
-            }`}
-          />
-        </div>
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.98 }}
-            transition={{ duration: 0.14, ease: "easeOut" }}
-            className="absolute z-50 mt-1 w-full bg-white rounded-lg border border-[#e2e8f0] shadow-xl max-h-48 overflow-y-auto p-1 divide-y divide-slate-50 overscroll-contain"
-          >
-            {options.map((opt) => {
-              const isSelected = opt.value === value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => {
-                    onChange(opt.value);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between cursor-pointer select-none ${
-                    isSelected
-                      ? "bg-[#0B4DB8] text-white font-semibold"
-                      : "text-[#0f172a] hover:bg-[#f1f5f9] active:bg-[#eef4fb]"
-                  }`}
-                >
-                  <span className="truncate">{opt.label}</span>
-                  {isSelected && <Check className="w-3 h-3 text-white shrink-0 ml-1" />}
-                </button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 export default function VolunteerRegistrationPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -342,8 +288,7 @@ export default function VolunteerRegistrationPage() {
   const selectedWardData = mombasaWards.find((w) => w.ward === ward);
   const availableStations = selectedWardData ? selectedWardData.pollingStations : [];
 
-  const handleConstituencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newConst = e.target.value;
+  const handleConstituencyChange = (newConst: string) => {
     setConstituency(newConst);
     setWard("");
     setPollingStation("");
@@ -352,8 +297,7 @@ export default function VolunteerRegistrationPage() {
     setError(null);
   };
 
-  const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newWard = e.target.value;
+  const handleWardChange = (newWard: string) => {
     setWard(newWard);
     if (newWard && !constituency) {
       const parentConst = getConstituencyByWard(newWard);
@@ -365,8 +309,7 @@ export default function VolunteerRegistrationPage() {
     setError(null);
   };
 
-  const handleStationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
+  const handleStationChange = (val: string) => {
     if (val === OTHER_STATION) {
       setIsOtherStation(true);
       setPollingStation(OTHER_STATION);
@@ -1057,27 +1000,16 @@ export default function VolunteerRegistrationPage() {
                               {mombasaConstituencies.length} in Mombasa County
                             </span>
                           </div>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                              <Building2 className="w-4 h-4" />
-                            </div>
-                            <select
-                              required
-                              value={constituency}
-                              onChange={handleConstituencyChange}
-                              className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                            >
-                              <option value="">-- Choose Constituency in Mombasa --</option>
-                              {mombasaConstituencies.map((c) => (
-                                <option key={c} value={c}>
-                                  {c} Constituency
-                                </option>
-                              ))}
-                            </select>
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                              <ChevronDown className="w-4 h-4" />
-                            </div>
-                          </div>
+                          <CustomSelect
+                            value={constituency}
+                            placeholder="-- Choose Constituency in Mombasa --"
+                            options={mombasaConstituencies.map((c) => ({
+                              value: c,
+                              label: `${c} Constituency`,
+                            }))}
+                            onChange={handleConstituencyChange}
+                            icon={<Building2 className="w-4 h-4" />}
+                          />
                         </div>
 
                         {/* Ward & Landmark Grid */}
@@ -1094,32 +1026,21 @@ export default function VolunteerRegistrationPage() {
                                 </span>
                               )}
                             </div>
-                            <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                                <MapPin className="w-4 h-4" />
-                              </div>
-                              <select
-                                required
-                                disabled={!constituency}
-                                value={ward}
-                                onChange={handleWardChange}
-                                className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
-                              >
-                                <option value="">
-                                  {constituency
-                                    ? `-- Choose Ward in ${constituency} --`
-                                    : "-- Select Constituency First --"}
-                                </option>
-                                {availableWards.map((w) => (
-                                  <option key={w.ward} value={w.ward}>
-                                    {w.ward} Ward
-                                  </option>
-                                ))}
-                              </select>
-                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                                <ChevronDown className="w-4 h-4" />
-                              </div>
-                            </div>
+                            <CustomSelect
+                              disabled={!constituency}
+                              value={ward}
+                              placeholder={
+                                constituency
+                                  ? `-- Choose Ward in ${constituency} --`
+                                  : "-- Select Constituency First --"
+                              }
+                              options={availableWards.map((w) => ({
+                                value: w.ward,
+                                label: `${w.ward} Ward`,
+                              }))}
+                              onChange={handleWardChange}
+                              icon={<MapPin className="w-4 h-4" />}
+                            />
                           </div>
 
                           {/* Landmark / Polling Station */}
@@ -1134,37 +1055,26 @@ export default function VolunteerRegistrationPage() {
                                 </span>
                               )}
                             </div>
-                            <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                                <Vote className="w-4 h-4" />
-                              </div>
-                              <select
-                                required
-                                disabled={!ward}
-                                value={pollingStation}
-                                onChange={handleStationChange}
-                                className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
-                              >
-                                <option value="">
-                                  {ward
-                                    ? `-- Choose Landmark in ${ward} --`
-                                    : "-- Select Ward First --"}
-                                </option>
-                                {availableStations.map((station) => (
-                                  <option key={station} value={station}>
-                                    {station}
-                                  </option>
-                                ))}
-                                {ward && (
-                                  <option value={OTHER_STATION}>
-                                    ⚠ My landmark is not listed above
-                                  </option>
-                                )}
-                              </select>
-                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                                <ChevronDown className="w-4 h-4" />
-                              </div>
-                            </div>
+                            <CustomSelect
+                              disabled={!ward}
+                              value={pollingStation}
+                              placeholder={
+                                ward
+                                  ? `-- Choose Landmark in ${ward} --`
+                                  : "-- Select Ward First --"
+                              }
+                              options={[
+                                ...availableStations.map((station) => ({
+                                  value: station,
+                                  label: station,
+                                })),
+                                ...(ward
+                                  ? [{ value: OTHER_STATION, label: "⚠ My landmark is not listed above" }]
+                                  : []),
+                              ]}
+                              onChange={handleStationChange}
+                              icon={<Vote className="w-4 h-4" />}
+                            />
                           </div>
                         </div>
 
@@ -1217,32 +1127,13 @@ export default function VolunteerRegistrationPage() {
                             </span>
                             <span className="text-[10px] font-normal text-[#64748b]">Select primary capacity</span>
                           </label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                              <Award className="w-4 h-4" />
-                            </div>
-                            <select
-                              required
-                              value={volunteerRole}
-                              onChange={(e) => setVolunteerRole(e.target.value)}
-                              className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                            >
-                              <option value="Mobilizer (Ground Agent)">Mobilizer (Ground Agent)</option>
-                              <option value="Campaign Team & Strategy">Campaign Team & Strategy</option>
-                              <option value="Sponsor & Well Wisher">Sponsor & Well Wisher</option>
-                              <option value="Blogger & Social Media">Blogger & Social Media</option>
-                              <option value="Media & Communications">Media & Communications</option>
-                              <option value="Office & Administration">Office & Administration</option>
-                              <option value="Women League Leader">Women League Leader</option>
-                              <option value="Youth & Bodaboda Mobilizer">Youth & Bodaboda Mobilizer</option>
-                              <option value="Polling Day Agent">Polling Day Agent</option>
-                              <option value="Logistics & Transport">Logistics & Transport</option>
-                              <option value={OTHER_ROLE}>Other (Specify)</option>
-                            </select>
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                              <ChevronDown className="w-4 h-4" />
-                            </div>
-                          </div>
+                          <CustomSelect
+                            value={volunteerRole}
+                            placeholder="Select primary capacity"
+                            options={VOLUNTEER_ROLE_OPTIONS}
+                            onChange={(val) => setVolunteerRole(val)}
+                            icon={<Award className="w-4 h-4" />}
+                          />
 
                           {volunteerRole === OTHER_ROLE && (
                             <div className="mt-2 relative">
@@ -1287,28 +1178,13 @@ export default function VolunteerRegistrationPage() {
                               <span>Level of Education</span>
                               <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
                             </label>
-                            <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                                <GraduationCap className="w-4 h-4" />
-                              </div>
-                              <select
-                                value={educationLevel}
-                                onChange={(e) => setEducationLevel(e.target.value)}
-                                className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                              >
-                                <option value="">-- Choose Level --</option>
-                                <option value="Primary School">Primary School (KCPE)</option>
-                                <option value="Secondary School">Secondary School (KCSE)</option>
-                                <option value="Certificate / TVET">Certificate / TVET</option>
-                                <option value="Diploma">Diploma</option>
-                                <option value="Undergraduate Degree">Undergraduate Degree (Bachelors)</option>
-                                <option value="Postgraduate">Postgraduate (Masters / PhD)</option>
-                                <option value="Other">Other</option>
-                              </select>
-                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                                <ChevronDown className="w-4 h-4" />
-                              </div>
-                            </div>
+                            <CustomSelect
+                              value={educationLevel}
+                              placeholder="-- Choose Level --"
+                              options={EDUCATION_LEVEL_OPTIONS}
+                              onChange={(val) => setEducationLevel(val)}
+                              icon={<GraduationCap className="w-4 h-4" />}
+                            />
                           </div>
                         </div>
 
@@ -1321,27 +1197,13 @@ export default function VolunteerRegistrationPage() {
                             </span>
                             <span className="text-[10px] font-normal text-[#64748b]">Optional · Hiari</span>
                           </label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b] select-none" aria-hidden>
-                              <span className="text-sm leading-none">♿</span>
-                            </div>
-                            <select
-                              value={disability}
-                              onChange={(e) => setDisability(e.target.value)}
-                              className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                            >
-                              <option value="">-- None / Not Applicable --</option>
-                              <option value="Visual Impairment">Visual Impairment (Blind / Low Vision)</option>
-                              <option value="Hearing Impairment">Hearing Impairment (Deaf / Hard of Hearing)</option>
-                              <option value="Physical / Mobility">Physical / Mobility Impairment</option>
-                              <option value="Speech Impairment">Speech Impairment</option>
-                              <option value="Cognitive / Intellectual">Cognitive / Intellectual Disability</option>
-                              <option value="Prefer not to say">Prefer Not to Say</option>
-                            </select>
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                              <ChevronDown className="w-4 h-4" />
-                            </div>
-                          </div>
+                          <CustomSelect
+                            value={disability}
+                            placeholder="-- None / Not Applicable --"
+                            options={DISABILITY_OPTIONS}
+                            onChange={(val) => setDisability(val)}
+                            icon={<span className="text-sm leading-none" aria-hidden>♿</span>}
+                          />
                         </div>
                       </motion.div>
                     )}
