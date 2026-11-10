@@ -47,6 +47,29 @@ const FORM_STEPS = [
   { id: 4, label: "Pledge", title: "Review & Pledge", subtitle: "Confirm details and sign the volunteer pledge" },
 ];
 
+const MONTHS = [
+  { value: "01", label: "01 - Jan" },
+  { value: "02", label: "02 - Feb" },
+  { value: "03", label: "03 - Mar" },
+  { value: "04", label: "04 - Apr" },
+  { value: "05", label: "05 - May" },
+  { value: "06", label: "06 - Jun" },
+  { value: "07", label: "07 - Jul" },
+  { value: "08", label: "08 - Aug" },
+  { value: "09", label: "09 - Sep" },
+  { value: "10", label: "10 - Oct" },
+  { value: "11", label: "11 - Nov" },
+  { value: "12", label: "12 - Dec" },
+];
+
+const DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));
+
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from(
+  { length: CURRENT_YEAR - 18 - 1940 + 1 },
+  (_, i) => CURRENT_YEAR - 18 - i
+);
+
 const slideVariants = {
   enter: (dir: number) => ({
     x: dir > 0 ? 32 : -32,
@@ -81,6 +104,9 @@ export default function VolunteerRegistrationPage() {
   const [occupation, setOccupation] = useState("");
   const [educationLevel, setEducationLevel] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [dobDay, setDobDay] = useState("");
+  const [dobMonth, setDobMonth] = useState("");
+  const [dobYear, setDobYear] = useState("");
   const [disability, setDisability] = useState("");
   const [comment, setComment] = useState("");
 
@@ -100,7 +126,15 @@ export default function VolunteerRegistrationPage() {
         if (d.fullName) setFullName(d.fullName);
         if (d.idNumber) setIdNumber(d.idNumber);
         if (d.phoneNumber) setPhoneNumber(d.phoneNumber);
-        if (d.dateOfBirth) setDateOfBirth(d.dateOfBirth);
+        if (d.dateOfBirth && typeof d.dateOfBirth === "string") {
+          setDateOfBirth(d.dateOfBirth);
+          const parts = d.dateOfBirth.split("-");
+          if (parts.length === 3) {
+            setDobYear(parts[0]);
+            setDobMonth(parts[1]);
+            setDobDay(parts[2]);
+          }
+        }
         if (d.disability) setDisability(d.disability);
         if (d.constituency) setConstituency(d.constituency);
         if (d.ward) setWard(d.ward);
@@ -245,6 +279,22 @@ export default function VolunteerRegistrationPage() {
       setPollingStation(val);
     }
     setError(null);
+  };
+
+  const handleDobChange = (field: "day" | "month" | "year", val: string) => {
+    const nextDay = field === "day" ? val : dobDay;
+    const nextMonth = field === "month" ? val : dobMonth;
+    const nextYear = field === "year" ? val : dobYear;
+
+    if (field === "day") setDobDay(val);
+    if (field === "month") setDobMonth(val);
+    if (field === "year") setDobYear(val);
+
+    if (nextDay && nextMonth && nextYear) {
+      setDateOfBirth(`${nextYear}-${nextMonth}-${nextDay}`);
+    } else {
+      setDateOfBirth("");
+    }
   };
 
   const validateStep = (stepNumber: number): boolean => {
@@ -413,6 +463,9 @@ export default function VolunteerRegistrationPage() {
     setOccupation("");
     setEducationLevel("");
     setDateOfBirth("");
+    setDobDay("");
+    setDobMonth("");
+    setDobYear("");
     setDisability("");
     setComment("");
     setError(null);
@@ -824,49 +877,94 @@ export default function VolunteerRegistrationPage() {
                           </p>
                         </div>
 
-                        {/* National ID & Date of Birth in Clean 2-Col Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                          {/* National ID */}
-                          <div>
-                            <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
-                              <span>National ID</span>
-                              <span className="text-[10px] font-normal text-[#64748b]">Kitambulisho</span>
-                            </label>
-                            <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                                <CreditCard className="w-4 h-4" />
-                              </div>
-                              <input
-                                type="text"
-                                value={idNumber}
-                                onChange={(e) => setIdNumber(e.target.value)}
-                                placeholder="e.g. 12345678"
-                                className="ios-input ios-input-icon !pl-11"
-                              />
+                        {/* National ID & Date of Birth */}
+                        <div>
+                          <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                            <span>National ID Number</span>
+                            <span className="text-[10px] font-normal text-[#64748b]">Kitambulisho · Optional</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                              <CreditCard className="w-4 h-4" />
                             </div>
+                            <input
+                              type="text"
+                              value={idNumber}
+                              onChange={(e) => setIdNumber(e.target.value)}
+                              placeholder="e.g. 12345678"
+                              className="ios-input ios-input-icon !pl-11"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Date of Birth - 3 Segmented Dropdowns (Day · Month · Year) */}
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-xs font-semibold text-[#0f172a] flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5 text-[#0B4DB8]" />
+                              <span>Date of Birth</span>
+                            </label>
+                            <span className="text-[10px] font-normal text-[#64748b]">
+                              Optional · Tarehe ya Kuzaliwa
+                            </span>
                           </div>
 
-                          {/* Date of Birth */}
-                          <div>
-                            <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
-                              <span className="flex items-center gap-1.5">
-                                <Calendar className="w-3.5 h-3.5 text-[#0B4DB8]" />
-                                Date of Birth
-                              </span>
-                              <span className="text-[10px] font-normal text-[#64748b]">Optional</span>
-                            </label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {/* Day Selector */}
                             <div className="relative">
-                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                                <Calendar className="w-4 h-4" />
+                              <select
+                                value={dobDay}
+                                onChange={(e) => handleDobChange("day", e.target.value)}
+                                className="ios-input !px-2.5 !pr-7 text-xs appearance-none bg-white cursor-pointer"
+                              >
+                                <option value="">Day</option>
+                                {DAYS.map((d) => (
+                                  <option key={d} value={d}>
+                                    {d}
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
+                                <ChevronDown className="w-3.5 h-3.5" />
                               </div>
-                              <input
-                                type="date"
-                                value={dateOfBirth}
-                                onChange={(e) => setDateOfBirth(e.target.value)}
-                                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
-                                min="1940-01-01"
-                                className="ios-input ios-input-icon !pl-11 text-[#0f172a] [color-scheme:light]"
-                              />
+                            </div>
+
+                            {/* Month Selector */}
+                            <div className="relative">
+                              <select
+                                value={dobMonth}
+                                onChange={(e) => handleDobChange("month", e.target.value)}
+                                className="ios-input !px-2.5 !pr-7 text-xs appearance-none bg-white cursor-pointer"
+                              >
+                                <option value="">Month</option>
+                                {MONTHS.map((m) => (
+                                  <option key={m.value} value={m.value}>
+                                    {m.label}
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </div>
+                            </div>
+
+                            {/* Year Selector */}
+                            <div className="relative">
+                              <select
+                                value={dobYear}
+                                onChange={(e) => handleDobChange("year", e.target.value)}
+                                className="ios-input !px-2.5 !pr-7 text-xs appearance-none bg-white cursor-pointer"
+                              >
+                                <option value="">Year</option>
+                                {YEARS.map((y) => (
+                                  <option key={y} value={String(y)}>
+                                    {y}
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </div>
                             </div>
                           </div>
                         </div>
