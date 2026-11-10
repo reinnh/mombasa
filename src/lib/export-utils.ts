@@ -93,7 +93,7 @@ export function exportToPdf(volunteers: Volunteer[], scope: ExportScope = {}) {
 
   // Table Data
   const head = [
-    ["#", "Full Name", "Phone", "National ID", "Constituency", "Ward", "Polling Station", "Role", "Occupation", "Status", "Date"],
+    ["#", "Full Name", "Phone", "National ID", "Constituency", "Ward", "Polling Station", "Role", "Occupation", "Date"],
   ];
 
   const body = volunteers.map((v, i) => [
@@ -106,7 +106,6 @@ export function exportToPdf(volunteers: Volunteer[], scope: ExportScope = {}) {
     v.pollingStation,
     v.volunteerRole || "Mobilizer",
     v.occupation || "-",
-    v.status === "verified" ? "VERIFIED" : "ACTIVE",
     v.createdAt ? new Date(v.createdAt).toLocaleDateString("en-GB") : "-",
   ]);
 
@@ -137,27 +136,15 @@ export function exportToPdf(volunteers: Volunteer[], scope: ExportScope = {}) {
     },
     columnStyles: {
       0: { cellWidth: 8, halign: "center" }, // #
-      1: { cellWidth: 38, fontStyle: "bold" }, // Name
-      2: { cellWidth: 26 }, // Phone
-      3: { cellWidth: 22 }, // ID
-      4: { cellWidth: 26 }, // Constituency
-      5: { cellWidth: 26 }, // Ward
-      6: { cellWidth: 42 }, // Station
-      7: { cellWidth: 25 }, // Role
-      8: { cellWidth: 25 }, // Occupation
-      9: { cellWidth: 18, halign: "center", fontStyle: "bold" }, // Status
-      10: { cellWidth: 17, halign: "center" }, // Date
-    },
-    didDrawCell: (data) => {
-      // Custom coloring for Status column
-      if (data.section === "body" && data.column.index === 9) {
-        const val = data.cell.raw;
-        if (val === "VERIFIED") {
-          doc.setTextColor(11, 77, 184);
-        } else {
-          doc.setTextColor(100, 116, 139);
-        }
-      }
+      1: { cellWidth: 42, fontStyle: "bold" }, // Name
+      2: { cellWidth: 28 }, // Phone
+      3: { cellWidth: 24 }, // ID
+      4: { cellWidth: 28 }, // Constituency
+      5: { cellWidth: 28 }, // Ward
+      6: { cellWidth: 46 }, // Station
+      7: { cellWidth: 26 }, // Role
+      8: { cellWidth: 26 }, // Occupation
+      9: { cellWidth: 18, halign: "center" }, // Date
     },
     didDrawPage: (data) => {
       // Footer on every page
@@ -284,7 +271,6 @@ export function openPrintDialog(volunteers: Volunteer[], scope: ExportScope = {}
       <td>${v.pollingStation}</td>
       <td>${v.volunteerRole || "Mobilizer"}</td>
       <td>${v.occupation || "-"}</td>
-      <td style="text-align: center; font-weight: bold; color: ${v.status === "verified" ? "#0B4DB8" : "#64748b"}">${v.status.toUpperCase()}</td>
       <td style="text-align: center;">${v.createdAt ? new Date(v.createdAt).toLocaleDateString("en-GB") : "-"}</td>
     </tr>
   `
@@ -334,7 +320,6 @@ export function openPrintDialog(volunteers: Volunteer[], scope: ExportScope = {}
             <th>Polling Station</th>
             <th>Role</th>
             <th>Occupation</th>
-            <th style="text-align: center;">Status</th>
             <th style="text-align: center;">Date</th>
           </tr>
         </thead>
