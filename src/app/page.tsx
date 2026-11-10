@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import Lenis from "lenis";
@@ -62,13 +62,7 @@ const MONTHS = [
   { value: "12", label: "12 - Dec" },
 ];
 
-const DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));
-
 const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = Array.from(
-  { length: CURRENT_YEAR - 18 - 1940 + 1 },
-  (_, i) => CURRENT_YEAR - 18 - i
-);
 
 const slideVariants = {
   enter: (dir: number) => ({
@@ -84,6 +78,109 @@ const slideVariants = {
     opacity: 0,
   }),
 };
+
+const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => {
+  const d = String(i + 1).padStart(2, "0");
+  return { value: d, label: d };
+});
+
+const YEAR_OPTIONS = Array.from(
+  { length: CURRENT_YEAR - 18 - 1940 + 1 },
+  (_, i) => {
+    const y = String(CURRENT_YEAR - 18 - i);
+    return { value: y, label: y };
+  }
+);
+
+function CustomSelect({
+  value,
+  placeholder,
+  options,
+  onChange,
+}: {
+  value: string;
+  placeholder: string;
+  options: { value: string; label: string }[];
+  onChange: (val: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const selected = options.find((o) => o.value === value);
+
+  return (
+    <div ref={containerRef} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`ios-input !px-2.5 !pr-7 text-xs flex items-center justify-between text-left bg-white cursor-pointer select-none transition-all ${
+          isOpen ? "ring-2 ring-[#0B4DB8]/20 border-[#0B4DB8]" : ""
+        }`}
+      >
+        <span className={selected ? "text-[#0f172a] font-medium truncate" : "text-[#94a3b8]"}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
+          <ChevronDown
+            className={`w-3.5 h-3.5 transition-transform duration-200 ${
+              isOpen ? "rotate-180 text-[#0B4DB8]" : ""
+            }`}
+          />
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.14, ease: "easeOut" }}
+            className="absolute z-50 mt-1 w-full bg-white rounded-lg border border-[#e2e8f0] shadow-xl max-h-48 overflow-y-auto p-1 divide-y divide-slate-50 overscroll-contain"
+          >
+            {options.map((opt) => {
+              const isSelected = opt.value === value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between cursor-pointer select-none ${
+                    isSelected
+                      ? "bg-[#0B4DB8] text-white font-semibold"
+                      : "text-[#0f172a] hover:bg-[#f1f5f9] active:bg-[#eef4fb]"
+                  }`}
+                >
+                  <span className="truncate">{opt.label}</span>
+                  {isSelected && <Check className="w-3 h-3 text-white shrink-0 ml-1" />}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function VolunteerRegistrationPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -820,7 +917,7 @@ export default function VolunteerRegistrationPage() {
                 </div>
 
                 {/* Animated Form Steps Container */}
-                <div className="overflow-hidden min-h-[290px] flex flex-col justify-between">
+                <div className="[overflow-x:clip] min-h-[300px] flex flex-col justify-between">
                   <AnimatePresence mode="wait" custom={slideDirection}>
                     {/* STEP 1: Personal & Contact */}
                     {currentStep === 1 && (
@@ -897,7 +994,7 @@ export default function VolunteerRegistrationPage() {
                           </div>
                         </div>
 
-                        {/* Date of Birth - 3 Segmented Dropdowns (Day · Month · Year) */}
+                        {/* Date of Birth - 3 Segmented Custom Dropdowns (Day · Month · Year) */}
                         <div>
                           <div className="flex items-center justify-between mb-1.5">
                             <label className="text-xs font-semibold text-[#0f172a] flex items-center gap-1.5">
@@ -911,61 +1008,28 @@ export default function VolunteerRegistrationPage() {
 
                           <div className="grid grid-cols-3 gap-2">
                             {/* Day Selector */}
-                            <div className="relative">
-                              <select
-                                value={dobDay}
-                                onChange={(e) => handleDobChange("day", e.target.value)}
-                                className="ios-input !px-2.5 !pr-7 text-xs appearance-none bg-white cursor-pointer"
-                              >
-                                <option value="">Day</option>
-                                {DAYS.map((d) => (
-                                  <option key={d} value={d}>
-                                    {d}
-                                  </option>
-                                ))}
-                              </select>
-                              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
-                                <ChevronDown className="w-3.5 h-3.5" />
-                              </div>
-                            </div>
+                            <CustomSelect
+                              value={dobDay}
+                              placeholder="Day"
+                              options={DAY_OPTIONS}
+                              onChange={(val) => handleDobChange("day", val)}
+                            />
 
                             {/* Month Selector */}
-                            <div className="relative">
-                              <select
-                                value={dobMonth}
-                                onChange={(e) => handleDobChange("month", e.target.value)}
-                                className="ios-input !px-2.5 !pr-7 text-xs appearance-none bg-white cursor-pointer"
-                              >
-                                <option value="">Month</option>
-                                {MONTHS.map((m) => (
-                                  <option key={m.value} value={m.value}>
-                                    {m.label}
-                                  </option>
-                                ))}
-                              </select>
-                              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
-                                <ChevronDown className="w-3.5 h-3.5" />
-                              </div>
-                            </div>
+                            <CustomSelect
+                              value={dobMonth}
+                              placeholder="Month"
+                              options={MONTHS}
+                              onChange={(val) => handleDobChange("month", val)}
+                            />
 
                             {/* Year Selector */}
-                            <div className="relative">
-                              <select
-                                value={dobYear}
-                                onChange={(e) => handleDobChange("year", e.target.value)}
-                                className="ios-input !px-2.5 !pr-7 text-xs appearance-none bg-white cursor-pointer"
-                              >
-                                <option value="">Year</option>
-                                {YEARS.map((y) => (
-                                  <option key={y} value={String(y)}>
-                                    {y}
-                                  </option>
-                                ))}
-                              </select>
-                              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-[#64748b]">
-                                <ChevronDown className="w-3.5 h-3.5" />
-                              </div>
-                            </div>
+                            <CustomSelect
+                              value={dobYear}
+                              placeholder="Year"
+                              options={YEAR_OPTIONS}
+                              onChange={(val) => handleDobChange("year", val)}
+                            />
                           </div>
                         </div>
                       </motion.div>
