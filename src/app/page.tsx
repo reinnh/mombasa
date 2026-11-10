@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   ChevronDown,
   ArrowRight,
+  ArrowLeft,
+  Check,
   Shield,
   Briefcase,
   MessageSquare,
@@ -36,8 +38,35 @@ import { ApiResponse, Volunteer } from "@/types";
 
 const OTHER_STATION = "__OTHER__";
 const OTHER_ROLE = "Other (Specify)";
+const DRAFT_STORAGE_KEY = "tnd_volunteer_draft_v1";
+
+const FORM_STEPS = [
+  { id: 1, label: "Identity", title: "Personal & Contact", subtitle: "Basic identity and direct mobile line" },
+  { id: 2, label: "Location", title: "County Location", subtitle: "Constituency, ward and nearest polling station" },
+  { id: 3, label: "Role", title: "Role & Profile", subtitle: "Capacity, skills and accessibility preferences" },
+  { id: 4, label: "Pledge", title: "Review & Pledge", subtitle: "Confirm details and sign the volunteer pledge" },
+];
+
+const slideVariants = {
+  enter: (dir: number) => ({
+    x: dir > 0 ? 32 : -32,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (dir: number) => ({
+    x: dir > 0 ? -32 : 32,
+    opacity: 0,
+  }),
+};
 
 export default function VolunteerRegistrationPage() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [slideDirection, setSlideDirection] = useState(1);
+  const [isHydrated, setIsHydrated] = useState(false);
+
   const [fullName, setFullName] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -61,6 +90,87 @@ export default function VolunteerRegistrationPage() {
   const [showWardsAccordion, setShowWardsAccordion] = useState(false);
   const [expandedConstituency, setExpandedConstituency] = useState<string | null>(null);
   const [expandedWard, setExpandedWard] = useState<string | null>(null);
+
+  // Hydrate draft from localStorage on mount (survives page refresh)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.fullName) setFullName(d.fullName);
+        if (d.idNumber) setIdNumber(d.idNumber);
+        if (d.phoneNumber) setPhoneNumber(d.phoneNumber);
+        if (d.dateOfBirth) setDateOfBirth(d.dateOfBirth);
+        if (d.disability) setDisability(d.disability);
+        if (d.constituency) setConstituency(d.constituency);
+        if (d.ward) setWard(d.ward);
+        if (d.pollingStation) setPollingStation(d.pollingStation);
+        if (typeof d.isOtherStation === "boolean") setIsOtherStation(d.isOtherStation);
+        if (d.otherStationText) setOtherStationText(d.otherStationText);
+        if (d.volunteerRole) setVolunteerRole(d.volunteerRole);
+        if (d.otherRoleText) setOtherRoleText(d.otherRoleText);
+        if (d.occupation) setOccupation(d.occupation);
+        if (d.educationLevel) setEducationLevel(d.educationLevel);
+        if (d.comment) setComment(d.comment);
+        if (typeof d.isCommitted === "boolean") setIsCommitted(d.isCommitted);
+        if (typeof d.currentStep === "number" && d.currentStep >= 1 && d.currentStep <= 4) {
+          setCurrentStep(d.currentStep);
+        }
+      }
+    } catch {
+      // Safe fallback if localStorage is disabled or corrupt
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // Auto-save form draft to localStorage whenever fields change
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      const draft = {
+        fullName,
+        idNumber,
+        phoneNumber,
+        dateOfBirth,
+        disability,
+        constituency,
+        ward,
+        pollingStation,
+        isOtherStation,
+        otherStationText,
+        volunteerRole,
+        otherRoleText,
+        occupation,
+        educationLevel,
+        comment,
+        isCommitted,
+        currentStep,
+      };
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    } catch {
+      // Ignore quota errors
+    }
+  }, [
+    isHydrated,
+    fullName,
+    idNumber,
+    phoneNumber,
+    dateOfBirth,
+    disability,
+    constituency,
+    ward,
+    pollingStation,
+    isOtherStation,
+    otherStationText,
+    volunteerRole,
+    otherRoleText,
+    occupation,
+    educationLevel,
+    comment,
+    isCommitted,
+    currentStep,
+  ]);
 
   // Lenis iOS smooth inertial spring scrolling
   useEffect(() => {
@@ -137,47 +247,104 @@ export default function VolunteerRegistrationPage() {
     setError(null);
   };
 
+  const validateStep = (stepNumber: number): boolean => {
+    setError(null);
+    if (stepNumber === 1) {
+      if (!fullName.trim() || fullName.trim().length < 2) {
+        setError("Please provide your full legal name (at least 2 characters).");
+        return false;
+      }
+      const cleanPhone = phoneNumber.trim().replace(/\s+/g, "");
+      if (!cleanPhone || cleanPhone.length < 9) {
+        setError("Please provide a valid active phone number.");
+        return false;
+      }
+      return true;
+    }
+    if (stepNumber === 2) {
+      if (!constituency) {
+        setError("Please select your Constituency.");
+        return false;
+      }
+      if (!ward) {
+        setError("Please select your Ward.");
+        return false;
+      }
+      if (!pollingStation) {
+        setError("Please select your Landmark or Polling Station.");
+        return false;
+      }
+      if (isOtherStation && !otherStationText.trim()) {
+        setError("Please describe your landmark or location.");
+        return false;
+      }
+      return true;
+    }
+    if (stepNumber === 3) {
+      if (!volunteerRole) {
+        setError("Please select your volunteer capacity.");
+        return false;
+      }
+      if (volunteerRole === OTHER_ROLE && !otherRoleText.trim()) {
+        setError("Please specify how you wish to volunteer.");
+        return false;
+      }
+      return true;
+    }
+    if (stepNumber === 4) {
+      if (!isCommitted) {
+        setError("Please confirm your commitment by checking the pledge box.");
+        return false;
+      }
+      return true;
+    }
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (validateStep(currentStep)) {
+      setError(null);
+      setSlideDirection(1);
+      setCurrentStep((prev) => Math.min(prev + 1, 4));
+    }
+  };
+
+  const handlePrevStep = () => {
+    setError(null);
+    setSlideDirection(-1);
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleJumpToStep = (targetStep: number) => {
+    if (targetStep === currentStep) return;
+    if (targetStep < currentStep) {
+      setError(null);
+      setSlideDirection(-1);
+      setCurrentStep(targetStep);
+      return;
+    }
+    for (let s = currentStep; s < targetStep; s++) {
+      if (!validateStep(s)) {
+        setCurrentStep(s);
+        return;
+      }
+    }
+    setError(null);
+    setSlideDirection(1);
+    setCurrentStep(targetStep);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Validation
-    if (!fullName.trim() || fullName.trim().length < 2) {
-      setError("Please provide your full legal name (at least 2 characters).");
-      return;
-    }
+    // Validate all 4 steps before submitting
+    if (!validateStep(1)) { setCurrentStep(1); return; }
+    if (!validateStep(2)) { setCurrentStep(2); return; }
+    if (!validateStep(3)) { setCurrentStep(3); return; }
+    if (!validateStep(4)) { setCurrentStep(4); return; }
 
     const cleanPhone = phoneNumber.trim().replace(/\s+/g, "");
-    if (!cleanPhone || cleanPhone.length < 9) {
-      setError("Please provide a valid active phone number.");
-      return;
-    }
-
-    if (!constituency) {
-      setError("Please select your Constituency.");
-      return;
-    }
-
-    if (!ward) {
-      setError("Please select your Ward.");
-      return;
-    }
-
-    if (!pollingStation) {
-      setError("Please select your Landmark.");
-      return;
-    }
-
-    if (isOtherStation && !otherStationText.trim()) {
-      setError("Please describe your landmark or location.");
-      return;
-    }
-
-    if (!isCommitted) {
-      setError("Please confirm your commitment by checking the pledge box.");
-      return;
-    }
-
     const finalStation = isOtherStation ? otherStationText.trim() : pollingStation;
     const finalRole = volunteerRole === OTHER_ROLE && otherRoleText.trim() ? otherRoleText.trim() : volunteerRole;
 
@@ -211,6 +378,12 @@ export default function VolunteerRegistrationPage() {
         throw new Error(result.message || "Failed to submit registration");
       }
 
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } catch {
+        // Safe fallback
+      }
+
       setSuccessVolunteer(result.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Network error. Please try again.");
@@ -220,6 +393,12 @@ export default function VolunteerRegistrationPage() {
   };
 
   const handleReset = () => {
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch {
+      // Safe fallback
+    }
+    setCurrentStep(1);
     setFullName("");
     setIdNumber("");
     setPhoneNumber("");
@@ -524,484 +703,644 @@ export default function VolunteerRegistrationPage() {
                 </div>
               )}
 
-              {/* Registration Form Card */}
+              {/* Registration Form Card with Multi-Step Mobile Wizard */}
               <form onSubmit={handleSubmit} className="ios-card p-4 sm:p-5 lg:p-6 space-y-4 border-[#e2e8f0]">
+                {/* Form Header with Step Title & Live Draft Indicator */}
                 <div className="border-b border-[#e2e8f0] pb-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-[#0f172a]">
-                        Volunteer Registration
-                      </h3>
-                      <p className="text-xs text-[#64748b] mt-0.5">
-                        Join the ground mobilization network across Mombasa County.
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0B4DB8] bg-[#0B4DB8]/10 px-2 py-0.5 rounded-sm">
+                          Step {currentStep} of {FORM_STEPS.length}
+                        </span>
+                        <span className="text-[11px] font-semibold text-[#0f172a]">
+                          {FORM_STEPS[currentStep - 1].title}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#64748b] mt-1">
+                        {FORM_STEPS[currentStep - 1].subtitle}
                       </p>
                     </div>
+
                     <span className="hidden sm:inline-block text-[11px] font-semibold text-[#0B4DB8] bg-[#0B4DB8]/10 px-2.5 py-1 rounded-sm border border-[#0B4DB8]/20">
                       TND Mombasa
                     </span>
                   </div>
+
+                  {/* 4-Step Interactive Progress Bar */}
+                  <div className="grid grid-cols-4 gap-1.5 mt-3 pt-1">
+                    {FORM_STEPS.map((step) => {
+                      const isComplete = currentStep > step.id;
+                      const isCurrent = currentStep === step.id;
+                      return (
+                        <button
+                          key={step.id}
+                          type="button"
+                          onClick={() => handleJumpToStep(step.id)}
+                          className="group text-left cursor-pointer focus:outline-none"
+                          title={`Go to ${step.label}`}
+                        >
+                          <div
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                              isComplete
+                                ? "bg-[#0B4DB8]"
+                                : isCurrent
+                                ? "bg-[#0B4DB8] ring-2 ring-[#0B4DB8]/20"
+                                : "bg-[#e2e8f0]"
+                            }`}
+                          />
+                          <p
+                            className={`text-[9px] mt-1 truncate transition-colors ${
+                              isCurrent
+                                ? "font-bold text-[#0B4DB8]"
+                                : isComplete
+                                ? "font-medium text-[#0f172a]"
+                                : "text-[#94a3b8]"
+                            }`}
+                          >
+                            {step.label}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  {/* Full Name */}
-                  <div>
-                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5">
-                      Full Legal Name <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                        <User className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="text"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="e.g. Wycliffe Omwitsa"
-                        className="ios-input ios-input-icon !pl-11"
-                      />
-                    </div>
-                  </div>
-
-                  {/* National ID & Phone Number */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {/* National ID Number */}
-                    <div>
-                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
-                        <span>National ID Number</span>
-                        <span className="text-[10px] font-normal text-[#64748b]">Kitambulisho</span>
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                          <CreditCard className="w-4 h-4" />
-                        </div>
-                        <input
-                          type="text"
-                          value={idNumber}
-                          onChange={(e) => setIdNumber(e.target.value)}
-                          placeholder="e.g. 12345678"
-                          className="ios-input ios-input-icon !pl-11"
-                        />
-                      </div>
-                      <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
-                        Strictly for voter verification &amp; tallying.
-                      </p>
-                    </div>
-
-                    {/* Phone Number */}
-                    <div>
-                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5">
-                        Mobile Phone Number <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                          <Phone className="w-4 h-4" />
-                        </div>
-                        <input
-                          type="tel"
-                          required
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder="0712 345 678 or +254 7..."
-                          className="ios-input ios-input-icon !pl-11"
-                        />
-                      </div>
-                      <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
-                        Used for SMS station alerts and direct WhatsApp coordination.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Date of Birth */}
-                  <div>
-                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-[#0B4DB8]" />
-                        Date of Birth
-                      </span>
-                      <span className="text-[10px] font-normal text-[#64748b]">Optional · Tarehe ya Kuzaliwa</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                        <Calendar className="w-4 h-4" />
-                      </div>
-                      <input
-                        type="date"
-                        value={dateOfBirth}
-                        onChange={(e) => setDateOfBirth(e.target.value)}
-                        max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
-                        min="1940-01-01"
-                        className="ios-input ios-input-icon !pl-11 text-[#0f172a] [color-scheme:light]"
-                      />
-                    </div>
-                    <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
-                      Used for age verification. Must be 18 or older to register.
-                    </p>
-                  </div>
-
-                  {/* Disability / Access Needs */}
-                  <div>
-                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 text-[#0B4DB8] flex items-center justify-center text-sm leading-none select-none" aria-hidden>♿</span>
-                        Disability / Access Needs
-                      </span>
-                      <span className="text-[10px] font-normal text-[#64748b]">Optional · Hiari</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b] select-none" aria-hidden>
-                        <span className="text-sm leading-none">♿</span>
-                      </div>
-                      <select
-                        value={disability}
-                        onChange={(e) => setDisability(e.target.value)}
-                        className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
+                {/* Animated Form Steps Container */}
+                <div className="overflow-hidden min-h-[290px] flex flex-col justify-between">
+                  <AnimatePresence mode="wait" custom={slideDirection}>
+                    {/* STEP 1: Personal & Contact */}
+                    {currentStep === 1 && (
+                      <motion.div
+                        key="step-1"
+                        custom={slideDirection}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                        className="space-y-3.5"
                       >
-                        <option value="">-- None / Not Applicable --</option>
-                        <option value="Visual Impairment">Visual Impairment (Blind / Low Vision)</option>
-                        <option value="Hearing Impairment">Hearing Impairment (Deaf / Hard of Hearing)</option>
-                        <option value="Physical / Mobility">Physical / Mobility Impairment</option>
-                        <option value="Speech Impairment">Speech Impairment</option>
-                        <option value="Cognitive / Intellectual">Cognitive / Intellectual Disability</option>
-                        <option value="Prefer not to say">Prefer Not to Say</option>
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                        <ChevronDown className="w-4 h-4" />
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
-                      Helps us ensure accessibility and appropriate support during campaigning.
-                    </p>
-                  </div>
-
-                  {/* Occupation (Kazi) & Education Level */}                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {/* Occupation (Kazi) - Optional */}
-                    <div>
-                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
-                        <span>Kazi</span>
-                        <span className="text-[10px] font-normal text-[#64748b] line-through decoration-[#0B4DB8]/50">Occupation</span>
-                        <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                          <Briefcase className="w-4 h-4" />
+                        {/* Full Name */}
+                        <div>
+                          <label className="block text-xs font-semibold text-[#0f172a] mb-1.5">
+                            Full Legal Name <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                              <User className="w-4 h-4" />
+                            </div>
+                            <input
+                              type="text"
+                              required
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              placeholder="e.g. Wycliffe Omwitsa"
+                              className="ios-input ios-input-icon !pl-11"
+                            />
+                          </div>
                         </div>
-                        <input
-                          type="text"
-                          value={occupation}
-                          onChange={(e) => setOccupation(e.target.value)}
-                          placeholder="e.g. Teacher, Farmer, Business..."
-                          className="ios-input ios-input-icon !pl-11"
-                        />
-                      </div>
-                    </div>
 
-                    {/* Level of Education - Optional */}
-                    <div>
-                      <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
-                        <span>Level of Education</span>
-                        <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                          <GraduationCap className="w-4 h-4" />
+                        {/* Phone Number */}
+                        <div>
+                          <label className="block text-xs font-semibold text-[#0f172a] mb-1.5">
+                            Mobile Phone Number <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                              <Phone className="w-4 h-4" />
+                            </div>
+                            <input
+                              type="tel"
+                              required
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              placeholder="0712 345 678 or +254 7..."
+                              className="ios-input ios-input-icon !pl-11"
+                            />
+                          </div>
+                          <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
+                            Direct line for campaign coordination and WhatsApp updates.
+                          </p>
                         </div>
-                        <select
-                          value={educationLevel}
-                          onChange={(e) => setEducationLevel(e.target.value)}
-                          className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                        >
-                          <option value="">-- Choose Level --</option>
-                          <option value="Primary School">Primary School (KCPE)</option>
-                          <option value="Secondary School">Secondary School (KCSE)</option>
-                          <option value="Certificate / TVET">Certificate / TVET</option>
-                          <option value="Diploma">Diploma</option>
-                          <option value="Undergraduate Degree">Undergraduate Degree (Bachelors)</option>
-                          <option value="Postgraduate">Postgraduate (Masters / PhD)</option>
-                          <option value="Other">Other</option>
-                        </select>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                          <ChevronDown className="w-4 h-4" />
+
+                        {/* National ID & Date of Birth in Clean 2-Col Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                          {/* National ID */}
+                          <div>
+                            <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                              <span>National ID</span>
+                              <span className="text-[10px] font-normal text-[#64748b]">Kitambulisho</span>
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <CreditCard className="w-4 h-4" />
+                              </div>
+                              <input
+                                type="text"
+                                value={idNumber}
+                                onChange={(e) => setIdNumber(e.target.value)}
+                                placeholder="e.g. 12345678"
+                                className="ios-input ios-input-icon !pl-11"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Date of Birth */}
+                          <div>
+                            <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                              <span className="flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-[#0B4DB8]" />
+                                Date of Birth
+                              </span>
+                              <span className="text-[10px] font-normal text-[#64748b]">Optional</span>
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <Calendar className="w-4 h-4" />
+                              </div>
+                              <input
+                                type="date"
+                                value={dateOfBirth}
+                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
+                                min="1940-01-01"
+                                className="ios-input ios-input-icon !pl-11 text-[#0f172a] [color-scheme:light]"
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Volunteer As (Role) Dropdown */}
-                  <div>
-                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <Award className="w-3.5 h-3.5 text-[#0B4DB8]" />
-                        <span>Volunteer As</span>
-                        <span className="text-red-500">*</span>
-                      </span>
-                      <span className="text-[10px] font-normal text-[#64748b]">Select your primary capacity</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                        <Award className="w-4 h-4" />
-                      </div>
-                      <select
-                        required
-                        value={volunteerRole}
-                        onChange={(e) => setVolunteerRole(e.target.value)}
-                        className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                      >
-                        <option value="Mobilizer (Ground Agent)">Mobilizer (Ground Agent)</option>
-                        <option value="Campaign Team & Strategy">Campaign Team & Strategy</option>
-                        <option value="Sponsor & Well Wisher">Sponsor & Well Wisher</option>
-                        <option value="Blogger & Social Media">Blogger & Social Media</option>
-                        <option value="Media & Communications">Media & Communications</option>
-                        <option value="Office & Administration">Office & Administration</option>
-                        <option value="Women League Leader">Women League Leader</option>
-                        <option value="Youth & Bodaboda Mobilizer">Youth & Bodaboda Mobilizer</option>
-                        <option value="Polling Day Agent">Polling Day Agent</option>
-                        <option value="Logistics & Transport">Logistics & Transport</option>
-                        <option value={OTHER_ROLE}>Other (Specify)</option>
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                        <ChevronDown className="w-4 h-4" />
-                      </div>
-                    </div>
-
-                    {volunteerRole === OTHER_ROLE && (
-                      <div className="mt-2 relative">
-                        <input
-                          type="text"
-                          required
-                          value={otherRoleText}
-                          onChange={(e) => setOtherRoleText(e.target.value)}
-                          placeholder="Please specify how you wish to volunteer..."
-                          className="ios-input text-xs"
-                        />
-                      </div>
+                      </motion.div>
                     )}
-                  </div>
 
-                  {/* 3 Cascading Dropdowns: Constituency, Ward & Landmark */}
-                  <div className="space-y-3.5">
-                    {/* Constituency Selection (Dropdown 1) */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1.5">
-                        <label className="text-xs font-semibold text-[#0f172a]">
-                          Select Constituency <span className="text-red-500">*</span>
-                        </label>
-                        <span className="text-[10px] text-[#0B4DB8] font-semibold">
-                          {mombasaConstituencies.length} in Mombasa County
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                          <Building2 className="w-4 h-4" />
-                        </div>
-                        <select
-                          required
-                          value={constituency}
-                          onChange={handleConstituencyChange}
-                          className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
-                        >
-                          <option value="">-- Choose Constituency in Mombasa --</option>
-                          {mombasaConstituencies.map((c) => (
-                            <option key={c} value={c}>
-                              {c} Constituency
-                            </option>
-                          ))}
-                        </select>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                          <ChevronDown className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Ward & Landmark Grid (Dropdowns 2 & 3) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                      {/* Ward Selection (Dropdown 2 - Cascading) */}
-                      <div>
-                        <div className="flex justify-between items-center mb-1.5">
-                          <label className="text-xs font-semibold text-[#0f172a]">
-                            Select Ward <span className="text-red-500">*</span>
-                          </label>
-                          {constituency && (
+                    {/* STEP 2: Location & Polling Station */}
+                    {currentStep === 2 && (
+                      <motion.div
+                        key="step-2"
+                        custom={slideDirection}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                        className="space-y-3.5"
+                      >
+                        {/* Constituency Selection */}
+                        <div>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <label className="text-xs font-semibold text-[#0f172a]">
+                              Select Constituency <span className="text-red-500">*</span>
+                            </label>
                             <span className="text-[10px] text-[#0B4DB8] font-semibold">
-                              {availableWards.length} in {constituency}
+                              {mombasaConstituencies.length} in Mombasa County
                             </span>
+                          </div>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                              <Building2 className="w-4 h-4" />
+                            </div>
+                            <select
+                              required
+                              value={constituency}
+                              onChange={handleConstituencyChange}
+                              className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
+                            >
+                              <option value="">-- Choose Constituency in Mombasa --</option>
+                              {mombasaConstituencies.map((c) => (
+                                <option key={c} value={c}>
+                                  {c} Constituency
+                                </option>
+                              ))}
+                            </select>
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                              <ChevronDown className="w-4 h-4" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Ward & Landmark Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                          {/* Ward */}
+                          <div>
+                            <div className="flex justify-between items-center mb-1.5">
+                              <label className="text-xs font-semibold text-[#0f172a]">
+                                Select Ward <span className="text-red-500">*</span>
+                              </label>
+                              {constituency && (
+                                <span className="text-[10px] text-[#0B4DB8] font-semibold">
+                                  {availableWards.length} in {constituency}
+                                </span>
+                              )}
+                            </div>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <MapPin className="w-4 h-4" />
+                              </div>
+                              <select
+                                required
+                                disabled={!constituency}
+                                value={ward}
+                                onChange={handleWardChange}
+                                className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
+                              >
+                                <option value="">
+                                  {constituency
+                                    ? `-- Choose Ward in ${constituency} --`
+                                    : "-- Select Constituency First --"}
+                                </option>
+                                {availableWards.map((w) => (
+                                  <option key={w.ward} value={w.ward}>
+                                    {w.ward} Ward
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                                <ChevronDown className="w-4 h-4" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Landmark / Polling Station */}
+                          <div>
+                            <div className="flex justify-between items-center mb-1.5">
+                              <label className="text-xs font-semibold text-[#0f172a]">
+                                Landmark / Station <span className="text-red-500">*</span>
+                              </label>
+                              {selectedWardData && (
+                                <span className="text-[10px] text-[#0B4DB8] font-semibold">
+                                  {availableStations.length} in {ward}
+                                </span>
+                              )}
+                            </div>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <Vote className="w-4 h-4" />
+                              </div>
+                              <select
+                                required
+                                disabled={!ward}
+                                value={pollingStation}
+                                onChange={handleStationChange}
+                                className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
+                              >
+                                <option value="">
+                                  {ward
+                                    ? `-- Choose Landmark in ${ward} --`
+                                    : "-- Select Ward First --"}
+                                </option>
+                                {availableStations.map((station) => (
+                                  <option key={station} value={station}>
+                                    {station}
+                                  </option>
+                                ))}
+                                {ward && (
+                                  <option value={OTHER_STATION}>
+                                    ⚠ My landmark is not listed above
+                                  </option>
+                                )}
+                              </select>
+                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                                <ChevronDown className="w-4 h-4" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* "Other" Landmark Input */}
+                        {isOtherStation && (
+                          <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 space-y-2">
+                            <div className="flex items-start gap-2">
+                              <HelpCircle className="w-4 h-4 text-[#0B4DB8] shrink-0 mt-0.5" />
+                              <p className="text-[11px] text-[#64748b]">
+                                Type the name of your landmark or nearest center. Our team will verify and record your location.
+                              </p>
+                            </div>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <MapPin className="w-4 h-4" />
+                              </div>
+                              <input
+                                type="text"
+                                value={otherStationText}
+                                onChange={(e) => setOtherStationText(e.target.value)}
+                                placeholder="e.g. Near Kongowea Market, Buxton, Likoni..."
+                                className="ios-input ios-input-icon !pl-11"
+                                required
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+
+                    {/* STEP 3: Role & Profile */}
+                    {currentStep === 3 && (
+                      <motion.div
+                        key="step-3"
+                        custom={slideDirection}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                        className="space-y-3.5"
+                      >
+                        {/* Volunteer Role */}
+                        <div>
+                          <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                            <span className="flex items-center gap-1.5">
+                              <Award className="w-3.5 h-3.5 text-[#0B4DB8]" />
+                              <span>Volunteer As</span>
+                              <span className="text-red-500">*</span>
+                            </span>
+                            <span className="text-[10px] font-normal text-[#64748b]">Select primary capacity</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                              <Award className="w-4 h-4" />
+                            </div>
+                            <select
+                              required
+                              value={volunteerRole}
+                              onChange={(e) => setVolunteerRole(e.target.value)}
+                              className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
+                            >
+                              <option value="Mobilizer (Ground Agent)">Mobilizer (Ground Agent)</option>
+                              <option value="Campaign Team & Strategy">Campaign Team & Strategy</option>
+                              <option value="Sponsor & Well Wisher">Sponsor & Well Wisher</option>
+                              <option value="Blogger & Social Media">Blogger & Social Media</option>
+                              <option value="Media & Communications">Media & Communications</option>
+                              <option value="Office & Administration">Office & Administration</option>
+                              <option value="Women League Leader">Women League Leader</option>
+                              <option value="Youth & Bodaboda Mobilizer">Youth & Bodaboda Mobilizer</option>
+                              <option value="Polling Day Agent">Polling Day Agent</option>
+                              <option value="Logistics & Transport">Logistics & Transport</option>
+                              <option value={OTHER_ROLE}>Other (Specify)</option>
+                            </select>
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                              <ChevronDown className="w-4 h-4" />
+                            </div>
+                          </div>
+
+                          {volunteerRole === OTHER_ROLE && (
+                            <div className="mt-2 relative">
+                              <input
+                                type="text"
+                                required
+                                value={otherRoleText}
+                                onChange={(e) => setOtherRoleText(e.target.value)}
+                                placeholder="Please specify how you wish to volunteer..."
+                                className="ios-input text-xs"
+                              />
+                            </div>
                           )}
                         </div>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                            <MapPin className="w-4 h-4" />
+
+                        {/* Occupation & Education Level */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                          {/* Occupation */}
+                          <div>
+                            <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
+                              <span>Kazi</span>
+                              <span className="text-[10px] font-normal text-[#64748b] line-through decoration-[#0B4DB8]/50">Occupation</span>
+                              <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <Briefcase className="w-4 h-4" />
+                              </div>
+                              <input
+                                type="text"
+                                value={occupation}
+                                onChange={(e) => setOccupation(e.target.value)}
+                                placeholder="e.g. Teacher, Farmer..."
+                                className="ios-input ios-input-icon !pl-11"
+                              />
+                            </div>
                           </div>
-                          <select
-                            required
-                            disabled={!constituency}
-                            value={ward}
-                            onChange={handleWardChange}
-                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
-                          >
-                            <option value="">
-                              {constituency
-                                ? `-- Choose Ward in ${constituency} --`
-                                : "-- Select Constituency First --"}
-                            </option>
-                            {availableWards.map((w) => (
-                              <option key={w.ward} value={w.ward}>
-                                {w.ward} Ward
-                              </option>
-                            ))}
-                          </select>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                            <ChevronDown className="w-4 h-4" />
+
+                          {/* Education Level */}
+                          <div>
+                            <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
+                              <span>Level of Education</span>
+                              <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
+                            </label>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
+                                <GraduationCap className="w-4 h-4" />
+                              </div>
+                              <select
+                                value={educationLevel}
+                                onChange={(e) => setEducationLevel(e.target.value)}
+                                className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
+                              >
+                                <option value="">-- Choose Level --</option>
+                                <option value="Primary School">Primary School (KCPE)</option>
+                                <option value="Secondary School">Secondary School (KCSE)</option>
+                                <option value="Certificate / TVET">Certificate / TVET</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Undergraduate Degree">Undergraduate Degree (Bachelors)</option>
+                                <option value="Postgraduate">Postgraduate (Masters / PhD)</option>
+                                <option value="Other">Other</option>
+                              </select>
+                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                                <ChevronDown className="w-4 h-4" />
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Landmark (Dropdown 3 - Cascading) */}
-                      <div>
-                        <div className="flex justify-between items-center mb-1.5">
-                          <label className="text-xs font-semibold text-[#0f172a]">
-                            Select Landmark <span className="text-red-500">*</span>
-                          </label>
-                          {selectedWardData && (
-                            <span className="text-[10px] text-[#0B4DB8] font-semibold">
-                              {availableStations.length} in {ward}
+                        {/* Disability / Access Needs */}
+                        <div>
+                          <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-3.5 h-3.5 text-[#0B4DB8] flex items-center justify-center text-sm leading-none select-none" aria-hidden>♿</span>
+                              Disability / Access Needs
                             </span>
-                          )}
-                        </div>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                            <Vote className="w-4 h-4" />
-                          </div>
-                          <select
-                            required
-                            disabled={!ward}
-                            value={pollingStation}
-                            onChange={handleStationChange}
-                            className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer disabled:bg-[#f1f5f9] disabled:text-[#64748b] disabled:cursor-not-allowed"
-                          >
-                            <option value="">
-                              {ward
-                                ? `-- Choose Landmark in ${ward} --`
-                                : "-- Select Ward First --"}
-                            </option>
-                            {availableStations.map((station) => (
-                              <option key={station} value={station}>
-                                {station}
-                              </option>
-                            ))}
-                            {ward && (
-                              <option value={OTHER_STATION}>
-                                ⚠ My landmark is not listed above
-                              </option>
-                            )}
-                          </select>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
-                            <ChevronDown className="w-4 h-4" />
+                            <span className="text-[10px] font-normal text-[#64748b]">Optional · Hiari</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b] select-none" aria-hidden>
+                              <span className="text-sm leading-none">♿</span>
+                            </div>
+                            <select
+                              value={disability}
+                              onChange={(e) => setDisability(e.target.value)}
+                              className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
+                            >
+                              <option value="">-- None / Not Applicable --</option>
+                              <option value="Visual Impairment">Visual Impairment (Blind / Low Vision)</option>
+                              <option value="Hearing Impairment">Hearing Impairment (Deaf / Hard of Hearing)</option>
+                              <option value="Physical / Mobility">Physical / Mobility Impairment</option>
+                              <option value="Speech Impairment">Speech Impairment</option>
+                              <option value="Cognitive / Intellectual">Cognitive / Intellectual Disability</option>
+                              <option value="Prefer not to say">Prefer Not to Say</option>
+                            </select>
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                              <ChevronDown className="w-4 h-4" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
+                      </motion.div>
+                    )}
 
-                  {/* "Other" Landmark Text Input — shown when user selects "not listed" */}
-                  {isOtherStation && (
-                    <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 space-y-2">
-                      <div className="flex items-start gap-2">
-                        <HelpCircle className="w-4 h-4 text-[#0B4DB8] shrink-0 mt-0.5" />
-                        <p className="text-[11px] text-[#64748b]">
-                          No problem — please type the name of your landmark or nearest center below. Our team will verify and record your location.
-                        </p>
-                      </div>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b]">
-                          <MapPin className="w-4 h-4" />
+                    {/* STEP 4: Review & Pledge */}
+                    {currentStep === 4 && (
+                      <motion.div
+                        key="step-4"
+                        custom={slideDirection}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                        className="space-y-3.5"
+                      >
+                        {/* Quick Summary Card */}
+                        <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 space-y-2">
+                          <div className="flex items-center justify-between pb-1.5 border-b border-[#e2e8f0]">
+                            <span className="text-[11px] font-bold text-[#0f172a] flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#0B4DB8]" />
+                              Volunteer Summary
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleJumpToStep(1)}
+                              className="text-[10px] font-semibold text-[#0B4DB8] hover:underline cursor-pointer"
+                            >
+                              Edit Details
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <p className="text-[10px] text-[#64748b]">Name &amp; Phone</p>
+                              <p className="font-semibold text-[#0f172a] truncate">{fullName || "-"}</p>
+                              <p className="text-[10px] text-[#64748b]">{phoneNumber || "-"}</p>
+                            </div>
+
+                            <div>
+                              <p className="text-[10px] text-[#64748b]">Location</p>
+                              <p className="font-semibold text-[#0f172a] truncate">{ward ? `${ward} Ward` : "-"}</p>
+                              <p className="text-[10px] text-[#64748b] truncate">
+                                {isOtherStation ? otherStationText : pollingStation || "-"}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-[10px] text-[#64748b]">Volunteer Role</p>
+                              <p className="font-semibold text-[#0B4DB8] truncate">
+                                {volunteerRole === OTHER_ROLE ? otherRoleText : volunteerRole}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-[10px] text-[#64748b]">Age / Access</p>
+                              <p className="font-semibold text-[#0f172a] truncate">
+                                {dateOfBirth ? `${new Date(dateOfBirth).toLocaleDateString("en-GB")}` : "DOB not provided"}
+                              </p>
+                              {disability && disability !== "Prefer not to say" && (
+                                <p className="text-[10px] text-[#64748b] truncate">♿ {disability}</p>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <input
-                          type="text"
-                          value={otherStationText}
-                          onChange={(e) => setOtherStationText(e.target.value)}
-                          placeholder="e.g. Near Kongowea Market, Buxton, Likoni..."
-                          className="ios-input ios-input-icon !pl-11"
-                          required
-                        />
-                      </div>
-                    </div>
+
+                        {/* Optional Message / Comment */}
+                        <div>
+                          <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
+                            <span>Message / Comment</span>
+                            <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute top-3 left-0 pl-3.5 flex items-start pointer-events-none text-[#64748b]">
+                              <MessageSquare className="w-4 h-4" />
+                            </div>
+                            <textarea
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                              placeholder="Any message or additional information for the team..."
+                              rows={2}
+                              maxLength={1000}
+                              className="ios-input ios-input-icon !pl-11 !pt-2.5 resize-none text-xs"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Commitment Checkbox */}
+                        <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3 transition-all duration-200 hover:border-[#0B4DB8]/40 select-none">
+                          <label className="flex items-start gap-2.5 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              required
+                              checked={isCommitted}
+                              onChange={(e) => setIsCommitted(e.target.checked)}
+                              className="mt-0.5 w-4 h-4 rounded-xs text-[#0B4DB8] accent-[#0B4DB8] cursor-pointer"
+                            />
+                            <div className="text-xs">
+                              <span className="font-bold text-[#0f172a] flex items-center gap-1">
+                                <span>Are you committed?</span>
+                                <span className="text-red-500">*</span>
+                              </span>
+                              <p className="text-[11px] text-[#64748b] mt-0.5 leading-snug">
+                                Yes, I confirm my voluntary commitment and dedication to the ground campaign of The New Democrats Youth League Mombasa Chapter (2027).
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Step Action Buttons (Back & Continue / Submit) */}
+                <div className="pt-2 flex items-center gap-2.5 border-t border-[#e2e8f0]/80">
+                  {currentStep > 1 && (
+                    <button
+                      type="button"
+                      onClick={handlePrevStep}
+                      className="ios-button-secondary !py-2.5 px-3.5 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer select-none shrink-0"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Back</span>
+                    </button>
                   )}
 
-                  {/* Comment / Message - Optional */}
-                  <div>
-                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">
-                      <span>Message / Comment</span>
-                      <span className="text-[10px] font-normal text-[#64748b]">(Optional)</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute top-3 left-0 pl-3.5 flex items-start pointer-events-none text-[#64748b]">
-                        <MessageSquare className="w-4 h-4" />
-                      </div>
-                      <textarea
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        placeholder="Any message or additional information for the team..."
-                        rows={3}
-                        maxLength={1000}
-                        className="ios-input ios-input-icon !pl-11 !pt-2.5 resize-none text-xs"
-                      />
-                    </div>
-                    {comment.length > 0 && (
-                      <p className="text-[10px] text-[#64748b] mt-1 text-right">
-                        {comment.length}/1000
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Commitment Checkbox ("Are you really committed") */}
-                  <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-sm p-3.5 transition-all duration-200 hover:border-[#0B4DB8]/40 active:scale-[0.99] select-none">
-                    <label className="flex items-start gap-2.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        required
-                        checked={isCommitted}
-                        onChange={(e) => setIsCommitted(e.target.checked)}
-                        className="mt-0.5 w-4 h-4 rounded-xs text-[#0B4DB8] accent-[#0B4DB8] cursor-pointer"
-                      />
-                      <div className="text-xs">
-                        <span className="font-bold text-[#0f172a] flex items-center gap-1">
-                          <span>Are you really committed?</span>
-                          <span className="text-red-500">*</span>
+                  {currentStep < 4 ? (
+                    <button
+                      type="button"
+                      onClick={handleNextStep}
+                      className="ios-button-primary flex-1 !py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer select-none shadow-xs"
+                    >
+                      <span>Continue</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <motion.button
+                      type="submit"
+                      disabled={loading}
+                      whileHover={{ scale: 1.008 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                      className="ios-button-primary flex-1 cursor-pointer disabled:opacity-60 text-xs py-2.5 font-semibold shadow-xs hover:shadow-sm"
+                    >
+                      {loading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Submitting Registration...
                         </span>
-                        <p className="text-[11px] text-[#64748b] mt-0.5 leading-snug">
-                          Yes, I confirm my voluntary commitment and active dedication to the ground campaign of The New Democrats Youth League Mombasa Chapter (2027).
-                        </p>
-                      </div>
-                    </label>
-                  </div>
+                      ) : (
+                        <span className="flex items-center justify-center gap-1.5">
+                          <span>Join as Volunteer</span>
+                          <Check className="w-3.5 h-3.5" />
+                        </span>
+                      )}
+                    </motion.button>
+                  )}
                 </div>
 
-                {/* Submit CTA */}
-                <div className="pt-2">
-                  <motion.button
-                    type="submit"
-                    disabled={loading}
-                    whileHover={{ scale: 1.008 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
-                    className="ios-button-primary cursor-pointer disabled:opacity-60 text-sm py-3 font-semibold shadow-xs hover:shadow-sm"
-                  >
-                    {loading ? (
-                      <span className="flex items-center gap-2">
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Submitting Registration...
-                      </span>
-                    ) : (
-                      <>
-                        <span>Join as Volunteer</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </motion.button>
-                </div>
-
-                <p className="text-[10px] text-center text-[#64748b] pt-1">
-                  Your data is strictly for identification &amp; tallying &bull; Never shared with third parties.{" "}
+                <p className="text-[10px] text-center text-[#64748b] pt-0.5">
+                  Draft auto-saved &bull; Never shared with third parties.{" "}
                   <Link href="/privacy" className="text-[#0B4DB8] font-semibold underline hover:text-[#083B8F] active:opacity-75 transition-opacity">
                     Privacy Policy &amp; Terms
                   </Link>
@@ -1196,6 +1535,8 @@ export default function VolunteerRegistrationPage() {
                                                             setPollingStation(station);
                                                             setIsOtherStation(false);
                                                             setOtherStationText("");
+                                                            setSlideDirection(1);
+                                                            setCurrentStep(2);
                                                             // Smooth scroll up to form
                                                             window.scrollTo({
                                                               top: 240,
