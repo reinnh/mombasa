@@ -1338,13 +1338,6 @@ export default function VolunteerRegistrationPage() {
                     </motion.button>
                   )}
                 </div>
-
-                <p className="text-[10px] text-center text-[#64748b] pt-0.5">
-                  Draft auto-saved &bull; Never shared with third parties.{" "}
-                  <Link href="/privacy" className="text-[#0B4DB8] font-semibold underline hover:text-[#083B8F] active:opacity-75 transition-opacity">
-                    Privacy Policy &amp; Terms
-                  </Link>
-                </p>
               </form>
 
               {/* Geographical Directory Accordion - Directly below Volunteer Registration Form */}
@@ -1577,29 +1570,32 @@ export default function VolunteerRegistrationPage() {
         )}
       </main>
 
-      {/* Floating Bottom Coordinator Dock */}
-      <footer className="max-w-md lg:max-w-lg mx-auto w-full px-3.5 mt-6">
-        <div className="bg-white rounded-sm border border-[#e2e8f0] p-1.5 flex items-center justify-around shadow-xs">
+      {/* Discrete Footer Links */}
+      <footer className="max-w-md lg:max-w-lg mx-auto w-full px-3.5 mt-6 pb-2 text-center text-[11px] text-[#64748b]">
+        <div className="flex items-center justify-center gap-2.5 font-medium flex-wrap">
           <Link
             href="/"
-            className="flex-1 py-2 text-center rounded-sm bg-[#0B4DB8] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-transform duration-150 select-none"
+            className="text-[#0B4DB8] hover:underline font-semibold active:opacity-75 transition-opacity"
           >
-            <User className="w-3.5 h-3.5" />
             Volunteer Form
           </Link>
+          <span className="text-[#cbd5e1]">&bull;</span>
           <Link
             href="/admin"
-            className="flex-1 py-2 text-center rounded-sm text-[#0f172a] hover:bg-[#f1f5f9] active:scale-95 text-xs font-medium flex items-center justify-center gap-1.5 transition-all duration-150 select-none"
+            className="text-[#0B4DB8] hover:underline font-semibold active:opacity-75 transition-opacity"
           >
-            <Shield className="w-3.5 h-3.5 text-[#64748b]" />
             Coordinator Admin
           </Link>
-        </div>
-        <p className="text-[10px] text-center text-[#64748b] mt-2.5">
-          <span>Mombasa County &bull; TND Youth League Mombasa Chapter 2027 &bull; </span>
-          <Link href="/privacy" className="text-[#0B4DB8] hover:underline font-semibold active:opacity-75 transition-opacity">
+          <span className="text-[#cbd5e1]">&bull;</span>
+          <Link
+            href="/privacy"
+            className="text-[#0B4DB8] hover:underline font-semibold active:opacity-75 transition-opacity"
+          >
             Privacy Policy &amp; Terms
           </Link>
+        </div>
+        <p className="text-[10px] text-[#94a3b8] mt-2">
+          Mombasa County &bull; The NEW Democrats (TND) Youth League &bull; 2027
         </p>
       </footer>
     </div>
