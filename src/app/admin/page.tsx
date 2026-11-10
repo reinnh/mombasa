@@ -860,6 +860,9 @@ export default function AdminDashboardPage() {
                         {vol.educationLevel && (
                           <span className="block text-[10px] text-[#0B4DB8]">{vol.educationLevel}</span>
                         )}
+                        {vol.disability && vol.disability !== "Prefer not to say" && (
+                          <span className="block text-[10px] text-[#64748b]">♿ {vol.disability}</span>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <button
@@ -961,14 +964,14 @@ export default function AdminDashboardPage() {
                   )}
 
                   {/* Secondary Details: Clean inline text without noisy 'Kazi' headings */}
-                  {(vol.occupation || vol.educationLevel || vol.dateOfBirth) && (
+                  {(vol.occupation || vol.educationLevel || vol.dateOfBirth || vol.disability) && (
                     <p className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap">
                       {vol.dateOfBirth && (
                         <span title="Date of Birth">
                           {new Date(vol.dateOfBirth).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                         </span>
                       )}
-                      {vol.dateOfBirth && (vol.occupation || vol.educationLevel) && (
+                      {vol.dateOfBirth && (vol.occupation || vol.educationLevel || vol.disability) && (
                         <span className="text-slate-300">&bull;</span>
                       )}
                       {vol.occupation && <span>{vol.occupation}</span>}
@@ -976,6 +979,12 @@ export default function AdminDashboardPage() {
                         <span className="text-slate-300">&bull;</span>
                       )}
                       {vol.educationLevel && <span>{vol.educationLevel}</span>}
+                      {vol.disability && vol.disability !== "Prefer not to say" && (vol.occupation || vol.educationLevel) && (
+                        <span className="text-slate-300">&bull;</span>
+                      )}
+                      {vol.disability && vol.disability !== "Prefer not to say" && (
+                        <span className="text-[#0B4DB8]">♿ {vol.disability}</span>
+                      )}
                     </p>
                   )}
 
@@ -1085,6 +1094,9 @@ export default function AdminDashboardPage() {
                         {vol.occupation || <span className="text-[#94a3b8]">—</span>}
                         {vol.educationLevel && (
                           <span className="block text-[10px] text-[#0B4DB8]">{vol.educationLevel}</span>
+                        )}
+                        {vol.disability && vol.disability !== "Prefer not to say" && (
+                          <span className="block text-[10px] text-[#64748b]">♿ {vol.disability}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">

@@ -52,6 +52,7 @@ export default function VolunteerRegistrationPage() {
   const [occupation, setOccupation] = useState("");
   const [educationLevel, setEducationLevel] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [disability, setDisability] = useState("");
   const [comment, setComment] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -190,6 +191,7 @@ export default function VolunteerRegistrationPage() {
           fullName: fullName.trim(),
           idNumber: idNumber.trim(),
           dateOfBirth: dateOfBirth.trim(),
+          disability: disability.trim(),
           phoneNumber: cleanPhone,
           constituency,
           ward,
@@ -232,6 +234,7 @@ export default function VolunteerRegistrationPage() {
     setOccupation("");
     setEducationLevel("");
     setDateOfBirth("");
+    setDisability("");
     setComment("");
     setError(null);
     setSuccessVolunteer(null);
@@ -330,6 +333,15 @@ export default function VolunteerRegistrationPage() {
                     <span className="font-semibold text-[#0f172a]">
                       {new Date(successVolunteer.dateOfBirth).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                     </span>
+                  </div>
+                </>
+              )}
+              {successVolunteer.disability && successVolunteer.disability !== "Prefer not to say" && (
+                <>
+                  <div className="h-px bg-[#e2e8f0]" />
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-[#64748b]">Disability / Access</span>
+                    <span className="font-semibold text-[#0f172a]">{successVolunteer.disability}</span>
                   </div>
                 </>
               )}
@@ -627,8 +639,42 @@ export default function VolunteerRegistrationPage() {
                     </p>
                   </div>
 
-                  {/* Occupation (Kazi) & Education Level */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* Disability / Access Needs */}
+                  <div>
+                    <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-3.5 h-3.5 text-[#0B4DB8] flex items-center justify-center text-sm leading-none select-none" aria-hidden>♿</span>
+                        Disability / Access Needs
+                      </span>
+                      <span className="text-[10px] font-normal text-[#64748b]">Optional · Hiari</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#64748b] select-none" aria-hidden>
+                        <span className="text-sm leading-none">♿</span>
+                      </div>
+                      <select
+                        value={disability}
+                        onChange={(e) => setDisability(e.target.value)}
+                        className="ios-input ios-input-icon ios-select-icon !pl-11 !pr-9 appearance-none bg-white cursor-pointer"
+                      >
+                        <option value="">-- None / Not Applicable --</option>
+                        <option value="Visual Impairment">Visual Impairment (Blind / Low Vision)</option>
+                        <option value="Hearing Impairment">Hearing Impairment (Deaf / Hard of Hearing)</option>
+                        <option value="Physical / Mobility">Physical / Mobility Impairment</option>
+                        <option value="Speech Impairment">Speech Impairment</option>
+                        <option value="Cognitive / Intellectual">Cognitive / Intellectual Disability</option>
+                        <option value="Prefer not to say">Prefer Not to Say</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#64748b]">
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-[#64748b] mt-1 pl-0.5">
+                      Helps us ensure accessibility and appropriate support during campaigning.
+                    </p>
+                  </div>
+
+                  {/* Occupation (Kazi) & Education Level */}                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* Occupation (Kazi) - Optional */}
                     <div>
                       <label className="block text-xs font-semibold text-[#0f172a] mb-1.5 flex items-center gap-1.5">

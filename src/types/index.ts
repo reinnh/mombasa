@@ -17,6 +17,7 @@ export interface Volunteer {
   fullName: string;
   idNumber?: string;
   dateOfBirth?: string;
+  disability?: string;
   phoneNumber: string;
   constituency?: string;
   ward: string;
@@ -37,6 +38,7 @@ export interface VolunteerInput {
   fullName: string;
   idNumber?: string;
   dateOfBirth?: string;
+  disability?: string;
   phoneNumber: string;
   constituency?: string;
   ward: string;

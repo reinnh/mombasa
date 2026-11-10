@@ -4,6 +4,7 @@ export interface IVolunteer extends Document {
   fullName: string;
   idNumber?: string;
   dateOfBirth?: string;
+  disability?: string;
   phoneNumber: string;
   constituency?: string;
   ward: string;
@@ -38,6 +39,12 @@ const VolunteerSchema = new Schema<IVolunteer>(
     dateOfBirth: {
       type: String,
       trim: true,
+      default: "",
+    },
+    disability: {
+      type: String,
+      trim: true,
+      maxlength: 100,
       default: "",
     },
     phoneNumber: {
